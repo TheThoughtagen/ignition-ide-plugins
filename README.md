@@ -88,8 +88,8 @@ The Python LSP server provides advanced code intelligence features. With lazy.nv
 installed automatically via the `build` step. To install manually:
 
 ```bash
-# Install from PyPI (once published)
-pip install ignition-lsp
+# Install from PyPI (uses TestPyPI for ignition-lint-toolkit beta)
+pip install --extra-index-url https://test.pypi.org/simple/ ignition-lsp
 
 # Or install from source (inside the plugin directory)
 cd lsp

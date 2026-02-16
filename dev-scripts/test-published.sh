@@ -13,7 +13,11 @@ rm -rf ~/.local/share/nvim/lazy-test
 # Launch Neovim with test config
 echo "2. Installing plugin from GitHub and LSP from PyPI..."
 echo "   This will take a moment..."
-nvim -u test-install.lua --headless "+Lazy! sync" +qa
+
+# Find the script directory
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+nvim -u "$SCRIPT_DIR/test-install.lua" --headless "+Lazy! sync" +qa
 
 echo
 echo "3. Verifying installed versions..."

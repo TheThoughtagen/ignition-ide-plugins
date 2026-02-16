@@ -1,7 +1,11 @@
 -- Test configuration for ignition.nvim - Updated for Neovim 0.11.3
--- Run this in Neovim with: :luafile TEST_CONFIG.lua
+-- Run this in Neovim with: :luafile dev-scripts/test-config.lua
 
 print('=== Ignition.nvim Test Configuration ===')
+
+-- Dynamically find plugin root (parent of dev-scripts directory)
+local script_path = debug.getinfo(1, 'S').source:sub(2)
+local plugin_root = vim.fn.fnamemodify(script_path, ':h:h')
 
 -- Clear any cached modules
 package.loaded['ignition'] = nil
@@ -11,10 +15,10 @@ package.loaded['ignition.decoder'] = nil
 package.loaded['ignition.kindling'] = nil
 
 -- Add plugin to runtimepath
-vim.opt.runtimepath:append('/Users/pmannion/Documents/whiskeyhouse/ignition-nvim')
+vim.opt.runtimepath:append(plugin_root)
 
 -- Source the plugin
-vim.cmd('source /Users/pmannion/Documents/whiskeyhouse/ignition-nvim/plugin/ignition.lua')
+vim.cmd('source ' .. plugin_root .. '/plugin/ignition.lua')
 
 -- Setup ignition
 local ok, ignition = pcall(require, 'ignition')

@@ -83,10 +83,10 @@ If you're using lazy.nvim with the default spec, the LSP server installs automat
 
 ### Manual
 
-Install the latest version from PyPI:
+Install the latest version from PyPI (uses TestPyPI for ignition-lint-toolkit beta):
 
 ```bash
-pip install --upgrade ignition-lsp
+pip install --upgrade --extra-index-url https://test.pypi.org/simple/ ignition-lsp
 ```
 
 Or for development, install in editable mode from a local checkout:

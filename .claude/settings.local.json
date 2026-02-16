@@ -91,7 +91,15 @@
       "Bash(gh run watch:*)",
       "Bash(pip search:*)",
       "Bash(pip download:*)",
-      "WebFetch(domain:pypi.org)"
+      "WebFetch(domain:pypi.org)",
+      "Bash(./verify-lint-beta.sh:*)",
+      "Bash(venv/bin/pip uninstall:*)",
+      "Bash(venv/bin/pip install:*)",
+      "Bash(lsp/venv/bin/pip install:*)",
+      "Bash(venv/bin/pip index:*)",
+      "Bash(venv/bin/pip show:*)",
+      "Bash(bash verify-lint-beta.sh)",
+      "Bash(git mv:*)"
     ],
     "deny": [],
     "ask": []

@@ -1,10 +1,14 @@
 -- Test encoding/decoding directly
--- Run: :luafile TEST_ENCODING.lua
+-- Run: :luafile dev-scripts/test-encoding.lua
 
 print('=== Testing Encoding/Decoding ===')
 
+-- Dynamically find plugin root (parent of dev-scripts directory)
+local script_path = debug.getinfo(1, 'S').source:sub(2)
+local plugin_root = vim.fn.fnamemodify(script_path, ':h:h')
+
 package.loaded['ignition.encoding'] = nil
-package.path = package.path .. ';/Users/pmannion/Documents/whiskeyhouse/ignition-nvim/lua/?.lua'
+package.path = package.path .. ';' .. plugin_root .. '/lua/?.lua'
 
 local encoding = require('ignition.encoding')
 

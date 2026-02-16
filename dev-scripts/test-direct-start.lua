@@ -1,11 +1,15 @@
 -- Direct LSP start test - bypasses lspconfig
--- Run in Neovim: :luafile TEST_DIRECT_START.lua
+-- Run in Neovim: :luafile dev-scripts/test-direct-start.lua
 
 print('=== Direct LSP Start Test ===')
 
+-- Dynamically find plugin root (parent of dev-scripts directory)
+local script_path = debug.getinfo(1, 'S').source:sub(2)
+local plugin_root = vim.fn.fnamemodify(script_path, ':h:h')
+
 -- Define the LSP command
-local venv_python = '/Users/pmannion/Documents/whiskeyhouse/ignition-nvim/lsp/venv/bin/python'
-local server_path = '/Users/pmannion/Documents/whiskeyhouse/ignition-nvim/lsp/ignition_lsp/server.py'
+local venv_python = plugin_root .. '/lsp/venv/bin/python'
+local server_path = plugin_root .. '/lsp/ignition_lsp/server.py'
 
 print('Python:', venv_python)
 print('Server:', server_path)

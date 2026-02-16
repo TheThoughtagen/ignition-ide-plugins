@@ -1,10 +1,14 @@
 -- Simplest possible LSP test - Direct vim.lsp.start()
--- Run: :luafile TEST_CONFIG_SIMPLE.lua
+-- Run: :luafile dev-scripts/test-config-simple.lua
 
 print('=== Simple Direct LSP Start ===')
 
-local venv_python = '/Users/pmannion/Documents/whiskeyhouse/ignition-nvim/lsp/venv/bin/python'
-local server_path = '/Users/pmannion/Documents/whiskeyhouse/ignition-nvim/lsp/ignition_lsp/server.py'
+-- Dynamically find plugin root (parent of dev-scripts directory)
+local script_path = debug.getinfo(1, 'S').source:sub(2)
+local plugin_root = vim.fn.fnamemodify(script_path, ':h:h')
+
+local venv_python = plugin_root .. '/lsp/venv/bin/python'
+local server_path = plugin_root .. '/lsp/ignition_lsp/server.py'
 
 print('Command:', venv_python, server_path)
 

@@ -25,7 +25,8 @@ return {
 
   -- Install the Python LSP server after cloning
   -- Always upgrade to latest version from PyPI
-  build = 'cd lsp && python3 -m venv venv && venv/bin/pip install --upgrade ignition-lsp',
+  -- Use TestPyPI for ignition-lint-toolkit beta
+  build = 'cd lsp && python3 -m venv venv && venv/bin/pip install --upgrade --extra-index-url https://test.pypi.org/simple/ ignition-lsp',
 
   opts = {},
 

@@ -1,9 +1,11 @@
 -- Complete plugin loader for testing
--- Run: :luafile LOAD_PLUGIN.lua
+-- Run: :luafile dev-scripts/load-plugin.lua
 
 print('=== Loading ignition.nvim ===')
 
-local plugin_root = '/Users/pmannion/Documents/whiskeyhouse/ignition-nvim'
+-- Dynamically find plugin root (parent of dev-scripts directory)
+local script_path = debug.getinfo(1, 'S').source:sub(2)
+local plugin_root = vim.fn.fnamemodify(script_path, ':h:h')
 
 -- Add to runtime path
 vim.opt.runtimepath:prepend(plugin_root)
