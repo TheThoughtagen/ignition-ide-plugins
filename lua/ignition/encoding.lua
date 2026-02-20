@@ -130,7 +130,7 @@ function M.is_encoded_script(text)
     '\\n',     -- Escaped newlines are very common in scripts
     '\\t',     -- Escaped tabs
     '\\"',     -- Escaped quotes
-    '\\u003',  -- Unicode escapes (< > =)
+    '\\u00',   -- Unicode escapes (\u003c, \u003e, \u003d, \u0026, \u0027)
   }
 
   for _, pattern in ipairs(patterns) do

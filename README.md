@@ -29,6 +29,8 @@ This plugin uses a hybrid approach:
 - **User Guide**: See `docs/` directory or [online documentation](https://whiskeyhouse.github.io/ignition-nvim)
 - **Vim Help**: `:help ignition-nvim`
 - **Developer Guide**: [CLAUDE.md](CLAUDE.md)
+- **Claude Code Plugin**: [claude-code-plugin/README.md](claude-code-plugin/README.md)
+- **Claude Code Templates**: [templates/README.md](templates/README.md)
 - **Contributing**: [CONTRIBUTING.md](CONTRIBUTING.md)
 - **Troubleshooting**: [TROUBLESHOOTING.md](TROUBLESHOOTING.md)
 - **Changelog**: [CHANGELOG.md](CHANGELOG.md)
@@ -219,6 +221,25 @@ This plugin is under active development. See our [Linear project](https://linear
 - [x] Comprehensive testing suite (162 Python + 107 Lua tests)
 - [x] Full documentation (Docusaurus, Vim help, guides)
 - [x] CI workflow (GitHub Actions)
+
+## Claude Code Integration
+
+Give Claude Code full Ignition awareness — API reference, expression language, and auto-linting — so it writes correct Ignition scripts out of the box.
+
+**Option A: Plugin** (global, works across all projects)
+
+```bash
+claude plugin add --from whiskeyhouse/ignition-nvim --path claude-code-plugin
+```
+
+**Option B: Templates** (per-project, check into your repo)
+
+```bash
+# From your Ignition project root
+curl -sL https://raw.githubusercontent.com/whiskeyhouse/ignition-nvim/main/templates/setup.sh | bash
+```
+
+Both include auto-lint hooks and the full `system.*` + expression function reference. See [claude-code-plugin/README.md](claude-code-plugin/README.md) and [templates/README.md](templates/README.md) for details.
 
 ## Contributing
 

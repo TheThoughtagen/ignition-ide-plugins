@@ -24,7 +24,7 @@ function M.setup(config)
   vim.lsp.config('ignition_lsp', {
     cmd = lsp_config.cmd,
     root_markers = { 'project.json' },
-    filetypes = { 'ignition', 'python' },
+    filetypes = { 'ignition', 'python', 'ignition_expr' },
     settings = lsp_config.settings or {},
     init_options = {
       ignition_version = (lsp_config.settings or {}).ignition
@@ -35,7 +35,7 @@ function M.setup(config)
 
   -- Auto-start for matching filetypes in Ignition projects
   vim.api.nvim_create_autocmd('FileType', {
-    pattern = { 'ignition', 'python' },
+    pattern = { 'ignition', 'python', 'ignition_expr' },
     callback = function(args)
       -- Check if already attached to avoid duplicate clients
       local clients = vim.lsp.get_clients({ bufnr = args.buf, name = 'ignition_lsp' })
@@ -86,7 +86,9 @@ function M.find_lsp_server()
 end
 
 -- Start LSP for a specific buffer (used for virtual buffers)
-function M.start_lsp_for_buffer(bufnr)
+-- @param bufnr number Buffer number (optional, defaults to current buffer)
+-- @param root_dir string Root directory for LSP (optional, will auto-detect if not provided)
+function M.start_lsp_for_buffer(bufnr, root_dir)
   bufnr = bufnr or vim.api.nvim_get_current_buf()
 
   if not lsp_config.cmd then
@@ -100,7 +102,13 @@ function M.start_lsp_for_buffer(bufnr)
 
   local config = vim.lsp.config.ignition_lsp
   if config then
-    return vim.lsp.start(config, { bufnr = bufnr })
+    -- If root_dir is explicitly provided (for virtual buffers), use it
+    -- Otherwise let vim.lsp.start auto-detect from buffer path
+    local start_config = vim.tbl_extend('force', {}, config)
+    if root_dir then
+      start_config.root_dir = root_dir
+    end
+    return vim.lsp.start(start_config, { bufnr = bufnr })
   end
 
   return nil

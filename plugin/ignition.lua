@@ -40,6 +40,51 @@ vim.api.nvim_create_user_command('IgnitionInfo', function()
   require('ignition').info()
 end, { desc = 'Show Ignition plugin information and status' })
 
+vim.api.nvim_create_user_command('IgnitionDebugLSP', function()
+  local bufnr = vim.api.nvim_get_current_buf()
+  local lines = {
+    '=== Ignition LSP Debug ===',
+    'Buffer: ' .. bufnr,
+    'Name: ' .. vim.api.nvim_buf_get_name(bufnr),
+    'Filetype: ' .. vim.bo[bufnr].filetype,
+    'Buftype: ' .. vim.bo[bufnr].buftype,
+  }
+
+  local vd = require('ignition.virtual_doc')
+  local is_virtual = vd.is_virtual_doc(bufnr)
+  table.insert(lines, 'Is Virtual: ' .. tostring(is_virtual))
+
+  if is_virtual then
+    local meta = vd.get_metadata(bufnr)
+    table.insert(lines, 'Source: ' .. meta.source_file)
+    local root = vim.fs.root(meta.source_file, 'project.json')
+    table.insert(lines, 'Root: ' .. (root or 'NOT FOUND'))
+  else
+    local root = vim.fs.root(bufnr, 'project.json')
+    table.insert(lines, 'Root: ' .. (root or 'NOT FOUND'))
+  end
+
+  local clients = vim.lsp.get_clients({ bufnr = bufnr })
+  table.insert(lines, 'LSP Clients: ' .. #clients)
+  for _, c in ipairs(clients) do
+    table.insert(lines, '  - ' .. c.name .. ' root: ' .. (c.config.root_dir or 'none'))
+  end
+
+  if #clients == 0 then
+    table.insert(lines, 'Attempting manual LSP start...')
+    local lsp = require('ignition.lsp')
+    local root_dir = nil
+    if is_virtual then
+      local meta = vd.get_metadata(bufnr)
+      root_dir = vim.fs.root(meta.source_file, 'project.json')
+    end
+    local id = lsp.start_lsp_for_buffer(bufnr, root_dir)
+    table.insert(lines, 'Start result: ' .. tostring(id or 'FAILED'))
+  end
+
+  print(table.concat(lines, '\n'))
+end, { desc = 'Debug LSP attachment for current buffer' })
+
 vim.api.nvim_create_user_command('IgnitionComponentTree', function()
   require('ignition.component_tree').toggle()
 end, { desc = 'Toggle Perspective component tree sidebar' })

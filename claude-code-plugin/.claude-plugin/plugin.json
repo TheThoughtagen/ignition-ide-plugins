@@ -1,0 +1,15 @@
+{
+  "name": "ignition-scada",
+  "description": "Ignition SCADA development — API reference, expression language, and auto-linting for Ignition projects",
+  "version": "0.1.0",
+  "author": {
+    "name": "Whiskey House",
+    "url": "https://github.com/whiskeyhouse"
+  },
+  "homepage": "https://github.com/whiskeyhouse/ignition-nvim",
+  "repository": "https://github.com/whiskeyhouse/ignition-nvim",
+  "license": "MIT",
+  "keywords": ["ignition", "scada", "ics", "inductive-automation", "jython", "plc"],
+  "skills": "./skills/",
+  "hooks": "./hooks/hooks.json"
+}

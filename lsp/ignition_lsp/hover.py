@@ -49,6 +49,12 @@ def get_hover_info(
     if not word:
         return None
 
+    # Expression function hover for virtual expression buffers
+    if "[Ignition:" in document.uri and (
+        "/Expression:" in document.uri or "/Expression]" in document.uri
+    ):
+        return _get_expression_hover(word)
+
     # Try Java class/method hover first
     if java_loader is not None:
         java_hover = _get_java_hover(document, position, word, java_loader)
@@ -192,6 +198,34 @@ def _get_project_symbol_hover(
                 )
 
     return None
+
+
+def _get_expression_hover(word: str) -> Optional[Hover]:
+    """Get hover information for an Ignition expression function."""
+    from .expression_functions import EXPRESSION_FUNCTIONS
+
+    info = EXPRESSION_FUNCTIONS.get(word)
+    if not info:
+        return None
+
+    params_md = ""
+    if info.get("params"):
+        params_md = "\n\n**Parameters:**\n"
+        for p in info["params"]:
+            opt = " *(optional)*" if p.get("optional") else ""
+            params_md += f"- `{p['name']}`: {p['type']}{opt}\n"
+
+    md = (
+        f"**{info['signature']}**\n\n"
+        f"{info['description']}"
+        f"{params_md}\n\n"
+        f"**Returns:** {info['return_type']}  \n"
+        f"**Category:** {info['category']}"
+    )
+
+    return Hover(
+        contents=MarkupContent(kind=MarkupKind.Markdown, value=md)
+    )
 
 
 def _get_java_hover(
