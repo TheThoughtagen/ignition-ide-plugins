@@ -1,0 +1,201 @@
+{
+  "module": "tempfile",
+  "description": "Generate temporary files and directories.",
+  "functions": [
+    {
+      "name": "mkstemp",
+      "signature": "mkstemp(suffix='', prefix='tmp', dir=None)",
+      "params": [
+        {
+          "name": "suffix",
+          "type": "str",
+          "description": "Suffix for the temporary file name."
+        },
+        {
+          "name": "prefix",
+          "type": "str",
+          "description": "Prefix for the temporary file name. Defaults to 'tmp'."
+        },
+        {
+          "name": "dir",
+          "type": "str",
+          "description": "Directory in which to create the file. Defaults to the system temp directory."
+        }
+      ],
+      "returns": {
+        "type": "tuple",
+        "description": "A tuple (fd, name) where fd is the OS-level file descriptor and name is the absolute path."
+      },
+      "description": "Create a temporary file in the most secure manner possible. The caller is responsible for closing the file descriptor and deleting the file when done.",
+      "deprecated": false
+    },
+    {
+      "name": "mkdtemp",
+      "signature": "mkdtemp(suffix='', prefix='tmp', dir=None)",
+      "params": [
+        {
+          "name": "suffix",
+          "type": "str",
+          "description": "Suffix for the temporary directory name."
+        },
+        {
+          "name": "prefix",
+          "type": "str",
+          "description": "Prefix for the temporary directory name. Defaults to 'tmp'."
+        },
+        {
+          "name": "dir",
+          "type": "str",
+          "description": "Directory in which to create the directory. Defaults to the system temp directory."
+        }
+      ],
+      "returns": {
+        "type": "str",
+        "description": "Absolute pathname of the new temporary directory."
+      },
+      "description": "Create a temporary directory in the most secure manner possible. The caller is responsible for deleting the directory when done.",
+      "deprecated": false
+    },
+    {
+      "name": "gettempdir",
+      "signature": "gettempdir()",
+      "params": [],
+      "returns": {
+        "type": "str",
+        "description": "The default temporary directory path."
+      },
+      "description": "Return the name of the directory used for temporary files. This is the directory used by default by all functions in this module.",
+      "deprecated": false
+    },
+    {
+      "name": "NamedTemporaryFile",
+      "signature": "NamedTemporaryFile(mode='w+b', bufsize=-1, suffix='', prefix='tmp', dir=None, delete=True)",
+      "params": [
+        {
+          "name": "mode",
+          "type": "str",
+          "description": "File mode. Defaults to 'w+b' (binary read/write)."
+        },
+        {
+          "name": "bufsize",
+          "type": "int",
+          "description": "Buffer size. -1 means the OS default."
+        },
+        {
+          "name": "suffix",
+          "type": "str",
+          "description": "Suffix for the file name."
+        },
+        {
+          "name": "prefix",
+          "type": "str",
+          "description": "Prefix for the file name. Defaults to 'tmp'."
+        },
+        {
+          "name": "dir",
+          "type": "str",
+          "description": "Directory in which to create the file. Defaults to the system temp directory."
+        },
+        {
+          "name": "delete",
+          "type": "bool",
+          "description": "If True (default), the file is deleted when it is closed."
+        }
+      ],
+      "returns": {
+        "type": "file",
+        "description": "A file-like object with a visible name in the file system."
+      },
+      "description": "Create a temporary file that has a visible name in the file system. The file is deleted when closed unless delete=False. Can be used as a context manager.",
+      "deprecated": false
+    },
+    {
+      "name": "TemporaryFile",
+      "signature": "TemporaryFile(mode='w+b', bufsize=-1, suffix='', prefix='tmp', dir=None)",
+      "params": [
+        {
+          "name": "mode",
+          "type": "str",
+          "description": "File mode. Defaults to 'w+b' (binary read/write)."
+        },
+        {
+          "name": "bufsize",
+          "type": "int",
+          "description": "Buffer size. -1 means the OS default."
+        },
+        {
+          "name": "suffix",
+          "type": "str",
+          "description": "Suffix for the file name."
+        },
+        {
+          "name": "prefix",
+          "type": "str",
+          "description": "Prefix for the file name. Defaults to 'tmp'."
+        },
+        {
+          "name": "dir",
+          "type": "str",
+          "description": "Directory in which to create the file. Defaults to the system temp directory."
+        }
+      ],
+      "returns": {
+        "type": "file",
+        "description": "A file-like object with no name in the file system."
+      },
+      "description": "Create a temporary file that has no visible name in the file system. The file is destroyed as soon as it is closed. Can be used as a context manager.",
+      "deprecated": false
+    },
+    {
+      "name": "SpooledTemporaryFile",
+      "signature": "SpooledTemporaryFile(max_size=0, mode='w+b', bufsize=-1, suffix='', prefix='tmp', dir=None)",
+      "params": [
+        {
+          "name": "max_size",
+          "type": "int",
+          "description": "Maximum size in bytes before the file is rolled over to disk. 0 means always roll over."
+        },
+        {
+          "name": "mode",
+          "type": "str",
+          "description": "File mode. Defaults to 'w+b' (binary read/write)."
+        },
+        {
+          "name": "bufsize",
+          "type": "int",
+          "description": "Buffer size. -1 means the OS default."
+        },
+        {
+          "name": "suffix",
+          "type": "str",
+          "description": "Suffix for the file name."
+        },
+        {
+          "name": "prefix",
+          "type": "str",
+          "description": "Prefix for the file name. Defaults to 'tmp'."
+        },
+        {
+          "name": "dir",
+          "type": "str",
+          "description": "Directory in which to create the file when rolled over. Defaults to the system temp directory."
+        }
+      ],
+      "returns": {
+        "type": "file",
+        "description": "A file-like object that is held in memory until it exceeds max_size."
+      },
+      "description": "Create a temporary file that is held in memory (using StringIO) until it exceeds max_size bytes, at which point it is written to disk like TemporaryFile. Can be used as a context manager.",
+      "deprecated": false
+    }
+  ],
+  "classes": [],
+  "constants": [
+    {
+      "name": "tempdir",
+      "type": "str or None",
+      "description": "When set to a value other than None, this variable defines the default directory for all tempfile functions. If None, the standard platform-specific temp directory is used."
+    }
+  ],
+  "docs_url": "https://docs.python.org/2.7/library/tempfile.html"
+}

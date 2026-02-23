@@ -1,0 +1,221 @@
+{
+  "module": "textwrap",
+  "description": "Text wrapping and filling. Provides convenience functions and a TextWrapper class for formatting text to fit within a given width.",
+  "functions": [
+    {
+      "name": "wrap",
+      "signature": "wrap(text, width=70, **kwargs)",
+      "params": [
+        {
+          "name": "text",
+          "type": "str",
+          "description": "The text to wrap"
+        },
+        {
+          "name": "width",
+          "type": "int",
+          "description": "Maximum line length. Default is 70."
+        },
+        {
+          "name": "**kwargs",
+          "type": "any",
+          "description": "Additional keyword arguments are passed to the TextWrapper constructor"
+        }
+      ],
+      "returns": {
+        "type": "list",
+        "description": "List of output lines, without final newlines"
+      },
+      "description": "Wraps a single paragraph of text and returns a list of wrapped lines. Shorthand for TextWrapper(width=width, **kwargs).wrap(text).",
+      "deprecated": false
+    },
+    {
+      "name": "fill",
+      "signature": "fill(text, width=70, **kwargs)",
+      "params": [
+        {
+          "name": "text",
+          "type": "str",
+          "description": "The text to fill"
+        },
+        {
+          "name": "width",
+          "type": "int",
+          "description": "Maximum line length. Default is 70."
+        },
+        {
+          "name": "**kwargs",
+          "type": "any",
+          "description": "Additional keyword arguments are passed to the TextWrapper constructor"
+        }
+      ],
+      "returns": {
+        "type": "str",
+        "description": "A single string with lines separated by newlines"
+      },
+      "description": "Wraps a single paragraph of text and returns a single string containing the wrapped paragraph. Shorthand for TextWrapper(width=width, **kwargs).fill(text). Equivalent to '\\n'.join(wrap(text, ...)).",
+      "deprecated": false
+    },
+    {
+      "name": "dedent",
+      "signature": "dedent(text)",
+      "params": [
+        {
+          "name": "text",
+          "type": "str",
+          "description": "The text to dedent"
+        }
+      ],
+      "returns": {
+        "type": "str",
+        "description": "The dedented text"
+      },
+      "description": "Remove any common leading whitespace from all lines in text. Lines consisting solely of whitespace are treated as blank lines for whitespace removal but are otherwise unchanged. Tabs and spaces are both treated as whitespace, but they are not equal.",
+      "deprecated": false
+    }
+  ],
+  "classes": [
+    {
+      "name": "TextWrapper",
+      "description": "Wraps and fills text. Provides all the functionality of wrap() and fill() with fine-grained control over wrapping behavior via instance attributes.",
+      "constructors": [
+        {
+          "signature": "TextWrapper(width=70, initial_indent='', subsequent_indent='', expand_tabs=True, replace_whitespace=True, fix_sentence_endings=False, break_long_words=True, drop_whitespace=True, break_on_hyphens=True)",
+          "params": [
+            {
+              "name": "width",
+              "type": "int",
+              "description": "Maximum line length. Default is 70."
+            },
+            {
+              "name": "initial_indent",
+              "type": "str",
+              "description": "String prepended to the first line of wrapped output. Default is empty string."
+            },
+            {
+              "name": "subsequent_indent",
+              "type": "str",
+              "description": "String prepended to all subsequent lines of wrapped output. Default is empty string."
+            },
+            {
+              "name": "expand_tabs",
+              "type": "bool",
+              "description": "If True, tab characters are expanded to spaces using str.expandtabs(). Default is True."
+            },
+            {
+              "name": "replace_whitespace",
+              "type": "bool",
+              "description": "If True, each whitespace character remaining after tab expansion is replaced by a single space. Default is True."
+            },
+            {
+              "name": "fix_sentence_endings",
+              "type": "bool",
+              "description": "If True, attempts to detect sentence endings and add two spaces after them. Default is False."
+            },
+            {
+              "name": "break_long_words",
+              "type": "bool",
+              "description": "If True, words longer than width are broken to ensure no lines are longer than width. Default is True."
+            },
+            {
+              "name": "drop_whitespace",
+              "type": "bool",
+              "description": "If True, whitespace at the beginning and end of each line after wrapping is dropped. Default is True."
+            },
+            {
+              "name": "break_on_hyphens",
+              "type": "bool",
+              "description": "If True, wrapping will occur on hyphens in compound words. Default is True."
+            }
+          ],
+          "description": "Create a new TextWrapper with the given configuration."
+        }
+      ],
+      "methods": [
+        {
+          "name": "wrap",
+          "signature": "wrap(text)",
+          "params": [
+            {
+              "name": "text",
+              "type": "str",
+              "description": "The text to wrap"
+            }
+          ],
+          "returns": {
+            "type": "list",
+            "description": "List of output lines, without final newlines"
+          },
+          "description": "Wraps a single paragraph in text (a string) so every line is at most width characters long. Returns a list of output lines.",
+          "deprecated": false
+        },
+        {
+          "name": "fill",
+          "signature": "fill(text)",
+          "params": [
+            {
+              "name": "text",
+              "type": "str",
+              "description": "The text to fill"
+            }
+          ],
+          "returns": {
+            "type": "str",
+            "description": "A single string with lines separated by newlines"
+          },
+          "description": "Wraps a single paragraph in text and returns a single string containing the wrapped paragraph.",
+          "deprecated": false
+        }
+      ],
+      "fields": [
+        {
+          "name": "width",
+          "type": "int",
+          "description": "Maximum length of wrapped lines. Default is 70."
+        },
+        {
+          "name": "initial_indent",
+          "type": "str",
+          "description": "String prepended to the first line of wrapped output."
+        },
+        {
+          "name": "subsequent_indent",
+          "type": "str",
+          "description": "String prepended to all lines of wrapped output except the first."
+        },
+        {
+          "name": "expand_tabs",
+          "type": "bool",
+          "description": "If True, tab characters are expanded to spaces. Default is True."
+        },
+        {
+          "name": "replace_whitespace",
+          "type": "bool",
+          "description": "If True, each whitespace character after tab expansion is replaced by a single space. Default is True."
+        },
+        {
+          "name": "fix_sentence_endings",
+          "type": "bool",
+          "description": "If True, attempts to detect sentence endings and add two spaces after them. Default is False."
+        },
+        {
+          "name": "drop_whitespace",
+          "type": "bool",
+          "description": "If True, whitespace at the beginning and end of each line is dropped after wrapping. Default is True."
+        },
+        {
+          "name": "break_long_words",
+          "type": "bool",
+          "description": "If True, words longer than width will be broken. Default is True."
+        },
+        {
+          "name": "break_on_hyphens",
+          "type": "bool",
+          "description": "If True, wrapping occurs on hyphens in compound words. Default is True."
+        }
+      ]
+    }
+  ],
+  "constants": [],
+  "docs_url": "https://docs.python.org/2.7/library/textwrap.html"
+}

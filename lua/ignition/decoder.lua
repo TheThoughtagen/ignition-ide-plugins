@@ -4,7 +4,6 @@ local M = {}
 local encoding = require('ignition.encoding')
 local json_parser = require('ignition.json_parser')
 local virtual_doc = require('ignition.virtual_doc')
-local lsp = require('ignition.lsp')
 
 -- Decode embedded scripts in current buffer
 function M.decode_current_buffer()
@@ -102,8 +101,6 @@ function M.decode_script(source_bufnr, script_info)
       { title = 'Ignition.nvim' }
     )
 
-    -- Attach ignition LSP for project completions and go-to-definition
-    lsp.start_lsp_for_buffer(virtual_bufnr)
   end
 end
 

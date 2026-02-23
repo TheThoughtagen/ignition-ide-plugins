@@ -1,0 +1,887 @@
+{
+  "module": "io",
+  "description": "Core tools for working with streams. Provides the Python interfaces to stream handling including StringIO and BytesIO in-memory streams.",
+  "functions": [
+    {
+      "name": "open",
+      "signature": "open(file, mode='r', buffering=-1, encoding=None, errors=None, newline=None, closefd=True)",
+      "params": [
+        {
+          "name": "file",
+          "type": "str or int",
+          "description": "File path (string) or an existing file descriptor (integer)."
+        },
+        {
+          "name": "mode",
+          "type": "str",
+          "description": "File mode: 'r' (read), 'w' (write), 'a' (append), 'b' (binary), 't' (text), '+' (update). Combinations allowed, e.g. 'rb', 'w+b'."
+        },
+        {
+          "name": "buffering",
+          "type": "int",
+          "description": "Buffering policy: 0 for unbuffered (binary only), 1 for line buffered (text only), >1 for buffer size in bytes, -1 for system default."
+        },
+        {
+          "name": "encoding",
+          "type": "str",
+          "description": "Text encoding to use (e.g. 'utf-8'). Only used in text mode."
+        },
+        {
+          "name": "errors",
+          "type": "str",
+          "description": "How encoding errors are handled: 'strict', 'ignore', 'replace', etc. Only used in text mode."
+        },
+        {
+          "name": "newline",
+          "type": "str",
+          "description": "Controls newline translation. None enables universal newlines. Only used in text mode."
+        },
+        {
+          "name": "closefd",
+          "type": "bool",
+          "description": "If False and a file descriptor was given, the underlying FD is kept open when the file object is closed."
+        }
+      ],
+      "returns": {
+        "type": "IOBase",
+        "description": "A file object whose type depends on the mode: BufferedReader, BufferedWriter, BufferedRandom, TextIOWrapper, or FileIO."
+      },
+      "description": "Open a file and return a corresponding stream. This is the io module's version of the built-in open() function, providing more control over buffering and encoding.",
+      "deprecated": false
+    }
+  ],
+  "classes": [
+    {
+      "name": "StringIO",
+      "description": "An in-memory stream for unicode text. The text buffer is discarded when close() is called. StringIO objects can be used as context managers.",
+      "constructors": [
+        {
+          "signature": "StringIO(initial_value=u'', newline=None)",
+          "params": [
+            {
+              "name": "initial_value",
+              "type": "unicode",
+              "description": "Initial contents of the buffer. Must be a unicode string."
+            },
+            {
+              "name": "newline",
+              "type": "str",
+              "description": "Controls newline translation. None enables universal newlines on read."
+            }
+          ],
+          "description": "Create a new StringIO object with optional initial contents."
+        }
+      ],
+      "methods": [
+        {
+          "name": "read",
+          "signature": "read(size=-1)",
+          "params": [
+            {
+              "name": "size",
+              "type": "int",
+              "description": "Maximum number of characters to read. -1 reads to the end."
+            }
+          ],
+          "returns": {
+            "type": "unicode",
+            "description": "Unicode string of the data read."
+          },
+          "description": "Read at most size characters from the stream. If size is -1 or None, read until EOF.",
+          "deprecated": false
+        },
+        {
+          "name": "readline",
+          "signature": "readline(size=-1)",
+          "params": [
+            {
+              "name": "size",
+              "type": "int",
+              "description": "Maximum number of characters to read. -1 reads a full line."
+            }
+          ],
+          "returns": {
+            "type": "unicode",
+            "description": "A single line from the stream including the newline character."
+          },
+          "description": "Read and return one line from the stream. If size is specified, at most size characters are read.",
+          "deprecated": false
+        },
+        {
+          "name": "readlines",
+          "signature": "readlines(hint=-1)",
+          "params": [
+            {
+              "name": "hint",
+              "type": "int",
+              "description": "Approximate number of characters to read. -1 reads all lines."
+            }
+          ],
+          "returns": {
+            "type": "list",
+            "description": "List of lines from the stream."
+          },
+          "description": "Read and return a list of lines from the stream. The hint parameter controls how many lines are read.",
+          "deprecated": false
+        },
+        {
+          "name": "write",
+          "signature": "write(s)",
+          "params": [
+            {
+              "name": "s",
+              "type": "unicode",
+              "description": "Unicode string to write."
+            }
+          ],
+          "returns": {
+            "type": "int",
+            "description": "Number of characters written."
+          },
+          "description": "Write the unicode string s to the stream and return the number of characters written.",
+          "deprecated": false
+        },
+        {
+          "name": "writelines",
+          "signature": "writelines(lines)",
+          "params": [
+            {
+              "name": "lines",
+              "type": "list",
+              "description": "Iterable of unicode strings to write."
+            }
+          ],
+          "returns": {
+            "type": "None",
+            "description": "None."
+          },
+          "description": "Write a list of lines to the stream. Line separators are not added between the strings.",
+          "deprecated": false
+        },
+        {
+          "name": "getvalue",
+          "signature": "getvalue()",
+          "params": [],
+          "returns": {
+            "type": "unicode",
+            "description": "The entire contents of the buffer."
+          },
+          "description": "Return the entire contents of the buffer. This does not affect the read/write position.",
+          "deprecated": false
+        },
+        {
+          "name": "seek",
+          "signature": "seek(offset, whence=0)",
+          "params": [
+            {
+              "name": "offset",
+              "type": "int",
+              "description": "Position offset."
+            },
+            {
+              "name": "whence",
+              "type": "int",
+              "description": "0 = from start, 1 = from current position, 2 = from end."
+            }
+          ],
+          "returns": {
+            "type": "int",
+            "description": "New absolute position."
+          },
+          "description": "Change the stream position to the given offset. The whence parameter determines the reference point.",
+          "deprecated": false
+        },
+        {
+          "name": "tell",
+          "signature": "tell()",
+          "params": [],
+          "returns": {
+            "type": "int",
+            "description": "Current stream position."
+          },
+          "description": "Return the current stream position.",
+          "deprecated": false
+        },
+        {
+          "name": "close",
+          "signature": "close()",
+          "params": [],
+          "returns": {
+            "type": "None",
+            "description": "None."
+          },
+          "description": "Flush and close the stream. The buffer contents are discarded. Further operations on a closed stream will raise ValueError.",
+          "deprecated": false
+        },
+        {
+          "name": "truncate",
+          "signature": "truncate(size=None)",
+          "params": [
+            {
+              "name": "size",
+              "type": "int",
+              "description": "Truncate to at most this size. Defaults to the current position."
+            }
+          ],
+          "returns": {
+            "type": "int",
+            "description": "New size of the buffer."
+          },
+          "description": "Truncate the stream to at most size characters. The current position is not changed.",
+          "deprecated": false
+        },
+        {
+          "name": "isatty",
+          "signature": "isatty()",
+          "params": [],
+          "returns": {
+            "type": "bool",
+            "description": "Always False."
+          },
+          "description": "Return False. StringIO objects are not connected to a terminal.",
+          "deprecated": false
+        }
+      ],
+      "fields": []
+    },
+    {
+      "name": "BytesIO",
+      "description": "An in-memory stream for bytes data. The buffer is discarded when close() is called. BytesIO objects can be used as context managers.",
+      "constructors": [
+        {
+          "signature": "BytesIO(initial_bytes=b'')",
+          "params": [
+            {
+              "name": "initial_bytes",
+              "type": "str",
+              "description": "Initial contents of the buffer. Must be a bytes/str object."
+            }
+          ],
+          "description": "Create a new BytesIO object with optional initial contents."
+        }
+      ],
+      "methods": [
+        {
+          "name": "read",
+          "signature": "read(size=-1)",
+          "params": [
+            {
+              "name": "size",
+              "type": "int",
+              "description": "Maximum number of bytes to read. -1 reads to the end."
+            }
+          ],
+          "returns": {
+            "type": "str",
+            "description": "Bytes string of the data read."
+          },
+          "description": "Read at most size bytes from the stream. If size is -1 or None, read until EOF.",
+          "deprecated": false
+        },
+        {
+          "name": "readline",
+          "signature": "readline(size=-1)",
+          "params": [
+            {
+              "name": "size",
+              "type": "int",
+              "description": "Maximum number of bytes to read. -1 reads a full line."
+            }
+          ],
+          "returns": {
+            "type": "str",
+            "description": "A single line from the stream including the newline character."
+          },
+          "description": "Read and return one line from the stream. If size is specified, at most size bytes are read.",
+          "deprecated": false
+        },
+        {
+          "name": "readlines",
+          "signature": "readlines(hint=-1)",
+          "params": [
+            {
+              "name": "hint",
+              "type": "int",
+              "description": "Approximate number of bytes to read. -1 reads all lines."
+            }
+          ],
+          "returns": {
+            "type": "list",
+            "description": "List of lines from the stream."
+          },
+          "description": "Read and return a list of lines from the stream.",
+          "deprecated": false
+        },
+        {
+          "name": "write",
+          "signature": "write(b)",
+          "params": [
+            {
+              "name": "b",
+              "type": "str",
+              "description": "Bytes to write."
+            }
+          ],
+          "returns": {
+            "type": "int",
+            "description": "Number of bytes written."
+          },
+          "description": "Write the bytes string b to the stream and return the number of bytes written.",
+          "deprecated": false
+        },
+        {
+          "name": "writelines",
+          "signature": "writelines(lines)",
+          "params": [
+            {
+              "name": "lines",
+              "type": "list",
+              "description": "Iterable of bytes strings to write."
+            }
+          ],
+          "returns": {
+            "type": "None",
+            "description": "None."
+          },
+          "description": "Write a list of bytes lines to the stream. Line separators are not added.",
+          "deprecated": false
+        },
+        {
+          "name": "getvalue",
+          "signature": "getvalue()",
+          "params": [],
+          "returns": {
+            "type": "str",
+            "description": "The entire contents of the buffer as a bytes string."
+          },
+          "description": "Return the entire contents of the buffer as a bytes string.",
+          "deprecated": false
+        },
+        {
+          "name": "seek",
+          "signature": "seek(offset, whence=0)",
+          "params": [
+            {
+              "name": "offset",
+              "type": "int",
+              "description": "Position offset in bytes."
+            },
+            {
+              "name": "whence",
+              "type": "int",
+              "description": "0 = from start, 1 = from current position, 2 = from end."
+            }
+          ],
+          "returns": {
+            "type": "int",
+            "description": "New absolute position."
+          },
+          "description": "Change the stream position to the given byte offset.",
+          "deprecated": false
+        },
+        {
+          "name": "tell",
+          "signature": "tell()",
+          "params": [],
+          "returns": {
+            "type": "int",
+            "description": "Current stream position."
+          },
+          "description": "Return the current stream position.",
+          "deprecated": false
+        },
+        {
+          "name": "close",
+          "signature": "close()",
+          "params": [],
+          "returns": {
+            "type": "None",
+            "description": "None."
+          },
+          "description": "Flush and close the stream. The buffer contents are discarded.",
+          "deprecated": false
+        },
+        {
+          "name": "truncate",
+          "signature": "truncate(size=None)",
+          "params": [
+            {
+              "name": "size",
+              "type": "int",
+              "description": "Truncate to at most this size. Defaults to the current position."
+            }
+          ],
+          "returns": {
+            "type": "int",
+            "description": "New size of the buffer."
+          },
+          "description": "Truncate the stream to at most size bytes.",
+          "deprecated": false
+        },
+        {
+          "name": "isatty",
+          "signature": "isatty()",
+          "params": [],
+          "returns": {
+            "type": "bool",
+            "description": "Always False."
+          },
+          "description": "Return False. BytesIO objects are not connected to a terminal.",
+          "deprecated": false
+        }
+      ],
+      "fields": []
+    },
+    {
+      "name": "BufferedReader",
+      "description": "A buffered I/O implementation providing a readable interface over a raw binary stream (RawIOBase).",
+      "constructors": [
+        {
+          "signature": "BufferedReader(raw, buffer_size=DEFAULT_BUFFER_SIZE)",
+          "params": [
+            {
+              "name": "raw",
+              "type": "RawIOBase",
+              "description": "The underlying raw binary stream."
+            },
+            {
+              "name": "buffer_size",
+              "type": "int",
+              "description": "Size of the internal buffer in bytes."
+            }
+          ],
+          "description": "Create a BufferedReader wrapping the given raw stream."
+        }
+      ],
+      "methods": [
+        {
+          "name": "read",
+          "signature": "read(size=-1)",
+          "params": [
+            {
+              "name": "size",
+              "type": "int",
+              "description": "Number of bytes to read. -1 reads to EOF."
+            }
+          ],
+          "returns": {
+            "type": "str",
+            "description": "Bytes read."
+          },
+          "description": "Read and return up to size bytes.",
+          "deprecated": false
+        },
+        {
+          "name": "read1",
+          "signature": "read1(size=-1)",
+          "params": [
+            {
+              "name": "size",
+              "type": "int",
+              "description": "Number of bytes to read."
+            }
+          ],
+          "returns": {
+            "type": "str",
+            "description": "Bytes read with at most one call to the underlying raw stream."
+          },
+          "description": "Read and return up to size bytes with at most one call to the underlying raw stream's read() method.",
+          "deprecated": false
+        },
+        {
+          "name": "peek",
+          "signature": "peek(size=0)",
+          "params": [
+            {
+              "name": "size",
+              "type": "int",
+              "description": "Approximate number of bytes to peek at."
+            }
+          ],
+          "returns": {
+            "type": "str",
+            "description": "Bytes from the buffer without advancing the position."
+          },
+          "description": "Return bytes from the buffer without advancing the position. At most one single read on the raw stream is done to satisfy the call.",
+          "deprecated": false
+        },
+        {
+          "name": "readline",
+          "signature": "readline(size=-1)",
+          "params": [
+            {
+              "name": "size",
+              "type": "int",
+              "description": "Maximum number of bytes to read."
+            }
+          ],
+          "returns": {
+            "type": "str",
+            "description": "A single line from the stream."
+          },
+          "description": "Read and return one line from the stream.",
+          "deprecated": false
+        },
+        {
+          "name": "close",
+          "signature": "close()",
+          "params": [],
+          "returns": {
+            "type": "None",
+            "description": "None."
+          },
+          "description": "Flush and close the stream.",
+          "deprecated": false
+        }
+      ],
+      "fields": [
+        {
+          "name": "raw",
+          "type": "RawIOBase",
+          "description": "The underlying raw stream."
+        }
+      ]
+    },
+    {
+      "name": "BufferedWriter",
+      "description": "A buffered I/O implementation providing a writable interface over a raw binary stream (RawIOBase).",
+      "constructors": [
+        {
+          "signature": "BufferedWriter(raw, buffer_size=DEFAULT_BUFFER_SIZE)",
+          "params": [
+            {
+              "name": "raw",
+              "type": "RawIOBase",
+              "description": "The underlying raw binary stream."
+            },
+            {
+              "name": "buffer_size",
+              "type": "int",
+              "description": "Size of the internal buffer in bytes."
+            }
+          ],
+          "description": "Create a BufferedWriter wrapping the given raw stream."
+        }
+      ],
+      "methods": [
+        {
+          "name": "write",
+          "signature": "write(b)",
+          "params": [
+            {
+              "name": "b",
+              "type": "str",
+              "description": "Bytes to write."
+            }
+          ],
+          "returns": {
+            "type": "int",
+            "description": "Number of bytes written."
+          },
+          "description": "Write the bytes-like object b and return the number of bytes written.",
+          "deprecated": false
+        },
+        {
+          "name": "flush",
+          "signature": "flush()",
+          "params": [],
+          "returns": {
+            "type": "None",
+            "description": "None."
+          },
+          "description": "Force bytes held in the buffer into the raw stream.",
+          "deprecated": false
+        },
+        {
+          "name": "close",
+          "signature": "close()",
+          "params": [],
+          "returns": {
+            "type": "None",
+            "description": "None."
+          },
+          "description": "Flush and close the stream.",
+          "deprecated": false
+        }
+      ],
+      "fields": [
+        {
+          "name": "raw",
+          "type": "RawIOBase",
+          "description": "The underlying raw stream."
+        }
+      ]
+    },
+    {
+      "name": "TextIOWrapper",
+      "description": "A buffered text stream over a BufferedIOBase binary stream. Provides encoding and decoding of text data.",
+      "constructors": [
+        {
+          "signature": "TextIOWrapper(buffer, encoding=None, errors=None, newline=None, line_buffering=False)",
+          "params": [
+            {
+              "name": "buffer",
+              "type": "BufferedIOBase",
+              "description": "The underlying buffered binary stream."
+            },
+            {
+              "name": "encoding",
+              "type": "str",
+              "description": "Text encoding name (e.g. 'utf-8'). Defaults to locale.getpreferredencoding()."
+            },
+            {
+              "name": "errors",
+              "type": "str",
+              "description": "Error handling mode: 'strict', 'ignore', 'replace', etc."
+            },
+            {
+              "name": "newline",
+              "type": "str",
+              "description": "Controls newline translation. None enables universal newlines."
+            },
+            {
+              "name": "line_buffering",
+              "type": "bool",
+              "description": "If True, flush on every line terminator."
+            }
+          ],
+          "description": "Create a TextIOWrapper around a buffered binary stream."
+        }
+      ],
+      "methods": [
+        {
+          "name": "read",
+          "signature": "read(size=-1)",
+          "params": [
+            {
+              "name": "size",
+              "type": "int",
+              "description": "Maximum number of characters to read. -1 reads to EOF."
+            }
+          ],
+          "returns": {
+            "type": "unicode",
+            "description": "Unicode string of data read."
+          },
+          "description": "Read and return at most size characters from the stream.",
+          "deprecated": false
+        },
+        {
+          "name": "readline",
+          "signature": "readline(size=-1)",
+          "params": [
+            {
+              "name": "size",
+              "type": "int",
+              "description": "Maximum number of characters to read."
+            }
+          ],
+          "returns": {
+            "type": "unicode",
+            "description": "A single line from the stream."
+          },
+          "description": "Read until newline or EOF and return a single line.",
+          "deprecated": false
+        },
+        {
+          "name": "write",
+          "signature": "write(s)",
+          "params": [
+            {
+              "name": "s",
+              "type": "unicode",
+              "description": "Unicode string to write."
+            }
+          ],
+          "returns": {
+            "type": "int",
+            "description": "Number of characters written."
+          },
+          "description": "Write the string s to the stream and return the number of characters written.",
+          "deprecated": false
+        },
+        {
+          "name": "close",
+          "signature": "close()",
+          "params": [],
+          "returns": {
+            "type": "None",
+            "description": "None."
+          },
+          "description": "Flush and close the stream and its underlying buffer.",
+          "deprecated": false
+        }
+      ],
+      "fields": [
+        {
+          "name": "encoding",
+          "type": "str",
+          "description": "The name of the encoding used by this stream."
+        },
+        {
+          "name": "errors",
+          "type": "str",
+          "description": "The error setting of the decoder or encoder."
+        },
+        {
+          "name": "line_buffering",
+          "type": "bool",
+          "description": "Whether line buffering is enabled."
+        },
+        {
+          "name": "buffer",
+          "type": "BufferedIOBase",
+          "description": "The underlying binary buffer."
+        }
+      ]
+    },
+    {
+      "name": "FileIO",
+      "description": "A raw binary stream representing an OS-level file. Provides unbuffered, low-level access to a file descriptor.",
+      "constructors": [
+        {
+          "signature": "FileIO(name, mode='r', closefd=True)",
+          "params": [
+            {
+              "name": "name",
+              "type": "str or int",
+              "description": "File path (string) or file descriptor (integer)."
+            },
+            {
+              "name": "mode",
+              "type": "str",
+              "description": "File mode: 'r' (read), 'w' (write), 'a' (append), 'r+' (read/write)."
+            },
+            {
+              "name": "closefd",
+              "type": "bool",
+              "description": "If False and a file descriptor was given, the FD is kept open when the FileIO is closed."
+            }
+          ],
+          "description": "Open a file for low-level unbuffered binary I/O."
+        }
+      ],
+      "methods": [
+        {
+          "name": "read",
+          "signature": "read(size=-1)",
+          "params": [
+            {
+              "name": "size",
+              "type": "int",
+              "description": "Number of bytes to read. -1 reads to EOF."
+            }
+          ],
+          "returns": {
+            "type": "str",
+            "description": "Bytes read from the file."
+          },
+          "description": "Read and return up to size bytes. Returns an empty string at EOF.",
+          "deprecated": false
+        },
+        {
+          "name": "readall",
+          "signature": "readall()",
+          "params": [],
+          "returns": {
+            "type": "str",
+            "description": "All remaining bytes in the file."
+          },
+          "description": "Read and return all bytes from the file until EOF.",
+          "deprecated": false
+        },
+        {
+          "name": "write",
+          "signature": "write(b)",
+          "params": [
+            {
+              "name": "b",
+              "type": "str",
+              "description": "Bytes to write."
+            }
+          ],
+          "returns": {
+            "type": "int",
+            "description": "Number of bytes written."
+          },
+          "description": "Write the bytes b to the file and return the number of bytes written.",
+          "deprecated": false
+        },
+        {
+          "name": "seek",
+          "signature": "seek(offset, whence=0)",
+          "params": [
+            {
+              "name": "offset",
+              "type": "int",
+              "description": "Position offset in bytes."
+            },
+            {
+              "name": "whence",
+              "type": "int",
+              "description": "0 = from start, 1 = from current position, 2 = from end."
+            }
+          ],
+          "returns": {
+            "type": "int",
+            "description": "New absolute position."
+          },
+          "description": "Move to a new file position.",
+          "deprecated": false
+        },
+        {
+          "name": "tell",
+          "signature": "tell()",
+          "params": [],
+          "returns": {
+            "type": "int",
+            "description": "Current file position."
+          },
+          "description": "Return the current file position.",
+          "deprecated": false
+        },
+        {
+          "name": "close",
+          "signature": "close()",
+          "params": [],
+          "returns": {
+            "type": "None",
+            "description": "None."
+          },
+          "description": "Close the file. A closed file cannot be read or written to.",
+          "deprecated": false
+        },
+        {
+          "name": "fileno",
+          "signature": "fileno()",
+          "params": [],
+          "returns": {
+            "type": "int",
+            "description": "The underlying file descriptor."
+          },
+          "description": "Return the underlying file descriptor (integer).",
+          "deprecated": false
+        }
+      ],
+      "fields": [
+        {
+          "name": "name",
+          "type": "str",
+          "description": "The file name or file descriptor number."
+        },
+        {
+          "name": "mode",
+          "type": "str",
+          "description": "The mode string given in the constructor."
+        },
+        {
+          "name": "closefd",
+          "type": "bool",
+          "description": "Whether the file descriptor will be closed."
+        }
+      ]
+    }
+  ],
+  "constants": [],
+  "docs_url": "https://docs.python.org/2.7/library/io.html"
+}

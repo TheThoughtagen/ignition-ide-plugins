@@ -1,0 +1,620 @@
+{
+  "module": "threading",
+  "description": "Higher-level threading interface built on top of the thread module.",
+  "functions": [
+    {
+      "name": "active_count",
+      "signature": "active_count()",
+      "params": [],
+      "returns": {
+        "type": "int",
+        "description": "The number of Thread objects currently alive."
+      },
+      "description": "Return the number of Thread objects currently alive. Equal to the length of the list returned by enumerate().",
+      "deprecated": false
+    },
+    {
+      "name": "current_thread",
+      "signature": "current_thread()",
+      "params": [],
+      "returns": {
+        "type": "Thread",
+        "description": "The current Thread object corresponding to the caller's thread of control."
+      },
+      "description": "Return the current Thread object corresponding to the caller's thread of control.",
+      "deprecated": false
+    },
+    {
+      "name": "enumerate",
+      "signature": "enumerate()",
+      "params": [],
+      "returns": {
+        "type": "list",
+        "description": "A list of all Thread objects currently alive."
+      },
+      "description": "Return a list of all Thread objects currently alive. Includes daemonic threads, the main thread, and dummy thread objects created by current_thread().",
+      "deprecated": false
+    },
+    {
+      "name": "settrace",
+      "signature": "settrace(func)",
+      "params": [
+        {
+          "name": "func",
+          "type": "callable",
+          "description": "A trace function to set for all threads. The function is passed to sys.settrace() for each thread before its run() method is called."
+        }
+      ],
+      "returns": {
+        "type": "None",
+        "description": "No return value."
+      },
+      "description": "Set a trace function for all threads started from the threading module. The func is passed to sys.settrace() for each thread before run() is called.",
+      "deprecated": false
+    },
+    {
+      "name": "setprofile",
+      "signature": "setprofile(func)",
+      "params": [
+        {
+          "name": "func",
+          "type": "callable",
+          "description": "A profile function to set for all threads. The function is passed to sys.setprofile() for each thread before its run() method is called."
+        }
+      ],
+      "returns": {
+        "type": "None",
+        "description": "No return value."
+      },
+      "description": "Set a profile function for all threads started from the threading module. The func is passed to sys.setprofile() for each thread before run() is called.",
+      "deprecated": false
+    },
+    {
+      "name": "stack_size",
+      "signature": "stack_size([size])",
+      "params": [
+        {
+          "name": "size",
+          "type": "int",
+          "description": "The stack size in bytes for new threads. 0 uses the platform default. Must be at least 32768 (32 KiB) if set."
+        }
+      ],
+      "returns": {
+        "type": "int",
+        "description": "The stack size used for newly created threads (0 means platform default)."
+      },
+      "description": "Return the thread stack size used when creating new threads. Optionally set the stack size for subsequently created threads.",
+      "deprecated": false
+    }
+  ],
+  "classes": [
+    {
+      "name": "Thread",
+      "description": "A class that represents a thread of control. Threads can be created by passing a callable to the constructor or by overriding the run() method in a subclass.",
+      "constructors": [
+        {
+          "signature": "Thread(group=None, target=None, name=None, args=(), kwargs={})",
+          "params": [
+            {
+              "name": "group",
+              "type": "None",
+              "description": "Reserved for future extension. Must be None."
+            },
+            {
+              "name": "target",
+              "type": "callable",
+              "description": "The callable object to be invoked by the run() method. Defaults to None."
+            },
+            {
+              "name": "name",
+              "type": "str",
+              "description": "The thread name. By default, a unique name of the form 'Thread-N' is assigned."
+            },
+            {
+              "name": "args",
+              "type": "tuple",
+              "description": "The argument tuple for the target invocation. Defaults to ()."
+            },
+            {
+              "name": "kwargs",
+              "type": "dict",
+              "description": "A dictionary of keyword arguments for the target invocation. Defaults to {}."
+            }
+          ],
+          "description": "Create a new Thread instance."
+        }
+      ],
+      "methods": [
+        {
+          "name": "start",
+          "signature": "start()",
+          "params": [],
+          "returns": {
+            "type": "None",
+            "description": "No return value."
+          },
+          "description": "Start the thread's activity. It must be called at most once per thread object. It arranges for the object's run() method to be invoked in a separate thread of control."
+        },
+        {
+          "name": "run",
+          "signature": "run()",
+          "params": [],
+          "returns": {
+            "type": "None",
+            "description": "No return value."
+          },
+          "description": "Method representing the thread's activity. Override this method in a subclass. The standard run() method invokes the callable object passed to the constructor."
+        },
+        {
+          "name": "join",
+          "signature": "join([timeout])",
+          "params": [
+            {
+              "name": "timeout",
+              "type": "float",
+              "description": "Time in seconds to wait. None means wait indefinitely. Defaults to None."
+            }
+          ],
+          "returns": {
+            "type": "None",
+            "description": "No return value."
+          },
+          "description": "Wait until the thread terminates. Blocks the calling thread until the thread whose join() method is called terminates or the timeout occurs."
+        },
+        {
+          "name": "is_alive",
+          "signature": "is_alive()",
+          "params": [],
+          "returns": {
+            "type": "bool",
+            "description": "True if the thread is alive."
+          },
+          "description": "Return whether the thread is alive. A thread is alive from the moment start() is called until its run() method terminates."
+        },
+        {
+          "name": "getName",
+          "signature": "getName()",
+          "params": [],
+          "returns": {
+            "type": "str",
+            "description": "The thread name."
+          },
+          "description": "Return the thread's name. Equivalent to accessing the name attribute.",
+          "deprecated": false
+        },
+        {
+          "name": "setName",
+          "signature": "setName(name)",
+          "params": [
+            {
+              "name": "name",
+              "type": "str",
+              "description": "The new thread name."
+            }
+          ],
+          "returns": {
+            "type": "None",
+            "description": "No return value."
+          },
+          "description": "Set the thread's name. Equivalent to setting the name attribute.",
+          "deprecated": false
+        },
+        {
+          "name": "setDaemon",
+          "signature": "setDaemon(daemonic)",
+          "params": [
+            {
+              "name": "daemonic",
+              "type": "bool",
+              "description": "Whether the thread is a daemon thread."
+            }
+          ],
+          "returns": {
+            "type": "None",
+            "description": "No return value."
+          },
+          "description": "Set whether the thread is a daemon thread. Must be called before start(). The entire Python program exits when only daemon threads are left.",
+          "deprecated": false
+        },
+        {
+          "name": "isDaemon",
+          "signature": "isDaemon()",
+          "params": [],
+          "returns": {
+            "type": "bool",
+            "description": "True if the thread is a daemon thread."
+          },
+          "description": "Return whether the thread is a daemon thread. Equivalent to accessing the daemon attribute.",
+          "deprecated": false
+        }
+      ],
+      "fields": [
+        {
+          "name": "name",
+          "type": "str",
+          "description": "The thread's name. Multiple threads may share the same name."
+        },
+        {
+          "name": "daemon",
+          "type": "bool",
+          "description": "Whether the thread is a daemon thread. Must be set before start() is called. The initial value is inherited from the creating thread."
+        },
+        {
+          "name": "ident",
+          "type": "int",
+          "description": "The thread identifier, or None if the thread has not been started. This is a nonzero integer. Thread identifiers may be recycled."
+        }
+      ]
+    },
+    {
+      "name": "Lock",
+      "description": "A primitive lock object. Once a thread has acquired a lock, subsequent attempts to acquire it block until it is released. Any thread may release it.",
+      "constructors": [
+        {
+          "signature": "Lock()",
+          "params": [],
+          "description": "Create a new Lock object in the unlocked state."
+        }
+      ],
+      "methods": [
+        {
+          "name": "acquire",
+          "signature": "acquire([blocking])",
+          "params": [
+            {
+              "name": "blocking",
+              "type": "bool",
+              "description": "If True (default), block until the lock is acquired. If False, return immediately."
+            }
+          ],
+          "returns": {
+            "type": "bool",
+            "description": "True if the lock is acquired, False otherwise."
+          },
+          "description": "Acquire the lock, blocking or non-blocking. Returns True if the lock was acquired."
+        },
+        {
+          "name": "release",
+          "signature": "release()",
+          "params": [],
+          "returns": {
+            "type": "None",
+            "description": "No return value."
+          },
+          "description": "Release the lock. Can be called from any thread, not only the thread that acquired it. Raises ThreadError if called on an unlocked lock."
+        },
+        {
+          "name": "locked",
+          "signature": "locked()",
+          "params": [],
+          "returns": {
+            "type": "bool",
+            "description": "True if the lock is currently acquired."
+          },
+          "description": "Return True if the lock is currently acquired."
+        }
+      ]
+    },
+    {
+      "name": "RLock",
+      "description": "A reentrant lock object. A reentrant lock can be acquired multiple times by the same thread without blocking. It must be released the same number of times.",
+      "constructors": [
+        {
+          "signature": "RLock()",
+          "params": [],
+          "description": "Create a new reentrant lock object."
+        }
+      ],
+      "methods": [
+        {
+          "name": "acquire",
+          "signature": "acquire([blocking])",
+          "params": [
+            {
+              "name": "blocking",
+              "type": "bool",
+              "description": "If True (default), block until the lock is acquired. If False, return immediately."
+            }
+          ],
+          "returns": {
+            "type": "bool",
+            "description": "True if the lock is acquired, False otherwise."
+          },
+          "description": "Acquire the lock, blocking or non-blocking. When invoked without arguments, block until the lock is acquired. If the same thread has already acquired the lock, increment the recursion level by one."
+        },
+        {
+          "name": "release",
+          "signature": "release()",
+          "params": [],
+          "returns": {
+            "type": "None",
+            "description": "No return value."
+          },
+          "description": "Release the lock, decrementing the recursion level. If the recursion level reaches zero, the lock is actually released. Only the owning thread can release the lock."
+        }
+      ]
+    },
+    {
+      "name": "Condition",
+      "description": "A condition variable allows one or more threads to wait until they are notified by another thread. Always associated with a lock.",
+      "constructors": [
+        {
+          "signature": "Condition([lock])",
+          "params": [
+            {
+              "name": "lock",
+              "type": "Lock|RLock",
+              "description": "The underlying lock object. If None (default), a new RLock is created."
+            }
+          ],
+          "description": "Create a condition variable with an optional underlying lock."
+        }
+      ],
+      "methods": [
+        {
+          "name": "acquire",
+          "signature": "acquire(*args)",
+          "params": [
+            {
+              "name": "args",
+              "type": "tuple",
+              "description": "Arguments passed to the underlying lock's acquire() method."
+            }
+          ],
+          "returns": {
+            "type": "bool",
+            "description": "The return value of the underlying lock's acquire()."
+          },
+          "description": "Acquire the underlying lock."
+        },
+        {
+          "name": "release",
+          "signature": "release()",
+          "params": [],
+          "returns": {
+            "type": "None",
+            "description": "No return value."
+          },
+          "description": "Release the underlying lock."
+        },
+        {
+          "name": "wait",
+          "signature": "wait([timeout])",
+          "params": [
+            {
+              "name": "timeout",
+              "type": "float",
+              "description": "Maximum time to wait in seconds. None means wait indefinitely."
+            }
+          ],
+          "returns": {
+            "type": "bool",
+            "description": "True unless the timeout expired (always True in Python 2.7)."
+          },
+          "description": "Wait until notified or until a timeout occurs. The calling thread must have acquired the lock. Releases the lock, blocks until notified, then re-acquires the lock."
+        },
+        {
+          "name": "notify",
+          "signature": "notify([n])",
+          "params": [
+            {
+              "name": "n",
+              "type": "int",
+              "description": "Number of waiting threads to notify. Defaults to 1."
+            }
+          ],
+          "returns": {
+            "type": "None",
+            "description": "No return value."
+          },
+          "description": "Wake up one or more threads waiting on this condition. The calling thread must have acquired the lock."
+        },
+        {
+          "name": "notify_all",
+          "signature": "notify_all()",
+          "params": [],
+          "returns": {
+            "type": "None",
+            "description": "No return value."
+          },
+          "description": "Wake up all threads waiting on this condition. The calling thread must have acquired the lock."
+        }
+      ]
+    },
+    {
+      "name": "Event",
+      "description": "A class that implements event objects. An event manages a flag that can be set to true with the set() method and reset to false with the clear() method. The wait() method blocks until the flag is true.",
+      "constructors": [
+        {
+          "signature": "Event()",
+          "params": [],
+          "description": "Create a new Event object with the internal flag set to False."
+        }
+      ],
+      "methods": [
+        {
+          "name": "set",
+          "signature": "set()",
+          "params": [],
+          "returns": {
+            "type": "None",
+            "description": "No return value."
+          },
+          "description": "Set the internal flag to True. All threads waiting for the event are awakened."
+        },
+        {
+          "name": "clear",
+          "signature": "clear()",
+          "params": [],
+          "returns": {
+            "type": "None",
+            "description": "No return value."
+          },
+          "description": "Reset the internal flag to False. Threads calling wait() will block until set() is called."
+        },
+        {
+          "name": "wait",
+          "signature": "wait([timeout])",
+          "params": [
+            {
+              "name": "timeout",
+              "type": "float",
+              "description": "Maximum time to wait in seconds. None means wait indefinitely."
+            }
+          ],
+          "returns": {
+            "type": "bool",
+            "description": "True if and only if the internal flag has been set to True, either before the wait or after the timeout."
+          },
+          "description": "Block until the internal flag is true. If the flag is already true, return immediately. Otherwise, block until another thread calls set() or until the timeout occurs."
+        },
+        {
+          "name": "is_set",
+          "signature": "is_set()",
+          "params": [],
+          "returns": {
+            "type": "bool",
+            "description": "True if the internal flag is set."
+          },
+          "description": "Return True if and only if the internal flag is true."
+        }
+      ]
+    },
+    {
+      "name": "Semaphore",
+      "description": "A semaphore manages an internal counter which is decremented by each acquire() call and incremented by each release() call. The counter can never go below zero; acquire() blocks when it would.",
+      "constructors": [
+        {
+          "signature": "Semaphore([value])",
+          "params": [
+            {
+              "name": "value",
+              "type": "int",
+              "description": "The initial value of the internal counter. Defaults to 1."
+            }
+          ],
+          "description": "Create a semaphore with the given initial value."
+        }
+      ],
+      "methods": [
+        {
+          "name": "acquire",
+          "signature": "acquire([blocking])",
+          "params": [
+            {
+              "name": "blocking",
+              "type": "bool",
+              "description": "If True (default), block until the counter is greater than zero. If False, return immediately."
+            }
+          ],
+          "returns": {
+            "type": "bool",
+            "description": "True if acquired, False if non-blocking and the counter was zero."
+          },
+          "description": "Acquire the semaphore. If the internal counter is greater than zero, decrement it by one and return True. If zero and blocking, block until another thread calls release()."
+        },
+        {
+          "name": "release",
+          "signature": "release()",
+          "params": [],
+          "returns": {
+            "type": "None",
+            "description": "No return value."
+          },
+          "description": "Release the semaphore, incrementing the internal counter by one. May wake up a thread waiting to acquire."
+        }
+      ]
+    },
+    {
+      "name": "BoundedSemaphore",
+      "description": "A bounded semaphore that checks that the internal counter never exceeds its initial value. If it would, ValueError is raised. Helps catch programming errors where release() is called too many times.",
+      "constructors": [
+        {
+          "signature": "BoundedSemaphore([value])",
+          "params": [
+            {
+              "name": "value",
+              "type": "int",
+              "description": "The initial (and maximum) value of the internal counter. Defaults to 1."
+            }
+          ],
+          "description": "Create a bounded semaphore with the given initial value."
+        }
+      ],
+      "methods": [
+        {
+          "name": "acquire",
+          "signature": "acquire([blocking])",
+          "params": [
+            {
+              "name": "blocking",
+              "type": "bool",
+              "description": "If True (default), block until the counter is greater than zero. If False, return immediately."
+            }
+          ],
+          "returns": {
+            "type": "bool",
+            "description": "True if acquired, False if non-blocking and the counter was zero."
+          },
+          "description": "Acquire the semaphore. Same as Semaphore.acquire()."
+        },
+        {
+          "name": "release",
+          "signature": "release()",
+          "params": [],
+          "returns": {
+            "type": "None",
+            "description": "No return value."
+          },
+          "description": "Release the semaphore. Raises ValueError if this would increase the counter above its initial value."
+        }
+      ]
+    },
+    {
+      "name": "Timer",
+      "description": "A thread that executes a function after a specified interval has passed. A subclass of Thread.",
+      "constructors": [
+        {
+          "signature": "Timer(interval, function[, args[, kwargs]])",
+          "params": [
+            {
+              "name": "interval",
+              "type": "float",
+              "description": "The number of seconds to wait before executing the function."
+            },
+            {
+              "name": "function",
+              "type": "callable",
+              "description": "The function to call after the interval."
+            },
+            {
+              "name": "args",
+              "type": "list",
+              "description": "Arguments to pass to the function. Defaults to []."
+            },
+            {
+              "name": "kwargs",
+              "type": "dict",
+              "description": "Keyword arguments to pass to the function. Defaults to {}."
+            }
+          ],
+          "description": "Create a timer that will run function with arguments args and keyword arguments kwargs after interval seconds have passed."
+        }
+      ],
+      "methods": [
+        {
+          "name": "cancel",
+          "signature": "cancel()",
+          "params": [],
+          "returns": {
+            "type": "None",
+            "description": "No return value."
+          },
+          "description": "Stop the timer and cancel the execution of the timer's action. Only works if the timer is still in its waiting stage."
+        }
+      ]
+    }
+  ],
+  "constants": [],
+  "docs_url": "https://docs.python.org/2.7/library/threading.html"
+}

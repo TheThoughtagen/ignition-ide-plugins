@@ -1,0 +1,593 @@
+{
+  "module": "inspect",
+  "description": "Get useful information from live Python objects, including source code, classes, and call signatures.",
+  "functions": [
+    {
+      "name": "ismodule",
+      "signature": "ismodule(object)",
+      "params": [
+        {
+          "name": "object",
+          "type": "object",
+          "description": "The object to check."
+        }
+      ],
+      "returns": {
+        "type": "bool",
+        "description": "True if the object is a module."
+      },
+      "description": "Return True if the object is a module.",
+      "deprecated": false
+    },
+    {
+      "name": "isclass",
+      "signature": "isclass(object)",
+      "params": [
+        {
+          "name": "object",
+          "type": "object",
+          "description": "The object to check."
+        }
+      ],
+      "returns": {
+        "type": "bool",
+        "description": "True if the object is a class."
+      },
+      "description": "Return True if the object is a class, whether built-in or created in Python code.",
+      "deprecated": false
+    },
+    {
+      "name": "ismethod",
+      "signature": "ismethod(object)",
+      "params": [
+        {
+          "name": "object",
+          "type": "object",
+          "description": "The object to check."
+        }
+      ],
+      "returns": {
+        "type": "bool",
+        "description": "True if the object is a bound method."
+      },
+      "description": "Return True if the object is a bound method written in Python.",
+      "deprecated": false
+    },
+    {
+      "name": "isfunction",
+      "signature": "isfunction(object)",
+      "params": [
+        {
+          "name": "object",
+          "type": "object",
+          "description": "The object to check."
+        }
+      ],
+      "returns": {
+        "type": "bool",
+        "description": "True if the object is a Python function."
+      },
+      "description": "Return True if the object is a Python function (created by a def statement).",
+      "deprecated": false
+    },
+    {
+      "name": "isgeneratorfunction",
+      "signature": "isgeneratorfunction(object)",
+      "params": [
+        {
+          "name": "object",
+          "type": "object",
+          "description": "The object to check."
+        }
+      ],
+      "returns": {
+        "type": "bool",
+        "description": "True if the object is a generator function."
+      },
+      "description": "Return True if the object is a Python generator function (a function defined with a yield statement).",
+      "deprecated": false
+    },
+    {
+      "name": "isgenerator",
+      "signature": "isgenerator(object)",
+      "params": [
+        {
+          "name": "object",
+          "type": "object",
+          "description": "The object to check."
+        }
+      ],
+      "returns": {
+        "type": "bool",
+        "description": "True if the object is a generator."
+      },
+      "description": "Return True if the object is a generator (an object created by calling a generator function).",
+      "deprecated": false
+    },
+    {
+      "name": "istraceback",
+      "signature": "istraceback(object)",
+      "params": [
+        {
+          "name": "object",
+          "type": "object",
+          "description": "The object to check."
+        }
+      ],
+      "returns": {
+        "type": "bool",
+        "description": "True if the object is a traceback."
+      },
+      "description": "Return True if the object is a traceback.",
+      "deprecated": false
+    },
+    {
+      "name": "isframe",
+      "signature": "isframe(object)",
+      "params": [
+        {
+          "name": "object",
+          "type": "object",
+          "description": "The object to check."
+        }
+      ],
+      "returns": {
+        "type": "bool",
+        "description": "True if the object is a frame."
+      },
+      "description": "Return True if the object is a frame object.",
+      "deprecated": false
+    },
+    {
+      "name": "iscode",
+      "signature": "iscode(object)",
+      "params": [
+        {
+          "name": "object",
+          "type": "object",
+          "description": "The object to check."
+        }
+      ],
+      "returns": {
+        "type": "bool",
+        "description": "True if the object is a code object."
+      },
+      "description": "Return True if the object is a code object.",
+      "deprecated": false
+    },
+    {
+      "name": "isbuiltin",
+      "signature": "isbuiltin(object)",
+      "params": [
+        {
+          "name": "object",
+          "type": "object",
+          "description": "The object to check."
+        }
+      ],
+      "returns": {
+        "type": "bool",
+        "description": "True if the object is a built-in function or method."
+      },
+      "description": "Return True if the object is a built-in function or bound built-in method.",
+      "deprecated": false
+    },
+    {
+      "name": "isroutine",
+      "signature": "isroutine(object)",
+      "params": [
+        {
+          "name": "object",
+          "type": "object",
+          "description": "The object to check."
+        }
+      ],
+      "returns": {
+        "type": "bool",
+        "description": "True if the object is a function, method, or built-in."
+      },
+      "description": "Return True if the object is a user-defined or built-in function or method.",
+      "deprecated": false
+    },
+    {
+      "name": "isabstract",
+      "signature": "isabstract(object)",
+      "params": [
+        {
+          "name": "object",
+          "type": "object",
+          "description": "The object to check."
+        }
+      ],
+      "returns": {
+        "type": "bool",
+        "description": "True if the object is an abstract base class."
+      },
+      "description": "Return True if the object is an abstract base class.",
+      "deprecated": false
+    },
+    {
+      "name": "getmembers",
+      "signature": "getmembers(object[, predicate])",
+      "params": [
+        {
+          "name": "object",
+          "type": "object",
+          "description": "The object to inspect."
+        },
+        {
+          "name": "predicate",
+          "type": "callable",
+          "description": "Optional function used to filter members. Only members for which predicate returns true are included."
+        }
+      ],
+      "returns": {
+        "type": "list",
+        "description": "A list of (name, value) pairs sorted by name."
+      },
+      "description": "Return all members of an object as a list of (name, value) pairs sorted alphabetically. If predicate is given, only members for which it returns true are included.",
+      "deprecated": false
+    },
+    {
+      "name": "classify_class_attrs",
+      "signature": "classify_class_attrs(cls)",
+      "params": [
+        {
+          "name": "cls",
+          "type": "type",
+          "description": "The class to inspect."
+        }
+      ],
+      "returns": {
+        "type": "list",
+        "description": "A list of Attribute named tuples with fields: name, kind, defining_class, object."
+      },
+      "description": "Return a list of named tuples describing the attributes of the class, including inherited attributes, with info about where each was defined.",
+      "deprecated": false
+    },
+    {
+      "name": "getmro",
+      "signature": "getmro(cls)",
+      "params": [
+        {
+          "name": "cls",
+          "type": "type",
+          "description": "The class to inspect."
+        }
+      ],
+      "returns": {
+        "type": "tuple",
+        "description": "A tuple of classes in method resolution order, including cls itself."
+      },
+      "description": "Return a tuple of classes in the method resolution order for cls. The class itself is the first element.",
+      "deprecated": false
+    },
+    {
+      "name": "getfile",
+      "signature": "getfile(object)",
+      "params": [
+        {
+          "name": "object",
+          "type": "object",
+          "description": "A module, class, method, function, traceback, frame, or code object."
+        }
+      ],
+      "returns": {
+        "type": "str",
+        "description": "The file name in which the object was defined."
+      },
+      "description": "Return the name of the Python source file in which an object was defined. Raises TypeError for built-in modules, classes, or functions.",
+      "deprecated": false
+    },
+    {
+      "name": "getsourcefile",
+      "signature": "getsourcefile(object)",
+      "params": [
+        {
+          "name": "object",
+          "type": "object",
+          "description": "A module, class, method, function, traceback, frame, or code object."
+        }
+      ],
+      "returns": {
+        "type": "str",
+        "description": "The Python source file path, or None."
+      },
+      "description": "Return the name of the Python source file in which an object was defined. Returns None if unable to determine.",
+      "deprecated": false
+    },
+    {
+      "name": "getsource",
+      "signature": "getsource(object)",
+      "params": [
+        {
+          "name": "object",
+          "type": "object",
+          "description": "A module, class, method, function, traceback, frame, or code object."
+        }
+      ],
+      "returns": {
+        "type": "str",
+        "description": "The text of the source code as a single string."
+      },
+      "description": "Return the text of the source code for an object. Raises IOError if the source code cannot be retrieved.",
+      "deprecated": false
+    },
+    {
+      "name": "getsourcelines",
+      "signature": "getsourcelines(object)",
+      "params": [
+        {
+          "name": "object",
+          "type": "object",
+          "description": "A module, class, method, function, traceback, frame, or code object."
+        }
+      ],
+      "returns": {
+        "type": "tuple",
+        "description": "A tuple of (lines, lineno) where lines is a list of source lines and lineno is the line number of the first line."
+      },
+      "description": "Return a list of source lines and the starting line number for an object.",
+      "deprecated": false
+    },
+    {
+      "name": "getdoc",
+      "signature": "getdoc(object)",
+      "params": [
+        {
+          "name": "object",
+          "type": "object",
+          "description": "The object to get documentation for."
+        }
+      ],
+      "returns": {
+        "type": "str",
+        "description": "The cleaned docstring, or None."
+      },
+      "description": "Get the documentation string for an object, cleaned up with cleandoc. Returns None if no docstring.",
+      "deprecated": false
+    },
+    {
+      "name": "getcomments",
+      "signature": "getcomments(object)",
+      "params": [
+        {
+          "name": "object",
+          "type": "object",
+          "description": "The object to get comments for."
+        }
+      ],
+      "returns": {
+        "type": "str",
+        "description": "A single string of comment lines, or None."
+      },
+      "description": "Return any comment lines immediately preceding the object's source code (for a class, function, or method), or at the top of the Python source file (for a module).",
+      "deprecated": false
+    },
+    {
+      "name": "getmodule",
+      "signature": "getmodule(object)",
+      "params": [
+        {
+          "name": "object",
+          "type": "object",
+          "description": "The object to find the module for."
+        }
+      ],
+      "returns": {
+        "type": "module",
+        "description": "The module in which the object was defined, or None."
+      },
+      "description": "Try to guess which module an object was defined in. Returns None if unable to determine.",
+      "deprecated": false
+    },
+    {
+      "name": "getargspec",
+      "signature": "getargspec(func)",
+      "params": [
+        {
+          "name": "func",
+          "type": "function",
+          "description": "A Python function object."
+        }
+      ],
+      "returns": {
+        "type": "ArgSpec",
+        "description": "Named tuple (args, varargs, keywords, defaults)."
+      },
+      "description": "Get the names and default values of a Python function's arguments. Returns a named tuple ArgSpec(args, varargs, keywords, defaults).",
+      "deprecated": false
+    },
+    {
+      "name": "getargvalues",
+      "signature": "getargvalues(frame)",
+      "params": [
+        {
+          "name": "frame",
+          "type": "frame",
+          "description": "A frame object."
+        }
+      ],
+      "returns": {
+        "type": "ArgInfo",
+        "description": "Named tuple (args, varargs, keywords, locals)."
+      },
+      "description": "Get information about arguments passed into a particular frame. Returns a named tuple ArgInfo(args, varargs, keywords, locals).",
+      "deprecated": false
+    },
+    {
+      "name": "formatargspec",
+      "signature": "formatargspec(args[, varargs, varkw, defaults, formatarg, formatvarargs, formatvarkw, formatvalue])",
+      "params": [
+        {
+          "name": "args",
+          "type": "list",
+          "description": "List of argument names."
+        },
+        {
+          "name": "varargs",
+          "type": "str",
+          "description": "Name of the *args parameter, or None."
+        },
+        {
+          "name": "varkw",
+          "type": "str",
+          "description": "Name of the **kwargs parameter, or None."
+        },
+        {
+          "name": "defaults",
+          "type": "tuple",
+          "description": "Tuple of default argument values."
+        },
+        {
+          "name": "formatarg",
+          "type": "callable",
+          "description": "Function to format an argument name."
+        },
+        {
+          "name": "formatvarargs",
+          "type": "callable",
+          "description": "Function to format the *args name."
+        },
+        {
+          "name": "formatvarkw",
+          "type": "callable",
+          "description": "Function to format the **kwargs name."
+        },
+        {
+          "name": "formatvalue",
+          "type": "callable",
+          "description": "Function to format a default value."
+        }
+      ],
+      "returns": {
+        "type": "str",
+        "description": "A parenthesized argument list string."
+      },
+      "description": "Format an argument spec from the values returned by getargspec. The first four arguments are (args, varargs, varkw, defaults).",
+      "deprecated": false
+    },
+    {
+      "name": "formatargvalues",
+      "signature": "formatargvalues(args[, varargs, varkw, locals, formatarg, formatvarargs, formatvarkw, formatvalue])",
+      "params": [
+        {
+          "name": "args",
+          "type": "list",
+          "description": "List of argument names."
+        },
+        {
+          "name": "varargs",
+          "type": "str",
+          "description": "Name of the *args parameter, or None."
+        },
+        {
+          "name": "varkw",
+          "type": "str",
+          "description": "Name of the **kwargs parameter, or None."
+        },
+        {
+          "name": "locals",
+          "type": "dict",
+          "description": "Mapping of argument names to current values."
+        },
+        {
+          "name": "formatarg",
+          "type": "callable",
+          "description": "Function to format an argument name."
+        },
+        {
+          "name": "formatvarargs",
+          "type": "callable",
+          "description": "Function to format the *args name."
+        },
+        {
+          "name": "formatvarkw",
+          "type": "callable",
+          "description": "Function to format the **kwargs name."
+        },
+        {
+          "name": "formatvalue",
+          "type": "callable",
+          "description": "Function to format a value."
+        }
+      ],
+      "returns": {
+        "type": "str",
+        "description": "A parenthesized argument list with current values."
+      },
+      "description": "Format an argument spec from the values returned by getargvalues.",
+      "deprecated": false
+    },
+    {
+      "name": "getclasstree",
+      "signature": "getclasstree(classes[, unique])",
+      "params": [
+        {
+          "name": "classes",
+          "type": "list",
+          "description": "A list of classes."
+        },
+        {
+          "name": "unique",
+          "type": "bool",
+          "description": "If true, each class appears only once in the tree. Defaults to False."
+        }
+      ],
+      "returns": {
+        "type": "list",
+        "description": "A nested list representing the class hierarchy."
+      },
+      "description": "Arrange the given list of classes into a hierarchy of nested lists. Each entry is a 2-tuple of (class, bases).",
+      "deprecated": false
+    },
+    {
+      "name": "stack",
+      "signature": "stack([context])",
+      "params": [
+        {
+          "name": "context",
+          "type": "int",
+          "description": "Number of lines of context to include from the source file around the current line. Defaults to 1."
+        }
+      ],
+      "returns": {
+        "type": "list",
+        "description": "A list of frame records for the caller's stack. Each record is a 6-tuple (frame, filename, lineno, function, code_context, index)."
+      },
+      "description": "Return a list of frame records for the caller's stack. The first entry is the caller, the last is the outermost frame.",
+      "deprecated": false
+    },
+    {
+      "name": "trace",
+      "signature": "trace([context])",
+      "params": [
+        {
+          "name": "context",
+          "type": "int",
+          "description": "Number of lines of context to include from the source file. Defaults to 1."
+        }
+      ],
+      "returns": {
+        "type": "list",
+        "description": "A list of frame records for the stack between the current frame and the frame that raised the exception."
+      },
+      "description": "Return a list of frame records for the stack between the current frame and the frame in which an exception was raised.",
+      "deprecated": false
+    },
+    {
+      "name": "currentframe",
+      "signature": "currentframe()",
+      "params": [],
+      "returns": {
+        "type": "frame",
+        "description": "The frame object for the caller's stack frame."
+      },
+      "description": "Return the frame object for the caller's stack frame.",
+      "deprecated": false
+    }
+  ],
+  "classes": [],
+  "constants": [],
+  "docs_url": "https://docs.python.org/2.7/library/inspect.html"
+}

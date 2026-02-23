@@ -1,0 +1,142 @@
+{
+  "module": "abc",
+  "description": "Abstract Base Classes. Provides infrastructure for defining abstract base classes (ABCs) that enforce method implementation in subclasses.",
+  "functions": [
+    {
+      "name": "abstractmethod",
+      "signature": "abstractmethod(funcobj)",
+      "params": [
+        {
+          "name": "funcobj",
+          "type": "callable",
+          "description": "The function to mark as abstract"
+        }
+      ],
+      "returns": {
+        "type": "callable",
+        "description": "The function marked as abstract"
+      },
+      "description": "Decorator indicating an abstract method. A class that has a metaclass of ABCMeta cannot be instantiated unless all of its abstract methods are overridden. Unlike Java abstract methods, these can have an implementation callable via super().",
+      "deprecated": false
+    }
+  ],
+  "classes": [
+    {
+      "name": "ABCMeta",
+      "description": "Metaclass for defining Abstract Base Classes (ABCs). A class created with ABCMeta as its metaclass cannot be instantiated if it has any abstract methods that have not been overridden. Use as: __metaclass__ = ABCMeta (Python 2.7 syntax).",
+      "constructors": [
+        {
+          "signature": "ABCMeta(name, bases, namespace)",
+          "params": [
+            {
+              "name": "name",
+              "type": "str",
+              "description": "The class name"
+            },
+            {
+              "name": "bases",
+              "type": "tuple",
+              "description": "Tuple of base classes"
+            },
+            {
+              "name": "namespace",
+              "type": "dict",
+              "description": "Dictionary of class attributes and methods"
+            }
+          ],
+          "description": "Create a new abstract base class. Normally used by setting __metaclass__ = ABCMeta in the class body rather than calling directly."
+        }
+      ],
+      "methods": [
+        {
+          "name": "register",
+          "signature": "register(subclass)",
+          "params": [
+            {
+              "name": "subclass",
+              "type": "class",
+              "description": "The class to register as a virtual subclass of this ABC"
+            }
+          ],
+          "returns": {
+            "type": "None",
+            "description": "No return value"
+          },
+          "description": "Register subclass as a virtual subclass of this ABC. isinstance() and issubclass() will return True for the registered class, even though it does not inherit from the ABC. The registered class is not required to implement abstract methods.",
+          "deprecated": false
+        },
+        {
+          "name": "__instancecheck__",
+          "signature": "__instancecheck__(instance)",
+          "params": [
+            {
+              "name": "instance",
+              "type": "any",
+              "description": "Object to check"
+            }
+          ],
+          "returns": {
+            "type": "bool",
+            "description": "True if instance is an instance of this ABC or a registered/actual subclass"
+          },
+          "description": "Override for isinstance(). Checks if the given object is an instance of this ABC, including virtual subclasses registered via register().",
+          "deprecated": false
+        },
+        {
+          "name": "__subclasscheck__",
+          "signature": "__subclasscheck__(subclass)",
+          "params": [
+            {
+              "name": "subclass",
+              "type": "class",
+              "description": "Class to check"
+            }
+          ],
+          "returns": {
+            "type": "bool",
+            "description": "True if subclass is a subclass of this ABC or was registered"
+          },
+          "description": "Override for issubclass(). Checks if the given class is a subclass of this ABC, including virtual subclasses registered via register().",
+          "deprecated": false
+        }
+      ],
+      "fields": []
+    },
+    {
+      "name": "abstractproperty",
+      "description": "A subclass of the built-in property(), indicating an abstract property. A class with ABCMeta metaclass cannot be instantiated unless all abstract properties are overridden. Deprecated in Python 3; use @property with @abstractmethod instead.",
+      "constructors": [
+        {
+          "signature": "abstractproperty(fget=None, fset=None, fdel=None, doc=None)",
+          "params": [
+            {
+              "name": "fget",
+              "type": "callable",
+              "description": "Function for getting the attribute value"
+            },
+            {
+              "name": "fset",
+              "type": "callable",
+              "description": "Function for setting the attribute value"
+            },
+            {
+              "name": "fdel",
+              "type": "callable",
+              "description": "Function for deleting the attribute"
+            },
+            {
+              "name": "doc",
+              "type": "str",
+              "description": "Docstring for the property"
+            }
+          ],
+          "description": "Create an abstract property. Can also be used as a decorator: @abstractproperty."
+        }
+      ],
+      "methods": [],
+      "fields": []
+    }
+  ],
+  "constants": [],
+  "docs_url": "https://docs.python.org/2.7/library/abc.html"
+}

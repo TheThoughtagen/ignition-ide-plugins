@@ -1,0 +1,244 @@
+{
+  "module": "struct",
+  "description": "Interpret strings as packed binary data. Provides functions to pack and unpack data according to format strings, useful for handling binary data from files or network connections.",
+  "functions": [
+    {
+      "name": "pack",
+      "signature": "pack(fmt, v1, v2, ...)",
+      "params": [
+        {
+          "name": "fmt",
+          "type": "str",
+          "description": "The format string specifying the layout of the packed data. Uses format characters like 'i' (int), 'f' (float), 's' (char[]), etc. Byte order prefixes: '@' (native), '<' (little-endian), '>' (big-endian), '!' (network/big-endian)."
+        },
+        {
+          "name": "v1, v2, ...",
+          "type": "any",
+          "description": "Values to pack according to the format string. The number and types must match the format."
+        }
+      ],
+      "returns": {
+        "type": "str",
+        "description": "A string containing the packed values"
+      },
+      "description": "Return a string containing the values v1, v2, ... packed according to the given format. The arguments must match the values required by the format exactly.",
+      "deprecated": false
+    },
+    {
+      "name": "unpack",
+      "signature": "unpack(fmt, string)",
+      "params": [
+        {
+          "name": "fmt",
+          "type": "str",
+          "description": "The format string describing the layout of the packed data"
+        },
+        {
+          "name": "string",
+          "type": "str",
+          "description": "The packed binary data to unpack. Its length must exactly equal struct.calcsize(fmt)."
+        }
+      ],
+      "returns": {
+        "type": "tuple",
+        "description": "A tuple of unpacked values according to the format string"
+      },
+      "description": "Unpack the string according to the given format. The result is a tuple even if it contains exactly one item. The string must contain exactly the amount of data required by the format (len(string) must equal struct.calcsize(fmt)).",
+      "deprecated": false
+    },
+    {
+      "name": "pack_into",
+      "signature": "pack_into(fmt, buffer, offset, v1, v2, ...)",
+      "params": [
+        {
+          "name": "fmt",
+          "type": "str",
+          "description": "The format string specifying the layout"
+        },
+        {
+          "name": "buffer",
+          "type": "buffer",
+          "description": "A writable buffer (e.g., array or ctypes buffer) to pack into"
+        },
+        {
+          "name": "offset",
+          "type": "int",
+          "description": "The byte offset into the buffer at which to begin packing"
+        },
+        {
+          "name": "v1, v2, ...",
+          "type": "any",
+          "description": "Values to pack according to the format string"
+        }
+      ],
+      "returns": {
+        "type": "None",
+        "description": "No return value. Data is written directly into the buffer."
+      },
+      "description": "Pack the values v1, v2, ... according to the given format, writing the packed bytes into the writable buffer starting at the given offset.",
+      "deprecated": false
+    },
+    {
+      "name": "unpack_from",
+      "signature": "unpack_from(fmt, buffer, offset=0)",
+      "params": [
+        {
+          "name": "fmt",
+          "type": "str",
+          "description": "The format string describing the layout"
+        },
+        {
+          "name": "buffer",
+          "type": "buffer",
+          "description": "A buffer (string, array, etc.) to unpack from"
+        },
+        {
+          "name": "offset",
+          "type": "int",
+          "description": "The byte offset into the buffer at which to begin unpacking. Default is 0."
+        }
+      ],
+      "returns": {
+        "type": "tuple",
+        "description": "A tuple of unpacked values"
+      },
+      "description": "Unpack from the buffer starting at position offset according to the format string. The buffer must contain at least the amount of data required by the format (struct.calcsize(fmt) bytes starting at offset).",
+      "deprecated": false
+    },
+    {
+      "name": "calcsize",
+      "signature": "calcsize(fmt)",
+      "params": [
+        {
+          "name": "fmt",
+          "type": "str",
+          "description": "The format string"
+        }
+      ],
+      "returns": {
+        "type": "int",
+        "description": "The number of bytes needed for the struct with the given format"
+      },
+      "description": "Return the size of the struct (and hence of the string) corresponding to the given format.",
+      "deprecated": false
+    }
+  ],
+  "classes": [
+    {
+      "name": "Struct",
+      "description": "Compiled representation of a format string. Pre-compiling the format string into a Struct object avoids repeatedly parsing it and is more efficient when packing/unpacking many times with the same format.",
+      "constructors": [
+        {
+          "signature": "Struct(fmt)",
+          "params": [
+            {
+              "name": "fmt",
+              "type": "str",
+              "description": "The format string"
+            }
+          ],
+          "description": "Create a new Struct object which writes and reads binary data according to the format string fmt."
+        }
+      ],
+      "methods": [
+        {
+          "name": "pack",
+          "signature": "pack(v1, v2, ...)",
+          "params": [
+            {
+              "name": "v1, v2, ...",
+              "type": "any",
+              "description": "Values to pack according to the compiled format"
+            }
+          ],
+          "returns": {
+            "type": "str",
+            "description": "A string containing the packed values"
+          },
+          "description": "Identical to the struct.pack() function, using the compiled format. len(result) will equal self.size.",
+          "deprecated": false
+        },
+        {
+          "name": "unpack",
+          "signature": "unpack(string)",
+          "params": [
+            {
+              "name": "string",
+              "type": "str",
+              "description": "The packed data. Its length must exactly equal self.size."
+            }
+          ],
+          "returns": {
+            "type": "tuple",
+            "description": "A tuple of unpacked values"
+          },
+          "description": "Identical to the struct.unpack() function, using the compiled format. The buffer's size in bytes must equal self.size.",
+          "deprecated": false
+        },
+        {
+          "name": "pack_into",
+          "signature": "pack_into(buffer, offset, v1, v2, ...)",
+          "params": [
+            {
+              "name": "buffer",
+              "type": "buffer",
+              "description": "A writable buffer to pack into"
+            },
+            {
+              "name": "offset",
+              "type": "int",
+              "description": "The byte offset at which to begin packing"
+            },
+            {
+              "name": "v1, v2, ...",
+              "type": "any",
+              "description": "Values to pack"
+            }
+          ],
+          "returns": {
+            "type": "None",
+            "description": "No return value"
+          },
+          "description": "Identical to the struct.pack_into() function, using the compiled format.",
+          "deprecated": false
+        },
+        {
+          "name": "unpack_from",
+          "signature": "unpack_from(buffer, offset=0)",
+          "params": [
+            {
+              "name": "buffer",
+              "type": "buffer",
+              "description": "A buffer to unpack from"
+            },
+            {
+              "name": "offset",
+              "type": "int",
+              "description": "The byte offset at which to begin unpacking. Default is 0."
+            }
+          ],
+          "returns": {
+            "type": "tuple",
+            "description": "A tuple of unpacked values"
+          },
+          "description": "Identical to the struct.unpack_from() function, using the compiled format.",
+          "deprecated": false
+        }
+      ],
+      "fields": [
+        {
+          "name": "format",
+          "type": "str",
+          "description": "The format string used to construct this Struct object"
+        },
+        {
+          "name": "size",
+          "type": "int",
+          "description": "The calculated size of the struct (identical to struct.calcsize(fmt))"
+        }
+      ]
+    }
+  ],
+  "constants": [],
+  "docs_url": "https://docs.python.org/2.7/library/struct.html"
+}

@@ -1,0 +1,268 @@
+{
+  "module": "shutil",
+  "description": "High-level file operations including copying, moving, and removal of files and directory trees.",
+  "functions": [
+    {
+      "name": "copy",
+      "signature": "copy(src, dst)",
+      "params": [
+        {
+          "name": "src",
+          "type": "str",
+          "description": "Source file path."
+        },
+        {
+          "name": "dst",
+          "type": "str",
+          "description": "Destination file or directory path. If dst is a directory, the file is copied into it with the same basename."
+        }
+      ],
+      "returns": {
+        "type": "None",
+        "description": "None."
+      },
+      "description": "Copy the file src to the file or directory dst. Copies file data and permission mode. Does not preserve metadata (timestamps).",
+      "deprecated": false
+    },
+    {
+      "name": "copy2",
+      "signature": "copy2(src, dst)",
+      "params": [
+        {
+          "name": "src",
+          "type": "str",
+          "description": "Source file path."
+        },
+        {
+          "name": "dst",
+          "type": "str",
+          "description": "Destination file or directory path. If dst is a directory, the file is copied into it with the same basename."
+        }
+      ],
+      "returns": {
+        "type": "None",
+        "description": "None."
+      },
+      "description": "Copy the file src to the file or directory dst. Like copy() but also preserves file metadata (timestamps).",
+      "deprecated": false
+    },
+    {
+      "name": "copyfile",
+      "signature": "copyfile(src, dst)",
+      "params": [
+        {
+          "name": "src",
+          "type": "str",
+          "description": "Source file path."
+        },
+        {
+          "name": "dst",
+          "type": "str",
+          "description": "Destination file path. Must be a complete target file name, not a directory."
+        }
+      ],
+      "returns": {
+        "type": "None",
+        "description": "None."
+      },
+      "description": "Copy the contents of the file src to the file dst. The destination must be a writable file name; directories are not accepted. Does not copy permissions or metadata.",
+      "deprecated": false
+    },
+    {
+      "name": "copyfileobj",
+      "signature": "copyfileobj(fsrc, fdst, length=16384)",
+      "params": [
+        {
+          "name": "fsrc",
+          "type": "file",
+          "description": "Source file-like object opened for reading."
+        },
+        {
+          "name": "fdst",
+          "type": "file",
+          "description": "Destination file-like object opened for writing."
+        },
+        {
+          "name": "length",
+          "type": "int",
+          "description": "Buffer size in bytes. If negative, the file is copied without chunking."
+        }
+      ],
+      "returns": {
+        "type": "None",
+        "description": "None."
+      },
+      "description": "Copy the contents of the file-like object fsrc to the file-like object fdst. Optionally specify a buffer size.",
+      "deprecated": false
+    },
+    {
+      "name": "copytree",
+      "signature": "copytree(src, dst, symlinks=False, ignore=None)",
+      "params": [
+        {
+          "name": "src",
+          "type": "str",
+          "description": "Source directory path. Must exist."
+        },
+        {
+          "name": "dst",
+          "type": "str",
+          "description": "Destination directory path. Must not already exist; it will be created."
+        },
+        {
+          "name": "symlinks",
+          "type": "bool",
+          "description": "If True, symbolic links are copied as symbolic links. If False (default), the contents of the linked files are copied."
+        },
+        {
+          "name": "ignore",
+          "type": "callable",
+          "description": "A callable that receives the directory being visited and a list of its contents, and returns a set of names to ignore. Use ignore_patterns() to create one."
+        }
+      ],
+      "returns": {
+        "type": "None",
+        "description": "None."
+      },
+      "description": "Recursively copy an entire directory tree rooted at src to dst. The destination directory must not already exist. Permissions and times of directories are copied with copystat().",
+      "deprecated": false
+    },
+    {
+      "name": "rmtree",
+      "signature": "rmtree(path, ignore_errors=False, onerror=None)",
+      "params": [
+        {
+          "name": "path",
+          "type": "str",
+          "description": "Directory tree to remove."
+        },
+        {
+          "name": "ignore_errors",
+          "type": "bool",
+          "description": "If True, errors from failed removals are ignored. If False (default) and onerror is None, exceptions are raised."
+        },
+        {
+          "name": "onerror",
+          "type": "callable",
+          "description": "Error handler called with (func, path, exc_info) when an error occurs. If omitted, errors raise exceptions."
+        }
+      ],
+      "returns": {
+        "type": "None",
+        "description": "None."
+      },
+      "description": "Delete an entire directory tree. Use with caution. If ignore_errors is True, errors are ignored; otherwise the onerror handler is called or exceptions propagate.",
+      "deprecated": false
+    },
+    {
+      "name": "move",
+      "signature": "move(src, dst)",
+      "params": [
+        {
+          "name": "src",
+          "type": "str",
+          "description": "Source file or directory path."
+        },
+        {
+          "name": "dst",
+          "type": "str",
+          "description": "Destination path. If dst is an existing directory, src is moved inside it."
+        }
+      ],
+      "returns": {
+        "type": "None",
+        "description": "None."
+      },
+      "description": "Recursively move a file or directory to another location. If the destination is an existing directory, src is moved inside it. Uses os.rename() when possible; otherwise copies then removes.",
+      "deprecated": false
+    },
+    {
+      "name": "make_archive",
+      "signature": "make_archive(base_name, format, root_dir=None, base_dir=None, verbose=0, dry_run=0, owner=None, group=None, logger=None)",
+      "params": [
+        {
+          "name": "base_name",
+          "type": "str",
+          "description": "Name of the archive file to create (without extension). Can include a full path."
+        },
+        {
+          "name": "format",
+          "type": "str",
+          "description": "Archive format: 'zip', 'tar', 'bztar', or 'gztar'."
+        },
+        {
+          "name": "root_dir",
+          "type": "str",
+          "description": "Directory that will be the root of the archive. Defaults to the current directory."
+        },
+        {
+          "name": "base_dir",
+          "type": "str",
+          "description": "Directory where archiving starts from. Defaults to root_dir."
+        },
+        {
+          "name": "verbose",
+          "type": "int",
+          "description": "Verbosity level. Deprecated; use logger instead."
+        },
+        {
+          "name": "dry_run",
+          "type": "int",
+          "description": "If True, do not actually create the archive."
+        },
+        {
+          "name": "owner",
+          "type": "str",
+          "description": "Owner name used when creating a tar archive. Defaults to the current owner."
+        },
+        {
+          "name": "group",
+          "type": "str",
+          "description": "Group name used when creating a tar archive. Defaults to the current group."
+        },
+        {
+          "name": "logger",
+          "type": "logging.Logger",
+          "description": "Logger object for logging archive creation steps."
+        }
+      ],
+      "returns": {
+        "type": "str",
+        "description": "Name of the created archive file."
+      },
+      "description": "Create an archive file (such as zip or tar) and return its name. The base_name is the name of the file to create, including the path; the format determines the archive type.",
+      "deprecated": false
+    },
+    {
+      "name": "get_archive_formats",
+      "signature": "get_archive_formats()",
+      "params": [],
+      "returns": {
+        "type": "list",
+        "description": "List of (name, description) tuples for supported archive formats."
+      },
+      "description": "Return the list of supported formats for archiving. Each element of the list is a (name, description) tuple.",
+      "deprecated": false
+    },
+    {
+      "name": "ignore_patterns",
+      "signature": "ignore_patterns(*patterns)",
+      "params": [
+        {
+          "name": "*patterns",
+          "type": "str",
+          "description": "Glob-style patterns for file and directory names to ignore."
+        }
+      ],
+      "returns": {
+        "type": "callable",
+        "description": "A function usable as the ignore argument to copytree()."
+      },
+      "description": "Create a callable that can be used as the ignore argument to copytree(). Files and directories matching any of the given glob-style patterns will be ignored.",
+      "deprecated": false
+    }
+  ],
+  "classes": [],
+  "constants": [],
+  "docs_url": "https://docs.python.org/2.7/library/shutil.html"
+}

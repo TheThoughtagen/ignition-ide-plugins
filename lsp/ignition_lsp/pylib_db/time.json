@@ -1,0 +1,264 @@
+{
+  "module": "time",
+  "description": "Time access and conversions. Provides functions for working with time values, formatting, parsing, and sleeping.",
+  "functions": [
+    {
+      "name": "time",
+      "signature": "time()",
+      "params": [],
+      "returns": {
+        "type": "float",
+        "description": "The current time in seconds since the epoch (January 1, 1970, 00:00:00 UTC)"
+      },
+      "description": "Returns the time as a floating-point number expressed in seconds since the epoch. Note that even though the time is always returned as a floating-point number, not all systems provide time with a better precision than 1 second.",
+      "deprecated": false
+    },
+    {
+      "name": "clock",
+      "signature": "clock()",
+      "params": [],
+      "returns": {
+        "type": "float",
+        "description": "CPU time in seconds as a floating-point number"
+      },
+      "description": "Returns the current processor time as a floating-point number expressed in seconds. The precision depends on the platform. Use this for benchmarking Python code or timing algorithms.",
+      "deprecated": false
+    },
+    {
+      "name": "sleep",
+      "signature": "sleep(secs)",
+      "params": [
+        {
+          "name": "secs",
+          "type": "float",
+          "description": "Number of seconds to suspend execution. Can be a float for sub-second precision."
+        }
+      ],
+      "returns": {
+        "type": "None",
+        "description": "No return value"
+      },
+      "description": "Suspend execution of the current thread for the given number of seconds. The argument may be a floating-point number for sub-second sleep times. The actual suspension time may be less due to signals or more due to scheduling.",
+      "deprecated": false
+    },
+    {
+      "name": "gmtime",
+      "signature": "gmtime([secs])",
+      "params": [
+        {
+          "name": "secs",
+          "type": "float",
+          "description": "Seconds since the epoch. If not provided or None, the current time as returned by time() is used."
+        }
+      ],
+      "returns": {
+        "type": "struct_time",
+        "description": "A time.struct_time object in UTC"
+      },
+      "description": "Converts a time expressed in seconds since the epoch to a struct_time in UTC. If secs is not provided, the current time as returned by time() is used. Fields in the result have no daylight saving adjustment.",
+      "deprecated": false
+    },
+    {
+      "name": "localtime",
+      "signature": "localtime([secs])",
+      "params": [
+        {
+          "name": "secs",
+          "type": "float",
+          "description": "Seconds since the epoch. If not provided or None, the current time as returned by time() is used."
+        }
+      ],
+      "returns": {
+        "type": "struct_time",
+        "description": "A time.struct_time object in local time"
+      },
+      "description": "Converts a time expressed in seconds since the epoch to a struct_time in local time. If secs is not provided, the current time as returned by time() is used. The DST flag is set if DST is in effect for the given time.",
+      "deprecated": false
+    },
+    {
+      "name": "mktime",
+      "signature": "mktime(t)",
+      "params": [
+        {
+          "name": "t",
+          "type": "struct_time",
+          "description": "A struct_time or 9-tuple expressing local time (not UTC)"
+        }
+      ],
+      "returns": {
+        "type": "float",
+        "description": "Seconds since the epoch as a floating-point number"
+      },
+      "description": "Converts a struct_time or 9-tuple expressing local time to seconds since the epoch. This is the inverse of localtime(). The tm_isdst field of the input may be set to 1 for DST, 0 for non-DST, or -1 to let mktime determine DST.",
+      "deprecated": false
+    },
+    {
+      "name": "asctime",
+      "signature": "asctime([t])",
+      "params": [
+        {
+          "name": "t",
+          "type": "struct_time",
+          "description": "A struct_time or 9-tuple. If not provided, the current local time is used."
+        }
+      ],
+      "returns": {
+        "type": "str",
+        "description": "A 24-character string of the form 'Sun Jun 20 23:21:05 1993'"
+      },
+      "description": "Converts a struct_time or tuple representing time to a 24-character string of the form 'Sun Jun 20 23:21:05 1993'. If no argument is provided, the current local time is used.",
+      "deprecated": false
+    },
+    {
+      "name": "ctime",
+      "signature": "ctime([secs])",
+      "params": [
+        {
+          "name": "secs",
+          "type": "float",
+          "description": "Seconds since the epoch. If not provided or None, the current time is used."
+        }
+      ],
+      "returns": {
+        "type": "str",
+        "description": "A 24-character string representing local time"
+      },
+      "description": "Converts a time expressed in seconds since the epoch to a string representing local time. Equivalent to asctime(localtime(secs)). If secs is not provided, the current time is used.",
+      "deprecated": false
+    },
+    {
+      "name": "strftime",
+      "signature": "strftime(format[, t])",
+      "params": [
+        {
+          "name": "format",
+          "type": "str",
+          "description": "Format string using directives such as %Y (year), %m (month), %d (day), %H (hour), %M (minute), %S (second), etc."
+        },
+        {
+          "name": "t",
+          "type": "struct_time",
+          "description": "A struct_time or 9-tuple. If not provided, the current local time is used."
+        }
+      ],
+      "returns": {
+        "type": "str",
+        "description": "The formatted time string"
+      },
+      "description": "Converts a struct_time or tuple representing time to a string as specified by the format argument. Common directives: %Y=4-digit year, %m=month (01-12), %d=day (01-31), %H=hour (00-23), %M=minute (00-59), %S=second (00-61).",
+      "deprecated": false
+    },
+    {
+      "name": "strptime",
+      "signature": "strptime(string, format)",
+      "params": [
+        {
+          "name": "string",
+          "type": "str",
+          "description": "The string to parse"
+        },
+        {
+          "name": "format",
+          "type": "str",
+          "description": "Format string using the same directives as strftime()"
+        }
+      ],
+      "returns": {
+        "type": "struct_time",
+        "description": "A struct_time parsed from the string"
+      },
+      "description": "Parses a string representing a time according to a format. The return value is a struct_time. The format parameter uses the same directives as strftime(). Raises ValueError if the string does not match the format.",
+      "deprecated": false
+    }
+  ],
+  "classes": [
+    {
+      "name": "struct_time",
+      "description": "Named tuple returned by gmtime(), localtime(), and strptime(). It holds a sequence of 9 integers: year, month, day, hour, minute, second, weekday, Julian day, and DST flag. Values can be accessed by index or by attribute name.",
+      "constructors": [
+        {
+          "signature": "struct_time(tuple)",
+          "params": [
+            {
+              "name": "tuple",
+              "type": "tuple",
+              "description": "A 9-element tuple: (tm_year, tm_mon, tm_mday, tm_hour, tm_min, tm_sec, tm_wday, tm_yday, tm_isdst)"
+            }
+          ],
+          "description": "Creates a struct_time from a 9-element tuple."
+        }
+      ],
+      "methods": [],
+      "fields": [
+        {
+          "name": "tm_year",
+          "type": "int",
+          "description": "Four-digit year (e.g. 2014)"
+        },
+        {
+          "name": "tm_mon",
+          "type": "int",
+          "description": "Month as integer, range 1-12"
+        },
+        {
+          "name": "tm_mday",
+          "type": "int",
+          "description": "Day of the month, range 1-31"
+        },
+        {
+          "name": "tm_hour",
+          "type": "int",
+          "description": "Hour, range 0-23"
+        },
+        {
+          "name": "tm_min",
+          "type": "int",
+          "description": "Minute, range 0-59"
+        },
+        {
+          "name": "tm_sec",
+          "type": "int",
+          "description": "Second, range 0-61 (60 and 61 for leap seconds)"
+        },
+        {
+          "name": "tm_wday",
+          "type": "int",
+          "description": "Day of the week, range 0-6 (Monday is 0)"
+        },
+        {
+          "name": "tm_yday",
+          "type": "int",
+          "description": "Day of the year, range 1-366"
+        },
+        {
+          "name": "tm_isdst",
+          "type": "int",
+          "description": "Daylight saving time flag: 0=not DST, 1=DST, -1=unknown"
+        }
+      ]
+    }
+  ],
+  "constants": [
+    {
+      "name": "timezone",
+      "type": "int",
+      "description": "The offset of the local (non-DST) timezone, in seconds west of UTC. Negative in most of Western Europe, positive in the US, zero in the UK."
+    },
+    {
+      "name": "altzone",
+      "type": "int",
+      "description": "The offset of the local DST timezone, in seconds west of UTC. Defined only if the local timezone has DST."
+    },
+    {
+      "name": "daylight",
+      "type": "int",
+      "description": "Nonzero if a DST timezone is defined for the local area."
+    },
+    {
+      "name": "tzname",
+      "type": "tuple",
+      "description": "A tuple of two strings: the name of the local non-DST timezone and the name of the local DST timezone."
+    }
+  ],
+  "docs_url": "https://docs.python.org/2.7/library/time.html"
+}

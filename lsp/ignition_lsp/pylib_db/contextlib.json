@@ -1,0 +1,75 @@
+{
+  "module": "contextlib",
+  "description": "Utilities for with-statement contexts. Provides decorators and helpers for creating and working with context managers.",
+  "functions": [
+    {
+      "name": "contextmanager",
+      "signature": "contextmanager(func)",
+      "params": [
+        {
+          "name": "func",
+          "type": "generator function",
+          "description": "A generator function that yields exactly once. Code before the yield runs on __enter__, code after runs on __exit__."
+        }
+      ],
+      "returns": {
+        "type": "callable",
+        "description": "A decorator that converts the generator function into a context manager factory"
+      },
+      "description": "Decorator that converts a generator function into a context manager. The function must yield exactly once. Everything before the yield is executed on entering the context; everything after is executed on leaving. The yielded value is bound to the 'as' target.",
+      "deprecated": false
+    },
+    {
+      "name": "nested",
+      "signature": "nested(*managers)",
+      "params": [
+        {
+          "name": "*managers",
+          "type": "context managers",
+          "description": "One or more context manager objects to nest"
+        }
+      ],
+      "returns": {
+        "type": "context manager",
+        "description": "A combined context manager that enters all supplied managers in order"
+      },
+      "description": "Combines multiple context managers into a single nested context manager. Equivalent to nesting multiple with statements. Deprecated since Python 2.7 in favor of the multiple-with syntax: with A() as a, B() as b.",
+      "deprecated": true
+    }
+  ],
+  "classes": [
+    {
+      "name": "closing",
+      "description": "A context manager that ensures the wrapped object's close() method is called when the with block exits. Useful for objects like urllib.urlopen() results that have close() but are not context managers.",
+      "constructors": [
+        {
+          "signature": "closing(thing)",
+          "params": [
+            {
+              "name": "thing",
+              "type": "object",
+              "description": "Any object with a close() method"
+            }
+          ],
+          "description": "Wrap an object so its close() method is called on context exit."
+        }
+      ],
+      "methods": [
+        {
+          "name": "close",
+          "signature": "close()",
+          "params": [],
+          "returns": {
+            "type": "None",
+            "description": "No return value"
+          },
+          "description": "Calls the wrapped object's close() method. Invoked automatically when exiting the with block.",
+          "deprecated": false
+        }
+      ],
+      "fields": []
+    }
+  ],
+  "constants": [],
+  "docs_url": "https://docs.python.org/2.7/library/contextlib.html"
+}

@@ -1,0 +1,444 @@
+{
+  "module": "itertools",
+  "description": "Functions creating iterators for efficient looping. Standardizes a core set of fast, memory-efficient tools. Together they form an iterator algebra making it possible to construct specialized tools in pure Python. Uses Python 2.7 names (imap, ifilter, izip, etc.).",
+  "functions": [
+    {
+      "name": "chain",
+      "signature": "chain(*iterables)",
+      "params": [
+        {
+          "name": "*iterables",
+          "type": "iterable",
+          "description": "One or more iterables to chain together"
+        }
+      ],
+      "returns": {
+        "type": "iterator",
+        "description": "An iterator that yields elements from the first iterable until it is exhausted, then from the next iterable, and so on"
+      },
+      "description": "Make an iterator that returns elements from the first iterable until it is exhausted, then proceeds to the next iterable, until all of the iterables are exhausted. Used for treating consecutive sequences as a single sequence.",
+      "deprecated": false
+    },
+    {
+      "name": "combinations",
+      "signature": "combinations(iterable, r)",
+      "params": [
+        {
+          "name": "iterable",
+          "type": "iterable",
+          "description": "The input iterable"
+        },
+        {
+          "name": "r",
+          "type": "int",
+          "description": "Length of each combination subsequence"
+        }
+      ],
+      "returns": {
+        "type": "iterator",
+        "description": "An iterator of r-length tuples of elements from the input iterable"
+      },
+      "description": "Return r-length subsequences of elements from the input iterable. Combinations are emitted in lexicographic sort order. Elements are treated as unique based on their position, not on their value.",
+      "deprecated": false
+    },
+    {
+      "name": "combinations_with_replacement",
+      "signature": "combinations_with_replacement(iterable, r)",
+      "params": [
+        {
+          "name": "iterable",
+          "type": "iterable",
+          "description": "The input iterable"
+        },
+        {
+          "name": "r",
+          "type": "int",
+          "description": "Length of each combination subsequence"
+        }
+      ],
+      "returns": {
+        "type": "iterator",
+        "description": "An iterator of r-length tuples allowing individual elements to be repeated"
+      },
+      "description": "Return r-length subsequences of elements from the input iterable, allowing individual elements to be repeated more than once. Combinations are emitted in lexicographic sort order.",
+      "deprecated": false
+    },
+    {
+      "name": "compress",
+      "signature": "compress(data, selectors)",
+      "params": [
+        {
+          "name": "data",
+          "type": "iterable",
+          "description": "The data iterable to filter"
+        },
+        {
+          "name": "selectors",
+          "type": "iterable",
+          "description": "An iterable of booleans selecting which data elements to keep"
+        }
+      ],
+      "returns": {
+        "type": "iterator",
+        "description": "An iterator yielding elements from data where the corresponding selector is true"
+      },
+      "description": "Make an iterator that filters elements from data returning only those that have a corresponding element in selectors that evaluates to True. Stops when either the data or selectors iterables has been exhausted.",
+      "deprecated": false
+    },
+    {
+      "name": "count",
+      "signature": "count(start=0, step=1)",
+      "params": [
+        {
+          "name": "start",
+          "type": "int",
+          "description": "The starting value. Default is 0."
+        },
+        {
+          "name": "step",
+          "type": "int",
+          "description": "The step between values. Default is 1."
+        }
+      ],
+      "returns": {
+        "type": "iterator",
+        "description": "An infinite iterator of evenly spaced values starting from start"
+      },
+      "description": "Make an iterator that returns evenly spaced values starting with start. Often used with imap() to generate consecutive data points or with izip() to add sequence numbers.",
+      "deprecated": false
+    },
+    {
+      "name": "cycle",
+      "signature": "cycle(iterable)",
+      "params": [
+        {
+          "name": "iterable",
+          "type": "iterable",
+          "description": "The iterable to cycle over"
+        }
+      ],
+      "returns": {
+        "type": "iterator",
+        "description": "An infinite iterator that cycles through the elements of the input"
+      },
+      "description": "Make an iterator returning elements from the iterable and saving a copy of each. When the iterable is exhausted, return elements from the saved copy. Repeats indefinitely.",
+      "deprecated": false
+    },
+    {
+      "name": "dropwhile",
+      "signature": "dropwhile(predicate, iterable)",
+      "params": [
+        {
+          "name": "predicate",
+          "type": "callable",
+          "description": "A function that returns True/False. Elements are dropped while this returns True."
+        },
+        {
+          "name": "iterable",
+          "type": "iterable",
+          "description": "The input iterable"
+        }
+      ],
+      "returns": {
+        "type": "iterator",
+        "description": "An iterator that drops elements while predicate is true, then yields all remaining elements"
+      },
+      "description": "Make an iterator that drops elements from the iterable as long as the predicate is true; afterwards, returns every element. The iterator does not produce any output until the predicate first becomes false.",
+      "deprecated": false
+    },
+    {
+      "name": "groupby",
+      "signature": "groupby(iterable, key=None)",
+      "params": [
+        {
+          "name": "iterable",
+          "type": "iterable",
+          "description": "The input iterable. Should generally be sorted on the same key function for groupby to work as expected."
+        },
+        {
+          "name": "key",
+          "type": "callable",
+          "description": "A function computing a key value for each element. If None or not supplied, the element itself is used. Default is None."
+        }
+      ],
+      "returns": {
+        "type": "iterator",
+        "description": "An iterator of (key, group) pairs where group is an iterator over the consecutive elements sharing the same key"
+      },
+      "description": "Make an iterator that returns consecutive keys and groups from the iterable. The key is a function computing a key value for each element. If not supplied, the element itself is used. Generally the iterable needs to already be sorted on the same key function.",
+      "deprecated": false
+    },
+    {
+      "name": "ifilter",
+      "signature": "ifilter(predicate, iterable)",
+      "params": [
+        {
+          "name": "predicate",
+          "type": "callable",
+          "description": "A function that returns True/False, or None to use the truthiness of each element"
+        },
+        {
+          "name": "iterable",
+          "type": "iterable",
+          "description": "The input iterable"
+        }
+      ],
+      "returns": {
+        "type": "iterator",
+        "description": "An iterator yielding elements for which predicate returns True"
+      },
+      "description": "Make an iterator that filters elements from iterable returning only those for which the predicate is True. If predicate is None, return the items that are true. Python 2.7 equivalent of Python 3's filter() returning an iterator.",
+      "deprecated": false
+    },
+    {
+      "name": "ifilterfalse",
+      "signature": "ifilterfalse(predicate, iterable)",
+      "params": [
+        {
+          "name": "predicate",
+          "type": "callable",
+          "description": "A function that returns True/False, or None to use the truthiness of each element"
+        },
+        {
+          "name": "iterable",
+          "type": "iterable",
+          "description": "The input iterable"
+        }
+      ],
+      "returns": {
+        "type": "iterator",
+        "description": "An iterator yielding elements for which predicate returns False"
+      },
+      "description": "Make an iterator that filters elements from iterable returning only those for which the predicate is False. If predicate is None, return the items that are false. The complement of ifilter().",
+      "deprecated": false
+    },
+    {
+      "name": "imap",
+      "signature": "imap(function, *iterables)",
+      "params": [
+        {
+          "name": "function",
+          "type": "callable",
+          "description": "The function to apply to each element(s). If None, returns tuples of the elements."
+        },
+        {
+          "name": "*iterables",
+          "type": "iterable",
+          "description": "One or more iterables. If multiple are given, function is called with corresponding elements from each."
+        }
+      ],
+      "returns": {
+        "type": "iterator",
+        "description": "An iterator that applies function to every item of iterable(s)"
+      },
+      "description": "Make an iterator that computes the function using arguments from each of the iterables. If function is set to None, then imap() returns the arguments as a tuple. Stops when the shortest iterable is exhausted. Python 2.7 equivalent of Python 3's map() returning an iterator.",
+      "deprecated": false
+    },
+    {
+      "name": "islice",
+      "signature": "islice(iterable, [start,] stop [, step])",
+      "params": [
+        {
+          "name": "iterable",
+          "type": "iterable",
+          "description": "The input iterable"
+        },
+        {
+          "name": "start",
+          "type": "int",
+          "description": "Starting index. Default is 0 if omitted."
+        },
+        {
+          "name": "stop",
+          "type": "int",
+          "description": "Stop index (exclusive). If None, iteration continues until the iterator is exhausted."
+        },
+        {
+          "name": "step",
+          "type": "int",
+          "description": "Step value. Default is 1 if omitted."
+        }
+      ],
+      "returns": {
+        "type": "iterator",
+        "description": "An iterator returning selected elements from the input iterable"
+      },
+      "description": "Make an iterator that returns selected elements from the iterable. Works like slice() but returns an iterator instead of a list. If start is None, iteration starts at 0. If step is None, the step defaults to 1.",
+      "deprecated": false
+    },
+    {
+      "name": "izip",
+      "signature": "izip(*iterables)",
+      "params": [
+        {
+          "name": "*iterables",
+          "type": "iterable",
+          "description": "Two or more iterables to zip together"
+        }
+      ],
+      "returns": {
+        "type": "iterator",
+        "description": "An iterator of tuples aggregating elements from each iterable"
+      },
+      "description": "Make an iterator that aggregates elements from each of the iterables. Like zip() but returns an iterator instead of a list. Stops when the shortest input iterable is exhausted. Python 2.7 equivalent of Python 3's zip() returning an iterator.",
+      "deprecated": false
+    },
+    {
+      "name": "izip_longest",
+      "signature": "izip_longest(*iterables, fillvalue=None)",
+      "params": [
+        {
+          "name": "*iterables",
+          "type": "iterable",
+          "description": "Two or more iterables to zip together"
+        },
+        {
+          "name": "fillvalue",
+          "type": "any",
+          "description": "Value to fill in for exhausted iterables. Default is None."
+        }
+      ],
+      "returns": {
+        "type": "iterator",
+        "description": "An iterator of tuples, continuing until the longest iterable is exhausted"
+      },
+      "description": "Make an iterator that aggregates elements from each of the iterables. If the iterables are of uneven length, missing values are filled-in with fillvalue. Iteration continues until the longest iterable is exhausted. Python 2.7 name for Python 3's zip_longest.",
+      "deprecated": false
+    },
+    {
+      "name": "permutations",
+      "signature": "permutations(iterable, r=None)",
+      "params": [
+        {
+          "name": "iterable",
+          "type": "iterable",
+          "description": "The input iterable"
+        },
+        {
+          "name": "r",
+          "type": "int",
+          "description": "Length of each permutation. If None or not supplied, defaults to the length of the iterable (full-length permutations)."
+        }
+      ],
+      "returns": {
+        "type": "iterator",
+        "description": "An iterator of r-length tuples of all possible orderings, no repeated elements"
+      },
+      "description": "Return successive r-length permutations of elements in the iterable. If r is not specified or is None, then r defaults to the length of the iterable and all possible full-length permutations are generated.",
+      "deprecated": false
+    },
+    {
+      "name": "product",
+      "signature": "product(*iterables, repeat=1)",
+      "params": [
+        {
+          "name": "*iterables",
+          "type": "iterable",
+          "description": "Input iterables to compute the Cartesian product of"
+        },
+        {
+          "name": "repeat",
+          "type": "int",
+          "description": "Number of times to repeat the input iterables. Default is 1."
+        }
+      ],
+      "returns": {
+        "type": "iterator",
+        "description": "An iterator of tuples representing the Cartesian product"
+      },
+      "description": "Cartesian product of input iterables. Equivalent to nested for-loops. For example, product(A, B) returns the same as ((x,y) for x in A for y in B). The optional repeat keyword argument computes the product of an iterable with itself.",
+      "deprecated": false
+    },
+    {
+      "name": "repeat",
+      "signature": "repeat(object, times=None)",
+      "params": [
+        {
+          "name": "object",
+          "type": "any",
+          "description": "The object to repeat"
+        },
+        {
+          "name": "times",
+          "type": "int",
+          "description": "Number of times to repeat. If None, repeats indefinitely. Default is None."
+        }
+      ],
+      "returns": {
+        "type": "iterator",
+        "description": "An iterator that returns the object for the specified number of times, or indefinitely"
+      },
+      "description": "Make an iterator that returns object over and over again. Runs indefinitely unless the times argument is specified. Used as argument to imap() for invariant function parameters or with izip() to create constant fields in a tuple record.",
+      "deprecated": false
+    },
+    {
+      "name": "starmap",
+      "signature": "starmap(function, iterable)",
+      "params": [
+        {
+          "name": "function",
+          "type": "callable",
+          "description": "The function to apply. Arguments are unpacked from each element of the iterable."
+        },
+        {
+          "name": "iterable",
+          "type": "iterable",
+          "description": "An iterable of argument tuples"
+        }
+      ],
+      "returns": {
+        "type": "iterator",
+        "description": "An iterator of results from applying function to each tuple of arguments"
+      },
+      "description": "Make an iterator that computes the function using arguments obtained from the iterable. Used instead of imap() when argument parameters are already grouped in tuples from a single iterable (the data has been pre-zipped).",
+      "deprecated": false
+    },
+    {
+      "name": "takewhile",
+      "signature": "takewhile(predicate, iterable)",
+      "params": [
+        {
+          "name": "predicate",
+          "type": "callable",
+          "description": "A function that returns True/False. Elements are taken while this returns True."
+        },
+        {
+          "name": "iterable",
+          "type": "iterable",
+          "description": "The input iterable"
+        }
+      ],
+      "returns": {
+        "type": "iterator",
+        "description": "An iterator that yields elements as long as the predicate is true"
+      },
+      "description": "Make an iterator that returns elements from the iterable as long as the predicate is true. The complement of dropwhile().",
+      "deprecated": false
+    },
+    {
+      "name": "tee",
+      "signature": "tee(iterable, n=2)",
+      "params": [
+        {
+          "name": "iterable",
+          "type": "iterable",
+          "description": "The input iterable to split"
+        },
+        {
+          "name": "n",
+          "type": "int",
+          "description": "Number of independent iterators to return. Default is 2."
+        }
+      ],
+      "returns": {
+        "type": "tuple",
+        "description": "A tuple of n independent iterators"
+      },
+      "description": "Return n independent iterators from a single iterable. Once tee() has made a split, the original iterable should not be used anywhere else; otherwise the tee objects could advance without the others being informed.",
+      "deprecated": false
+    }
+  ],
+  "classes": [],
+  "constants": [],
+  "docs_url": "https://docs.python.org/2.7/library/itertools.html"
+}

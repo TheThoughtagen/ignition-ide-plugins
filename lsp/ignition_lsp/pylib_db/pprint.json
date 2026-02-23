@@ -1,0 +1,228 @@
+{
+  "module": "pprint",
+  "description": "Data pretty printer. Provides the ability to print Python data structures in a well-formatted, readable form.",
+  "functions": [
+    {
+      "name": "pprint",
+      "signature": "pprint(object[, stream[, indent[, width[, depth]]]])",
+      "params": [
+        {
+          "name": "object",
+          "type": "object",
+          "description": "The object to pretty-print."
+        },
+        {
+          "name": "stream",
+          "type": "file",
+          "description": "The output stream. Defaults to sys.stdout."
+        },
+        {
+          "name": "indent",
+          "type": "int",
+          "description": "The amount of indentation added for each recursive level. Defaults to 1."
+        },
+        {
+          "name": "width",
+          "type": "int",
+          "description": "The desired maximum output width. Defaults to 80."
+        },
+        {
+          "name": "depth",
+          "type": "int",
+          "description": "The number of levels which may be printed. Deeper levels are replaced with '...'. None means no limit."
+        }
+      ],
+      "returns": {
+        "type": "None",
+        "description": "No return value."
+      },
+      "description": "Print the formatted representation of object to stream, followed by a newline.",
+      "deprecated": false
+    },
+    {
+      "name": "pformat",
+      "signature": "pformat(object[, indent[, width[, depth]]])",
+      "params": [
+        {
+          "name": "object",
+          "type": "object",
+          "description": "The object to format."
+        },
+        {
+          "name": "indent",
+          "type": "int",
+          "description": "The amount of indentation added for each recursive level. Defaults to 1."
+        },
+        {
+          "name": "width",
+          "type": "int",
+          "description": "The desired maximum output width. Defaults to 80."
+        },
+        {
+          "name": "depth",
+          "type": "int",
+          "description": "The number of levels which may be printed. None means no limit."
+        }
+      ],
+      "returns": {
+        "type": "str",
+        "description": "The formatted representation as a string."
+      },
+      "description": "Return the formatted representation of object as a string.",
+      "deprecated": false
+    },
+    {
+      "name": "isreadable",
+      "signature": "isreadable(object)",
+      "params": [
+        {
+          "name": "object",
+          "type": "object",
+          "description": "The object to check."
+        }
+      ],
+      "returns": {
+        "type": "bool",
+        "description": "True if the object's repr is readable (can be used to recreate the value via eval())."
+      },
+      "description": "Determine whether the formatted representation of the object is readable, meaning it can be used to recreate the value with eval(). Always returns False for recursive objects.",
+      "deprecated": false
+    },
+    {
+      "name": "isrecursive",
+      "signature": "isrecursive(object)",
+      "params": [
+        {
+          "name": "object",
+          "type": "object",
+          "description": "The object to check."
+        }
+      ],
+      "returns": {
+        "type": "bool",
+        "description": "True if the object contains a recursive reference."
+      },
+      "description": "Determine whether the object requires a recursive representation.",
+      "deprecated": false
+    },
+    {
+      "name": "saferepr",
+      "signature": "saferepr(object)",
+      "params": [
+        {
+          "name": "object",
+          "type": "object",
+          "description": "The object to represent."
+        }
+      ],
+      "returns": {
+        "type": "str",
+        "description": "A string representation of the object, with recursive references marked."
+      },
+      "description": "Return a string representation of the object, protected against recursive data structures. Recursive references are replaced with a brief '<Recursion on ...>' indicator.",
+      "deprecated": false
+    }
+  ],
+  "classes": [
+    {
+      "name": "PrettyPrinter",
+      "description": "A class that provides configurable pretty-printing. Construct an instance with formatting parameters, then use its methods to format or print objects.",
+      "constructors": [
+        {
+          "signature": "PrettyPrinter(indent=1, width=80, depth=None, stream=None)",
+          "params": [
+            {
+              "name": "indent",
+              "type": "int",
+              "description": "Amount of indentation per nesting level. Defaults to 1."
+            },
+            {
+              "name": "width",
+              "type": "int",
+              "description": "Desired maximum output width. Defaults to 80."
+            },
+            {
+              "name": "depth",
+              "type": "int",
+              "description": "Number of nesting levels to print. None means unlimited. Defaults to None."
+            },
+            {
+              "name": "stream",
+              "type": "file",
+              "description": "Output stream for the pprint method. Defaults to sys.stdout."
+            }
+          ],
+          "description": "Create a PrettyPrinter instance."
+        }
+      ],
+      "methods": [
+        {
+          "name": "pprint",
+          "signature": "pprint(object)",
+          "params": [
+            {
+              "name": "object",
+              "type": "object",
+              "description": "The object to pretty-print."
+            }
+          ],
+          "returns": {
+            "type": "None",
+            "description": "No return value."
+          },
+          "description": "Print the formatted representation of object on the configured stream, followed by a newline."
+        },
+        {
+          "name": "pformat",
+          "signature": "pformat(object)",
+          "params": [
+            {
+              "name": "object",
+              "type": "object",
+              "description": "The object to format."
+            }
+          ],
+          "returns": {
+            "type": "str",
+            "description": "The formatted string."
+          },
+          "description": "Return the formatted representation of object as a string, using the configured options."
+        },
+        {
+          "name": "isreadable",
+          "signature": "isreadable(object)",
+          "params": [
+            {
+              "name": "object",
+              "type": "object",
+              "description": "The object to check."
+            }
+          ],
+          "returns": {
+            "type": "bool",
+            "description": "True if the repr is readable."
+          },
+          "description": "Determine whether the formatted representation of the object is readable."
+        },
+        {
+          "name": "isrecursive",
+          "signature": "isrecursive(object)",
+          "params": [
+            {
+              "name": "object",
+              "type": "object",
+              "description": "The object to check."
+            }
+          ],
+          "returns": {
+            "type": "bool",
+            "description": "True if the object contains a recursive reference."
+          },
+          "description": "Determine whether the object requires a recursive representation."
+        }
+      ]
+    }
+  ],
+  "constants": [],
+  "docs_url": "https://docs.python.org/2.7/library/pprint.html"
+}

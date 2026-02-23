@@ -1,0 +1,182 @@
+{
+  "module": "heapq",
+  "description": "Heap queue algorithm (a.k.a. priority queue). Provides an implementation of the min-heap using a regular list.",
+  "functions": [
+    {
+      "name": "heappush",
+      "signature": "heappush(heap, item)",
+      "params": [
+        {
+          "name": "heap",
+          "type": "list",
+          "description": "A list maintained as a heap. Must already satisfy the heap invariant."
+        },
+        {
+          "name": "item",
+          "type": "object",
+          "description": "The item to push onto the heap."
+        }
+      ],
+      "returns": {
+        "type": "None",
+        "description": "Modifies heap in place."
+      },
+      "description": "Push the value item onto the heap, maintaining the heap invariant.",
+      "deprecated": false
+    },
+    {
+      "name": "heappop",
+      "signature": "heappop(heap)",
+      "params": [
+        {
+          "name": "heap",
+          "type": "list",
+          "description": "A list maintained as a heap."
+        }
+      ],
+      "returns": {
+        "type": "object",
+        "description": "The smallest item from the heap."
+      },
+      "description": "Pop and return the smallest item from the heap, maintaining the heap invariant. Raises IndexError if the heap is empty.",
+      "deprecated": false
+    },
+    {
+      "name": "heappushpop",
+      "signature": "heappushpop(heap, item)",
+      "params": [
+        {
+          "name": "heap",
+          "type": "list",
+          "description": "A list maintained as a heap."
+        },
+        {
+          "name": "item",
+          "type": "object",
+          "description": "The item to push onto the heap."
+        }
+      ],
+      "returns": {
+        "type": "object",
+        "description": "The smallest item from the heap after pushing."
+      },
+      "description": "Push item on the heap, then pop and return the smallest item from the heap. More efficient than a heappush() followed by a separate call to heappop().",
+      "deprecated": false
+    },
+    {
+      "name": "heapify",
+      "signature": "heapify(x)",
+      "params": [
+        {
+          "name": "x",
+          "type": "list",
+          "description": "A list to transform into a heap."
+        }
+      ],
+      "returns": {
+        "type": "None",
+        "description": "Modifies x in place."
+      },
+      "description": "Transform list x into a heap, in-place, in linear time.",
+      "deprecated": false
+    },
+    {
+      "name": "heapreplace",
+      "signature": "heapreplace(heap, item)",
+      "params": [
+        {
+          "name": "heap",
+          "type": "list",
+          "description": "A list maintained as a heap."
+        },
+        {
+          "name": "item",
+          "type": "object",
+          "description": "The item to push onto the heap after popping."
+        }
+      ],
+      "returns": {
+        "type": "object",
+        "description": "The smallest item that was on the heap before the push."
+      },
+      "description": "Pop and return the smallest item from the heap, and also push the new item. The heap size doesn't change. Raises IndexError if the heap is empty. This is more efficient than heappop() followed by heappush(), and can be more appropriate when using a fixed-size heap. The value returned may be larger than item.",
+      "deprecated": false
+    },
+    {
+      "name": "merge",
+      "signature": "merge(*iterables)",
+      "params": [
+        {
+          "name": "*iterables",
+          "type": "iterable",
+          "description": "Multiple sorted iterables to merge."
+        }
+      ],
+      "returns": {
+        "type": "iterator",
+        "description": "An iterator over the sorted values from all iterables."
+      },
+      "description": "Merge multiple sorted inputs into a single sorted output. Returns an iterator over the sorted values. Similar to sorted(itertools.chain(*iterables)) but returns an iterator, does not pull the data into memory all at once, and assumes that each of the input streams is already sorted (smallest to largest).",
+      "deprecated": false
+    },
+    {
+      "name": "nlargest",
+      "signature": "nlargest(n, iterable[, key])",
+      "params": [
+        {
+          "name": "n",
+          "type": "int",
+          "description": "Number of largest elements to return."
+        },
+        {
+          "name": "iterable",
+          "type": "iterable",
+          "description": "The dataset to search."
+        },
+        {
+          "name": "key",
+          "type": "callable",
+          "description": "A function of one argument that is used to extract a comparison key from each element in the iterable.",
+          "optional": true
+        }
+      ],
+      "returns": {
+        "type": "list",
+        "description": "A list of the n largest elements in descending order."
+      },
+      "description": "Return a list with the n largest elements from the dataset defined by iterable. Equivalent to: sorted(iterable, key=key, reverse=True)[:n]. Performs best for small values of n relative to the iterable size. For larger values, sorted() is more efficient. If n==1, equivalent to the built-in max().",
+      "deprecated": false
+    },
+    {
+      "name": "nsmallest",
+      "signature": "nsmallest(n, iterable[, key])",
+      "params": [
+        {
+          "name": "n",
+          "type": "int",
+          "description": "Number of smallest elements to return."
+        },
+        {
+          "name": "iterable",
+          "type": "iterable",
+          "description": "The dataset to search."
+        },
+        {
+          "name": "key",
+          "type": "callable",
+          "description": "A function of one argument that is used to extract a comparison key from each element in the iterable.",
+          "optional": true
+        }
+      ],
+      "returns": {
+        "type": "list",
+        "description": "A list of the n smallest elements in ascending order."
+      },
+      "description": "Return a list with the n smallest elements from the dataset defined by iterable. Equivalent to: sorted(iterable, key=key)[:n]. Performs best for small values of n relative to the iterable size. For larger values, sorted() is more efficient. If n==1, equivalent to the built-in min().",
+      "deprecated": false
+    }
+  ],
+  "classes": [],
+  "constants": [],
+  "docs_url": "https://docs.python.org/2.7/library/heapq.html"
+}

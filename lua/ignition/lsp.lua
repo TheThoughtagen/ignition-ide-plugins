@@ -43,13 +43,54 @@ function M.setup(config)
         return
       end
 
-      -- Get the registered config
       local config = vim.lsp.config.ignition_lsp
-      if config then
+      if not config then
+        return
+      end
+
+      -- Virtual buffers need root_dir resolved from the source file
+      -- because their synthetic paths (e.g. [Ignition:...]) aren't real paths
+      local virtual_doc = require('ignition.virtual_doc')
+      local meta = virtual_doc.get_metadata(args.buf)
+      if meta then
+        local root_dir = vim.fs.root(meta.source_file, 'project.json')
+        if root_dir then
+          local start_config = vim.tbl_extend('force', {}, config)
+          start_config.root_dir = root_dir
+          vim.lsp.start(start_config, { bufnr = args.buf })
+        end
+      else
         vim.lsp.start(config, { bufnr = args.buf })
       end
     end,
     desc = 'Start Ignition LSP for Ignition project files',
+  })
+
+  -- Re-attach virtual buffers after :LspRestart
+  -- Neovim's built-in re-attachment skips buftype=acwrite buffers,
+  -- so virtual buffers lose their LSP client on restart.
+  vim.api.nvim_create_autocmd('LspDetach', {
+    callback = function(args)
+      if args.data and args.data.client_id then
+        local client = vim.lsp.get_client_by_id(args.data.client_id)
+        if not client or client.name ~= 'ignition_lsp' then
+          return
+        end
+      end
+
+      local virtual_doc = require('ignition.virtual_doc')
+      if not virtual_doc.get_metadata(args.buf) then
+        return
+      end
+
+      -- Delay to allow the restarted server to initialize
+      vim.defer_fn(function()
+        if vim.api.nvim_buf_is_valid(args.buf) then
+          M.start_lsp_for_buffer(args.buf)
+        end
+      end, 500)
+    end,
+    desc = 'Re-attach Ignition LSP to virtual buffers after restart',
   })
 end
 
@@ -87,7 +128,7 @@ end
 
 -- Start LSP for a specific buffer (used for virtual buffers)
 -- @param bufnr number Buffer number (optional, defaults to current buffer)
--- @param root_dir string Root directory for LSP (optional, will auto-detect if not provided)
+-- @param root_dir string Root directory for LSP (optional, auto-resolves for virtual buffers)
 function M.start_lsp_for_buffer(bufnr, root_dir)
   bufnr = bufnr or vim.api.nvim_get_current_buf()
 
@@ -100,10 +141,17 @@ function M.start_lsp_for_buffer(bufnr, root_dir)
     return clients[1].id
   end
 
+  -- Auto-resolve root_dir from virtual buffer metadata when not provided
+  if not root_dir then
+    local virtual_doc = require('ignition.virtual_doc')
+    local meta = virtual_doc.get_metadata(bufnr)
+    if meta then
+      root_dir = vim.fs.root(meta.source_file, 'project.json')
+    end
+  end
+
   local config = vim.lsp.config.ignition_lsp
   if config then
-    -- If root_dir is explicitly provided (for virtual buffers), use it
-    -- Otherwise let vim.lsp.start auto-detect from buffer path
     local start_config = vim.tbl_extend('force', {}, config)
     if root_dir then
       start_config.root_dir = root_dir

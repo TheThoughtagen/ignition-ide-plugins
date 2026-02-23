@@ -48,6 +48,9 @@ dmypy.json
 # IDEs
 .vscode/
 .idea/
+
+# Claude Code local settings (contains machine-specific paths)
+.claude/settings.local.json
 *.swp
 *.swo
 *~

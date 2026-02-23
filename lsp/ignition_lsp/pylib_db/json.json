@@ -1,0 +1,451 @@
+{
+  "module": "json",
+  "description": "JSON encoder and decoder for Python objects. Provides serialization of Python dicts, lists, strings, and numbers to JSON format and deserialization back.",
+  "functions": [
+    {
+      "name": "loads",
+      "signature": "loads(s, encoding=None, cls=None, object_hook=None, parse_float=None, parse_int=None, parse_constant=None, object_pairs_hook=None)",
+      "params": [
+        {
+          "name": "s",
+          "type": "str",
+          "description": "A JSON string to deserialize"
+        },
+        {
+          "name": "encoding",
+          "type": "str",
+          "description": "The encoding used to interpret the string (default UTF-8). Ignored in Python 2.7 when s is unicode."
+        },
+        {
+          "name": "cls",
+          "type": "type",
+          "description": "Custom JSONDecoder subclass to use for deserialization"
+        },
+        {
+          "name": "object_hook",
+          "type": "callable",
+          "description": "Function called with the result of every JSON object decoded, allowing custom transformations"
+        },
+        {
+          "name": "parse_float",
+          "type": "callable",
+          "description": "Function called with the string of every JSON float to be decoded (default float)"
+        },
+        {
+          "name": "parse_int",
+          "type": "callable",
+          "description": "Function called with the string of every JSON int to be decoded (default int)"
+        },
+        {
+          "name": "parse_constant",
+          "type": "callable",
+          "description": "Function called with the string of JSON constants (-Infinity, Infinity, NaN)"
+        },
+        {
+          "name": "object_pairs_hook",
+          "type": "callable",
+          "description": "Function called with an ordered list of pairs for every JSON object, allowing ordered dict construction"
+        }
+      ],
+      "returns": {
+        "type": "object",
+        "description": "Python object (dict, list, str, unicode, int, float, bool, or None)"
+      },
+      "description": "Deserialize a JSON string to a Python object.",
+      "deprecated": false
+    },
+    {
+      "name": "dumps",
+      "signature": "dumps(obj, skipkeys=False, ensure_ascii=True, check_circular=True, allow_nan=True, cls=None, indent=None, separators=None, encoding='utf-8', default=None, sort_keys=False)",
+      "params": [
+        {
+          "name": "obj",
+          "type": "object",
+          "description": "The Python object to serialize to JSON"
+        },
+        {
+          "name": "skipkeys",
+          "type": "bool",
+          "description": "If True, dict keys that are not basic types (str, unicode, int, long, float, bool, None) will be skipped instead of raising TypeError"
+        },
+        {
+          "name": "ensure_ascii",
+          "type": "bool",
+          "description": "If True, all non-ASCII characters in the output are escaped with \\uXXXX sequences"
+        },
+        {
+          "name": "check_circular",
+          "type": "bool",
+          "description": "If False, the circular reference check for container types is skipped (may cause OverflowError or worse)"
+        },
+        {
+          "name": "allow_nan",
+          "type": "bool",
+          "description": "If False, serialization of float values that are out of range (nan, inf, -inf) will raise ValueError"
+        },
+        {
+          "name": "cls",
+          "type": "type",
+          "description": "Custom JSONEncoder subclass to use for serialization"
+        },
+        {
+          "name": "indent",
+          "type": "int",
+          "description": "Number of spaces for pretty-printing indentation. None produces the most compact representation."
+        },
+        {
+          "name": "separators",
+          "type": "tuple",
+          "description": "Tuple of (item_separator, key_separator). Default is (', ', ': ') with indent or (',', ': ') without."
+        },
+        {
+          "name": "encoding",
+          "type": "str",
+          "description": "Character encoding for str instances (default 'utf-8')"
+        },
+        {
+          "name": "default",
+          "type": "callable",
+          "description": "Function called for objects that are not serializable. Should return a serializable object or raise TypeError."
+        },
+        {
+          "name": "sort_keys",
+          "type": "bool",
+          "description": "If True, the output of dictionaries will be sorted by key"
+        }
+      ],
+      "returns": {
+        "type": "str",
+        "description": "A JSON-formatted string"
+      },
+      "description": "Serialize a Python object to a JSON-formatted string.",
+      "deprecated": false
+    },
+    {
+      "name": "load",
+      "signature": "load(fp, encoding=None, cls=None, object_hook=None, parse_float=None, parse_int=None, parse_constant=None, object_pairs_hook=None)",
+      "params": [
+        {
+          "name": "fp",
+          "type": "file",
+          "description": "A file-like object with a .read() method containing a JSON document"
+        },
+        {
+          "name": "encoding",
+          "type": "str",
+          "description": "The encoding used to interpret the file contents"
+        },
+        {
+          "name": "cls",
+          "type": "type",
+          "description": "Custom JSONDecoder subclass to use for deserialization"
+        },
+        {
+          "name": "object_hook",
+          "type": "callable",
+          "description": "Function called with the result of every JSON object decoded"
+        },
+        {
+          "name": "parse_float",
+          "type": "callable",
+          "description": "Function called with the string of every JSON float to be decoded"
+        },
+        {
+          "name": "parse_int",
+          "type": "callable",
+          "description": "Function called with the string of every JSON int to be decoded"
+        },
+        {
+          "name": "parse_constant",
+          "type": "callable",
+          "description": "Function called with the string of JSON constants (-Infinity, Infinity, NaN)"
+        },
+        {
+          "name": "object_pairs_hook",
+          "type": "callable",
+          "description": "Function called with an ordered list of pairs for every JSON object"
+        }
+      ],
+      "returns": {
+        "type": "object",
+        "description": "Python object (dict, list, str, unicode, int, float, bool, or None)"
+      },
+      "description": "Deserialize a JSON document read from a file-like object to a Python object.",
+      "deprecated": false
+    },
+    {
+      "name": "dump",
+      "signature": "dump(obj, fp, skipkeys=False, ensure_ascii=True, check_circular=True, allow_nan=True, cls=None, indent=None, separators=None, encoding='utf-8', default=None, sort_keys=False)",
+      "params": [
+        {
+          "name": "obj",
+          "type": "object",
+          "description": "The Python object to serialize to JSON"
+        },
+        {
+          "name": "fp",
+          "type": "file",
+          "description": "A file-like object with a .write() method"
+        },
+        {
+          "name": "skipkeys",
+          "type": "bool",
+          "description": "If True, dict keys that are not basic types will be skipped instead of raising TypeError"
+        },
+        {
+          "name": "ensure_ascii",
+          "type": "bool",
+          "description": "If True, all non-ASCII characters in the output are escaped with \\uXXXX sequences"
+        },
+        {
+          "name": "check_circular",
+          "type": "bool",
+          "description": "If False, the circular reference check for container types is skipped"
+        },
+        {
+          "name": "allow_nan",
+          "type": "bool",
+          "description": "If False, serialization of out-of-range float values will raise ValueError"
+        },
+        {
+          "name": "cls",
+          "type": "type",
+          "description": "Custom JSONEncoder subclass to use for serialization"
+        },
+        {
+          "name": "indent",
+          "type": "int",
+          "description": "Number of spaces for pretty-printing indentation"
+        },
+        {
+          "name": "separators",
+          "type": "tuple",
+          "description": "Tuple of (item_separator, key_separator)"
+        },
+        {
+          "name": "encoding",
+          "type": "str",
+          "description": "Character encoding for str instances (default 'utf-8')"
+        },
+        {
+          "name": "default",
+          "type": "callable",
+          "description": "Function called for objects that are not serializable"
+        },
+        {
+          "name": "sort_keys",
+          "type": "bool",
+          "description": "If True, the output of dictionaries will be sorted by key"
+        }
+      ],
+      "returns": {
+        "type": "None",
+        "description": "Writes JSON to the file-like object; returns None"
+      },
+      "description": "Serialize a Python object as a JSON-formatted stream to a file-like object.",
+      "deprecated": false
+    }
+  ],
+  "classes": [
+    {
+      "name": "JSONEncoder",
+      "description": "Extensible JSON encoder for Python data structures. Supports str, unicode, int, long, float, bool, None, list, tuple, and dict by default.",
+      "constructors": [
+        {
+          "signature": "JSONEncoder(skipkeys=False, ensure_ascii=True, check_circular=True, allow_nan=True, sort_keys=False, indent=None, separators=None, encoding='utf-8', default=None)",
+          "params": [
+            {
+              "name": "skipkeys",
+              "type": "bool",
+              "description": "If True, keys that are not basic types will be skipped"
+            },
+            {
+              "name": "ensure_ascii",
+              "type": "bool",
+              "description": "If True, escape all non-ASCII characters in output"
+            },
+            {
+              "name": "check_circular",
+              "type": "bool",
+              "description": "If True (default), check for circular references during encoding"
+            },
+            {
+              "name": "allow_nan",
+              "type": "bool",
+              "description": "If True (default), allow NaN, Infinity, and -Infinity as values (not valid JSON but accepted by JavaScript)"
+            },
+            {
+              "name": "sort_keys",
+              "type": "bool",
+              "description": "If True, sort dictionary output by key"
+            },
+            {
+              "name": "indent",
+              "type": "int",
+              "description": "Number of spaces for pretty-printing indentation"
+            },
+            {
+              "name": "separators",
+              "type": "tuple",
+              "description": "Tuple of (item_separator, key_separator)"
+            },
+            {
+              "name": "encoding",
+              "type": "str",
+              "description": "Character encoding for str instances"
+            },
+            {
+              "name": "default",
+              "type": "callable",
+              "description": "Function for objects that cannot be serialized"
+            }
+          ],
+          "description": "Create a new JSONEncoder instance with the given options."
+        }
+      ],
+      "methods": [
+        {
+          "name": "encode",
+          "signature": "encode(o)",
+          "params": [
+            {
+              "name": "o",
+              "type": "object",
+              "description": "Python object to serialize"
+            }
+          ],
+          "returns": {
+            "type": "str",
+            "description": "JSON-encoded string"
+          },
+          "description": "Return a JSON string representation of a Python data structure.",
+          "deprecated": false
+        },
+        {
+          "name": "default",
+          "signature": "default(o)",
+          "params": [
+            {
+              "name": "o",
+              "type": "object",
+              "description": "Object that is not serializable by default"
+            }
+          ],
+          "returns": {
+            "type": "object",
+            "description": "A serializable object, or raises TypeError"
+          },
+          "description": "Override this method in a subclass to serialize additional types. Called for objects that cannot otherwise be serialized. Should return a serializable object or raise TypeError.",
+          "deprecated": false
+        },
+        {
+          "name": "iterencode",
+          "signature": "iterencode(o)",
+          "params": [
+            {
+              "name": "o",
+              "type": "object",
+              "description": "Python object to serialize"
+            }
+          ],
+          "returns": {
+            "type": "generator",
+            "description": "Generator yielding string chunks of the JSON encoding"
+          },
+          "description": "Encode the given object and yield each string representation as available. Useful for encoding large objects incrementally.",
+          "deprecated": false
+        }
+      ]
+    },
+    {
+      "name": "JSONDecoder",
+      "description": "Simple JSON decoder. Performs the following translations by default: JSON object to dict, array to list, string to unicode, number to int/float, true/false to True/False, null to None.",
+      "constructors": [
+        {
+          "signature": "JSONDecoder(encoding=None, object_hook=None, parse_float=None, parse_int=None, parse_constant=None, strict=True, object_pairs_hook=None)",
+          "params": [
+            {
+              "name": "encoding",
+              "type": "str",
+              "description": "Encoding used to decode the input string"
+            },
+            {
+              "name": "object_hook",
+              "type": "callable",
+              "description": "Function called with the result of every JSON object decoded"
+            },
+            {
+              "name": "parse_float",
+              "type": "callable",
+              "description": "Function called with the string of every JSON float"
+            },
+            {
+              "name": "parse_int",
+              "type": "callable",
+              "description": "Function called with the string of every JSON int"
+            },
+            {
+              "name": "parse_constant",
+              "type": "callable",
+              "description": "Function called with the string of JSON constants"
+            },
+            {
+              "name": "strict",
+              "type": "bool",
+              "description": "If False, allow control characters inside strings"
+            },
+            {
+              "name": "object_pairs_hook",
+              "type": "callable",
+              "description": "Function called with an ordered list of pairs for every JSON object"
+            }
+          ],
+          "description": "Create a new JSONDecoder instance."
+        }
+      ],
+      "methods": [
+        {
+          "name": "decode",
+          "signature": "decode(s)",
+          "params": [
+            {
+              "name": "s",
+              "type": "str",
+              "description": "A JSON string to deserialize"
+            }
+          ],
+          "returns": {
+            "type": "object",
+            "description": "Python representation of the JSON document"
+          },
+          "description": "Return the Python representation of a JSON string. Raises ValueError if the string is not valid JSON.",
+          "deprecated": false
+        },
+        {
+          "name": "raw_decode",
+          "signature": "raw_decode(s, idx=0)",
+          "params": [
+            {
+              "name": "s",
+              "type": "str",
+              "description": "A JSON string to deserialize"
+            },
+            {
+              "name": "idx",
+              "type": "int",
+              "description": "Index in s where the JSON document begins (default 0)"
+            }
+          ],
+          "returns": {
+            "type": "tuple",
+            "description": "A 2-tuple of (Python object, index where the document ended)"
+          },
+          "description": "Decode a JSON document from a string that may have extraneous data at the end. Returns a tuple of the decoded object and the index to the end of the document.",
+          "deprecated": false
+        }
+      ]
+    }
+  ],
+  "constants": [],
+  "docs_url": "https://docs.python.org/2.7/library/json.html"
+}

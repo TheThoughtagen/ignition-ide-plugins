@@ -1,0 +1,395 @@
+{
+  "module": "string",
+  "description": "Common string operations and formatting. Contains constants for character classes, a Template class for simple substitution, and a Formatter class for advanced string formatting.",
+  "functions": [
+    {
+      "name": "capwords",
+      "signature": "capwords(s, sep=None)",
+      "params": [
+        {
+          "name": "s",
+          "type": "str",
+          "description": "The string to capitalize"
+        },
+        {
+          "name": "sep",
+          "type": "str",
+          "description": "Word separator. If None, runs of whitespace are replaced by a single space and leading/trailing whitespace is stripped."
+        }
+      ],
+      "returns": {
+        "type": "str",
+        "description": "String with each word capitalized"
+      },
+      "description": "Split the argument into words using str.split, capitalize each word using str.capitalize, and join the capitalized words using str.join. If the optional second argument sep is absent or None, runs of whitespace characters are replaced by a single space.",
+      "deprecated": false
+    },
+    {
+      "name": "maketrans",
+      "signature": "maketrans(from, to)",
+      "params": [
+        {
+          "name": "from",
+          "type": "str",
+          "description": "Characters to map from"
+        },
+        {
+          "name": "to",
+          "type": "str",
+          "description": "Characters to map to. Must be the same length as from."
+        }
+      ],
+      "returns": {
+        "type": "str",
+        "description": "A 256-character translation table suitable for str.translate()"
+      },
+      "description": "Return a translation table suitable for passing to str.translate(). Each character in from will be mapped to the character at the same position in to. from and to must have the same length.",
+      "deprecated": false
+    }
+  ],
+  "classes": [
+    {
+      "name": "Formatter",
+      "description": "The Formatter class implements the same layout as the format() built-in. It allows customization of the formatting behavior by overriding its methods.",
+      "constructors": [
+        {
+          "signature": "Formatter()",
+          "params": [],
+          "description": "Create a new Formatter instance."
+        }
+      ],
+      "methods": [
+        {
+          "name": "format",
+          "signature": "format(format_string, *args, **kwargs)",
+          "params": [
+            {
+              "name": "format_string",
+              "type": "str",
+              "description": "The format string containing replacement fields"
+            },
+            {
+              "name": "*args",
+              "type": "any",
+              "description": "Positional arguments for replacement fields"
+            },
+            {
+              "name": "**kwargs",
+              "type": "any",
+              "description": "Keyword arguments for replacement fields"
+            }
+          ],
+          "returns": {
+            "type": "str",
+            "description": "The formatted string"
+          },
+          "description": "The primary API method. Takes a format string and an arbitrary set of positional and keyword arguments. Calls vformat().",
+          "deprecated": false
+        },
+        {
+          "name": "vformat",
+          "signature": "vformat(format_string, args, kwargs)",
+          "params": [
+            {
+              "name": "format_string",
+              "type": "str",
+              "description": "The format string"
+            },
+            {
+              "name": "args",
+              "type": "tuple",
+              "description": "Positional arguments"
+            },
+            {
+              "name": "kwargs",
+              "type": "dict",
+              "description": "Keyword arguments"
+            }
+          ],
+          "returns": {
+            "type": "str",
+            "description": "The formatted string"
+          },
+          "description": "Does the actual work of formatting. Accepts args and kwargs as a tuple and dict respectively, rather than unpacked.",
+          "deprecated": false
+        },
+        {
+          "name": "parse",
+          "signature": "parse(format_string)",
+          "params": [
+            {
+              "name": "format_string",
+              "type": "str",
+              "description": "The format string to parse"
+            }
+          ],
+          "returns": {
+            "type": "iterable",
+            "description": "Iterable of (literal_text, field_name, format_spec, conversion) tuples"
+          },
+          "description": "Loops over the format_string and returns an iterable of tuples (literal_text, field_name, format_spec, conversion). Used by vformat() to break up the format string into literal text and replacement fields.",
+          "deprecated": false
+        },
+        {
+          "name": "get_field",
+          "signature": "get_field(field_name, args, kwargs)",
+          "params": [
+            {
+              "name": "field_name",
+              "type": "str",
+              "description": "The field name as returned by parse()"
+            },
+            {
+              "name": "args",
+              "type": "tuple",
+              "description": "Positional arguments"
+            },
+            {
+              "name": "kwargs",
+              "type": "dict",
+              "description": "Keyword arguments"
+            }
+          ],
+          "returns": {
+            "type": "tuple",
+            "description": "Tuple of (obj, used_key) where obj is the resolved value"
+          },
+          "description": "Given a field_name as returned by parse(), convert it to an object to be formatted. Returns a tuple (obj, used_key). The default version calls get_value() then handles attribute and index lookups.",
+          "deprecated": false
+        },
+        {
+          "name": "get_value",
+          "signature": "get_value(key, args, kwargs)",
+          "params": [
+            {
+              "name": "key",
+              "type": "int or str",
+              "description": "The key (integer index or string name)"
+            },
+            {
+              "name": "args",
+              "type": "tuple",
+              "description": "Positional arguments"
+            },
+            {
+              "name": "kwargs",
+              "type": "dict",
+              "description": "Keyword arguments"
+            }
+          ],
+          "returns": {
+            "type": "any",
+            "description": "The value to be formatted"
+          },
+          "description": "Retrieve a given field value. If key is an integer, it indexes into args; if it is a string, it looks up in kwargs.",
+          "deprecated": false
+        },
+        {
+          "name": "check_unused_args",
+          "signature": "check_unused_args(used_args, args, kwargs)",
+          "params": [
+            {
+              "name": "used_args",
+              "type": "set",
+              "description": "Set of keys/indices that were referenced in the format string"
+            },
+            {
+              "name": "args",
+              "type": "tuple",
+              "description": "Positional arguments"
+            },
+            {
+              "name": "kwargs",
+              "type": "dict",
+              "description": "Keyword arguments"
+            }
+          ],
+          "returns": {
+            "type": "None",
+            "description": "No return value"
+          },
+          "description": "Called after formatting is complete. Override to check for unused arguments and raise an exception if desired. The default implementation does nothing.",
+          "deprecated": false
+        },
+        {
+          "name": "format_field",
+          "signature": "format_field(value, format_spec)",
+          "params": [
+            {
+              "name": "value",
+              "type": "any",
+              "description": "The value to format"
+            },
+            {
+              "name": "format_spec",
+              "type": "str",
+              "description": "The format specification"
+            }
+          ],
+          "returns": {
+            "type": "str",
+            "description": "The formatted value"
+          },
+          "description": "Format a single field. The default implementation calls the global format() built-in.",
+          "deprecated": false
+        },
+        {
+          "name": "convert_field",
+          "signature": "convert_field(value, conversion)",
+          "params": [
+            {
+              "name": "value",
+              "type": "any",
+              "description": "The value to convert"
+            },
+            {
+              "name": "conversion",
+              "type": "str",
+              "description": "Conversion type: 's' for str(), 'r' for repr()"
+            }
+          ],
+          "returns": {
+            "type": "str",
+            "description": "The converted value"
+          },
+          "description": "Convert a value given a conversion type (as returned by the parse() method). The default implementation handles 's' (str), 'r' (repr), and None (no conversion).",
+          "deprecated": false
+        }
+      ],
+      "fields": []
+    },
+    {
+      "name": "Template",
+      "description": "A simpler string substitution mechanism. Templates use $-based substitutions: $identifier or ${identifier}. Use $$ for a literal dollar sign.",
+      "constructors": [
+        {
+          "signature": "Template(template)",
+          "params": [
+            {
+              "name": "template",
+              "type": "str",
+              "description": "The template string using $-based substitution syntax"
+            }
+          ],
+          "description": "Create a new Template with the given template string."
+        }
+      ],
+      "methods": [
+        {
+          "name": "substitute",
+          "signature": "substitute(mapping, **kwds)",
+          "params": [
+            {
+              "name": "mapping",
+              "type": "dict",
+              "description": "Dictionary of substitution values"
+            },
+            {
+              "name": "**kwds",
+              "type": "any",
+              "description": "Keyword arguments used as substitution values"
+            }
+          ],
+          "returns": {
+            "type": "str",
+            "description": "The substituted string"
+          },
+          "description": "Perform substitution, returning a new string. Raises KeyError or ValueError if a placeholder is not found in the mapping and no keyword argument matches.",
+          "deprecated": false
+        },
+        {
+          "name": "safe_substitute",
+          "signature": "safe_substitute(mapping, **kwds)",
+          "params": [
+            {
+              "name": "mapping",
+              "type": "dict",
+              "description": "Dictionary of substitution values"
+            },
+            {
+              "name": "**kwds",
+              "type": "any",
+              "description": "Keyword arguments used as substitution values"
+            }
+          ],
+          "returns": {
+            "type": "str",
+            "description": "The substituted string with missing keys left intact"
+          },
+          "description": "Like substitute(), except that if placeholders are missing from the mapping and kwds, the original placeholder is left intact in the resulting string rather than raising an exception.",
+          "deprecated": false
+        }
+      ],
+      "fields": [
+        {
+          "name": "template",
+          "type": "str",
+          "description": "The original template string passed to the constructor"
+        }
+      ]
+    }
+  ],
+  "constants": [
+    {
+      "name": "ascii_letters",
+      "type": "str",
+      "description": "Concatenation of ascii_lowercase and ascii_uppercase: 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'"
+    },
+    {
+      "name": "ascii_lowercase",
+      "type": "str",
+      "description": "The lowercase letters: 'abcdefghijklmnopqrstuvwxyz'"
+    },
+    {
+      "name": "ascii_uppercase",
+      "type": "str",
+      "description": "The uppercase letters: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'"
+    },
+    {
+      "name": "digits",
+      "type": "str",
+      "description": "The string '0123456789'"
+    },
+    {
+      "name": "hexdigits",
+      "type": "str",
+      "description": "The string '0123456789abcdefABCDEF'"
+    },
+    {
+      "name": "octdigits",
+      "type": "str",
+      "description": "The string '01234567'"
+    },
+    {
+      "name": "whitespace",
+      "type": "str",
+      "description": "A string containing all characters considered whitespace: space, tab, newline, return, formfeed, and vertical tab"
+    },
+    {
+      "name": "printable",
+      "type": "str",
+      "description": "String of characters considered printable: digits, ascii_letters, punctuation, and whitespace"
+    },
+    {
+      "name": "punctuation",
+      "type": "str",
+      "description": "String of ASCII punctuation characters"
+    },
+    {
+      "name": "letters",
+      "type": "str",
+      "description": "Concatenation of lowercase and uppercase. Locale-dependent in Python 2.7."
+    },
+    {
+      "name": "lowercase",
+      "type": "str",
+      "description": "A string containing all characters considered lowercase letters. Locale-dependent in Python 2.7."
+    },
+    {
+      "name": "uppercase",
+      "type": "str",
+      "description": "A string containing all characters considered uppercase letters. Locale-dependent in Python 2.7."
+    }
+  ],
+  "docs_url": "https://docs.python.org/2.7/library/string.html"
+}

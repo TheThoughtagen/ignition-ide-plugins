@@ -1,0 +1,451 @@
+{
+  "module": "collections",
+  "description": "High-performance container datatypes. Provides specialized container types that extend the capabilities of the built-in dict, list, set, and tuple types.",
+  "functions": [
+    {
+      "name": "namedtuple",
+      "signature": "namedtuple(typename, field_names, verbose=False, rename=False)",
+      "params": [
+        {
+          "name": "typename",
+          "type": "str",
+          "description": "Name for the new class that will be created"
+        },
+        {
+          "name": "field_names",
+          "type": "str or list",
+          "description": "Sequence of field names. Can be a single string with space- or comma-separated names, or a list of strings."
+        },
+        {
+          "name": "verbose",
+          "type": "bool",
+          "description": "If True, print the class definition to stdout before building it (default False)"
+        },
+        {
+          "name": "rename",
+          "type": "bool",
+          "description": "If True, invalid field names are automatically replaced with positional names (_0, _1, etc.) (default False)"
+        }
+      ],
+      "returns": {
+        "type": "type",
+        "description": "A new class that is a subclass of tuple, with named fields accessible by attribute lookup"
+      },
+      "description": "Returns a new subclass of tuple with named fields. Named tuples assign meaning to each position in a tuple and allow for more readable, self-documenting code.",
+      "deprecated": false
+    }
+  ],
+  "classes": [
+    {
+      "name": "OrderedDict",
+      "description": "A dictionary subclass that remembers the order in which entries were added. When iterating, items are returned in the order their keys were first added.",
+      "constructors": [
+        {
+          "signature": "OrderedDict([items])",
+          "params": [
+            {
+              "name": "items",
+              "type": "iterable or dict",
+              "description": "Optional initial items as key-value pairs, a dict, or keyword arguments"
+            }
+          ],
+          "description": "Create a new ordered dictionary. If items are provided, they are added in the given order."
+        }
+      ],
+      "methods": [
+        {
+          "name": "popitem",
+          "signature": "popitem(last=True)",
+          "params": [
+            {
+              "name": "last",
+              "type": "bool",
+              "description": "If True (default), return and remove the last (most recently added) item. If False, return and remove the first item."
+            }
+          ],
+          "returns": {
+            "type": "tuple",
+            "description": "A (key, value) pair"
+          },
+          "description": "Remove and return a (key, value) pair. Pairs are returned in LIFO order if last is True or FIFO order if False. Raises KeyError if the dictionary is empty.",
+          "deprecated": false
+        },
+        {
+          "name": "move_to_end",
+          "signature": "move_to_end(key, last=True)",
+          "params": [
+            {
+              "name": "key",
+              "type": "object",
+              "description": "Key to move"
+            },
+            {
+              "name": "last",
+              "type": "bool",
+              "description": "If True (default), move to the right end (most recent). If False, move to the beginning."
+            }
+          ],
+          "returns": {
+            "type": "None",
+            "description": "Void"
+          },
+          "description": "Move an existing key to either end of an ordered dictionary. Raises KeyError if the key does not exist. Introduced in Python 3.2; not available in Python 2.7.",
+          "deprecated": true
+        },
+        {
+          "name": "keys",
+          "signature": "keys()",
+          "params": [],
+          "returns": {
+            "type": "list",
+            "description": "List of keys in insertion order"
+          },
+          "description": "Return a list of keys in the order they were inserted.",
+          "deprecated": false
+        },
+        {
+          "name": "values",
+          "signature": "values()",
+          "params": [],
+          "returns": {
+            "type": "list",
+            "description": "List of values in insertion order"
+          },
+          "description": "Return a list of values in the order the corresponding keys were inserted.",
+          "deprecated": false
+        },
+        {
+          "name": "items",
+          "signature": "items()",
+          "params": [],
+          "returns": {
+            "type": "list",
+            "description": "List of (key, value) pairs in insertion order"
+          },
+          "description": "Return a list of (key, value) pairs in the order they were inserted.",
+          "deprecated": false
+        }
+      ]
+    },
+    {
+      "name": "defaultdict",
+      "description": "A dictionary subclass that calls a factory function to supply missing values. This avoids KeyError by automatically creating entries for missing keys.",
+      "constructors": [
+        {
+          "signature": "defaultdict([default_factory[, ...]])",
+          "params": [
+            {
+              "name": "default_factory",
+              "type": "callable or None",
+              "description": "A callable that produces a default value when a missing key is accessed (e.g., list, int, set). If None, raises KeyError for missing keys."
+            }
+          ],
+          "description": "Create a new defaultdict. The first argument provides the initial value for the default_factory attribute; it defaults to None. Remaining arguments are treated the same as if passed to the dict constructor."
+        }
+      ],
+      "methods": [
+        {
+          "name": "__missing__",
+          "signature": "__missing__(key)",
+          "params": [
+            {
+              "name": "key",
+              "type": "object",
+              "description": "The missing key that was accessed"
+            }
+          ],
+          "returns": {
+            "type": "object",
+            "description": "The default value produced by default_factory"
+          },
+          "description": "Called by __getitem__() when the key is not found. If default_factory is not None, it is called without arguments to provide a default value for the given key. This value is inserted in the dictionary for the key, and returned.",
+          "deprecated": false
+        }
+      ],
+      "fields": [
+        {
+          "name": "default_factory",
+          "type": "callable or None",
+          "description": "The factory function called by __missing__() to produce default values for missing keys"
+        }
+      ]
+    },
+    {
+      "name": "Counter",
+      "description": "A dict subclass for counting hashable objects. Elements are stored as dictionary keys and their counts are stored as dictionary values. Counts can be any integer value including zero or negative.",
+      "constructors": [
+        {
+          "signature": "Counter([iterable-or-mapping])",
+          "params": [
+            {
+              "name": "iterable-or-mapping",
+              "type": "iterable or dict",
+              "description": "Elements to count from an iterable, or an existing mapping of element-to-count pairs"
+            }
+          ],
+          "description": "Create a new Counter. Can be initialized from an iterable of elements, a dictionary mapping elements to counts, or keyword arguments."
+        }
+      ],
+      "methods": [
+        {
+          "name": "elements",
+          "signature": "elements()",
+          "params": [],
+          "returns": {
+            "type": "iterator",
+            "description": "Iterator over elements, each repeated as many times as its count"
+          },
+          "description": "Return an iterator over elements repeating each as many times as its count. Elements are returned in arbitrary order. If an element's count is less than one, elements() will ignore it.",
+          "deprecated": false
+        },
+        {
+          "name": "most_common",
+          "signature": "most_common([n])",
+          "params": [
+            {
+              "name": "n",
+              "type": "int",
+              "description": "Number of most common elements to return. If omitted or None, returns all elements."
+            }
+          ],
+          "returns": {
+            "type": "list",
+            "description": "List of (element, count) tuples ordered from most common to least"
+          },
+          "description": "Return a list of the n most common elements and their counts from the most common to the least. If n is omitted or None, returns all elements.",
+          "deprecated": false
+        },
+        {
+          "name": "subtract",
+          "signature": "subtract([iterable-or-mapping])",
+          "params": [
+            {
+              "name": "iterable-or-mapping",
+              "type": "iterable or dict",
+              "description": "Elements to subtract. Can be an iterable or a mapping of element-to-count."
+            }
+          ],
+          "returns": {
+            "type": "None",
+            "description": "Void (modifies the Counter in-place)"
+          },
+          "description": "Elements are subtracted from an iterable or from another mapping (or counter). Like dict.update() but subtracts counts instead of replacing them.",
+          "deprecated": false
+        },
+        {
+          "name": "update",
+          "signature": "update([iterable-or-mapping])",
+          "params": [
+            {
+              "name": "iterable-or-mapping",
+              "type": "iterable or dict",
+              "description": "Elements to add. Can be an iterable or a mapping of element-to-count."
+            }
+          ],
+          "returns": {
+            "type": "None",
+            "description": "Void (modifies the Counter in-place)"
+          },
+          "description": "Elements are counted from an iterable or added-in from another mapping (or counter). Like dict.update() but adds counts instead of replacing them.",
+          "deprecated": false
+        }
+      ]
+    },
+    {
+      "name": "deque",
+      "description": "A double-ended queue that supports adding and removing elements from either end in O(1) time. Thread-safe, memory-efficient, and optimized for fast appends and pops from both sides.",
+      "constructors": [
+        {
+          "signature": "deque([iterable[, maxlen]])",
+          "params": [
+            {
+              "name": "iterable",
+              "type": "iterable",
+              "description": "Optional iterable to initialize the deque with"
+            },
+            {
+              "name": "maxlen",
+              "type": "int or None",
+              "description": "Maximum size of the deque. If None (default), the deque can grow to an arbitrary length. If maxlen is specified, when the deque is full and new items are added, a corresponding number of items are discarded from the opposite end."
+            }
+          ],
+          "description": "Create a new deque object. If iterable is provided, the deque is initialized left-to-right with data from it."
+        }
+      ],
+      "methods": [
+        {
+          "name": "append",
+          "signature": "append(x)",
+          "params": [
+            {
+              "name": "x",
+              "type": "object",
+              "description": "Element to add to the right side"
+            }
+          ],
+          "returns": {
+            "type": "None",
+            "description": "Void"
+          },
+          "description": "Add x to the right side of the deque.",
+          "deprecated": false
+        },
+        {
+          "name": "appendleft",
+          "signature": "appendleft(x)",
+          "params": [
+            {
+              "name": "x",
+              "type": "object",
+              "description": "Element to add to the left side"
+            }
+          ],
+          "returns": {
+            "type": "None",
+            "description": "Void"
+          },
+          "description": "Add x to the left side of the deque.",
+          "deprecated": false
+        },
+        {
+          "name": "pop",
+          "signature": "pop()",
+          "params": [],
+          "returns": {
+            "type": "object",
+            "description": "The rightmost element"
+          },
+          "description": "Remove and return an element from the right side of the deque. Raises IndexError if the deque is empty.",
+          "deprecated": false
+        },
+        {
+          "name": "popleft",
+          "signature": "popleft()",
+          "params": [],
+          "returns": {
+            "type": "object",
+            "description": "The leftmost element"
+          },
+          "description": "Remove and return an element from the left side of the deque. Raises IndexError if the deque is empty.",
+          "deprecated": false
+        },
+        {
+          "name": "extend",
+          "signature": "extend(iterable)",
+          "params": [
+            {
+              "name": "iterable",
+              "type": "iterable",
+              "description": "Elements to add to the right side"
+            }
+          ],
+          "returns": {
+            "type": "None",
+            "description": "Void"
+          },
+          "description": "Extend the right side of the deque by appending elements from the iterable argument.",
+          "deprecated": false
+        },
+        {
+          "name": "extendleft",
+          "signature": "extendleft(iterable)",
+          "params": [
+            {
+              "name": "iterable",
+              "type": "iterable",
+              "description": "Elements to add to the left side (note: the series of left appends results in reversing the order of elements in the iterable argument)"
+            }
+          ],
+          "returns": {
+            "type": "None",
+            "description": "Void"
+          },
+          "description": "Extend the left side of the deque by appending elements from iterable. Note that the series of left appends results in reversing the order of elements in the iterable argument.",
+          "deprecated": false
+        },
+        {
+          "name": "rotate",
+          "signature": "rotate(n=1)",
+          "params": [
+            {
+              "name": "n",
+              "type": "int",
+              "description": "Number of steps to rotate. Positive rotates right, negative rotates left. (default 1)"
+            }
+          ],
+          "returns": {
+            "type": "None",
+            "description": "Void"
+          },
+          "description": "Rotate the deque n steps to the right. If n is negative, rotate to the left. When the deque is not empty, rotating one step to the right is equivalent to d.appendleft(d.pop()).",
+          "deprecated": false
+        },
+        {
+          "name": "clear",
+          "signature": "clear()",
+          "params": [],
+          "returns": {
+            "type": "None",
+            "description": "Void"
+          },
+          "description": "Remove all elements from the deque leaving it with length 0.",
+          "deprecated": false
+        },
+        {
+          "name": "count",
+          "signature": "count(x)",
+          "params": [
+            {
+              "name": "x",
+              "type": "object",
+              "description": "Element to count"
+            }
+          ],
+          "returns": {
+            "type": "int",
+            "description": "Number of occurrences of x"
+          },
+          "description": "Count the number of deque elements equal to x.",
+          "deprecated": false
+        },
+        {
+          "name": "remove",
+          "signature": "remove(value)",
+          "params": [
+            {
+              "name": "value",
+              "type": "object",
+              "description": "Value to remove"
+            }
+          ],
+          "returns": {
+            "type": "None",
+            "description": "Void"
+          },
+          "description": "Remove the first occurrence of value. Raises ValueError if the value is not found.",
+          "deprecated": false
+        },
+        {
+          "name": "reverse",
+          "signature": "reverse()",
+          "params": [],
+          "returns": {
+            "type": "None",
+            "description": "Void"
+          },
+          "description": "Reverse the elements of the deque in-place and return None.",
+          "deprecated": false
+        }
+      ],
+      "fields": [
+        {
+          "name": "maxlen",
+          "type": "int or None",
+          "description": "Maximum size of the deque, or None if unbounded"
+        }
+      ]
+    }
+  ],
+  "constants": [],
+  "docs_url": "https://docs.python.org/2.7/library/collections.html"
+}

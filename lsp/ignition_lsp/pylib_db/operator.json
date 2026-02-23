@@ -1,0 +1,444 @@
+{
+  "module": "operator",
+  "description": "Standard operators as functions. Provides function equivalents for built-in Python operators for use with map(), filter(), reduce(), and similar higher-order functions.",
+  "functions": [
+    {
+      "name": "add",
+      "signature": "add(a, b)",
+      "params": [
+        {"name": "a", "type": "object", "description": "Left operand."},
+        {"name": "b", "type": "object", "description": "Right operand."}
+      ],
+      "returns": {"type": "object", "description": "Result of a + b."},
+      "description": "Return a + b for numbers or sequences.",
+      "deprecated": false
+    },
+    {
+      "name": "sub",
+      "signature": "sub(a, b)",
+      "params": [
+        {"name": "a", "type": "object", "description": "Left operand."},
+        {"name": "b", "type": "object", "description": "Right operand."}
+      ],
+      "returns": {"type": "object", "description": "Result of a - b."},
+      "description": "Return a - b.",
+      "deprecated": false
+    },
+    {
+      "name": "mul",
+      "signature": "mul(a, b)",
+      "params": [
+        {"name": "a", "type": "object", "description": "Left operand."},
+        {"name": "b", "type": "object", "description": "Right operand."}
+      ],
+      "returns": {"type": "object", "description": "Result of a * b."},
+      "description": "Return a * b for numbers or sequence repetition.",
+      "deprecated": false
+    },
+    {
+      "name": "div",
+      "signature": "div(a, b)",
+      "params": [
+        {"name": "a", "type": "object", "description": "Dividend."},
+        {"name": "b", "type": "object", "description": "Divisor."}
+      ],
+      "returns": {"type": "object", "description": "Result of a / b (classic division in Python 2)."},
+      "description": "Return a / b using classic division (integer division for int operands in Python 2).",
+      "deprecated": false
+    },
+    {
+      "name": "floordiv",
+      "signature": "floordiv(a, b)",
+      "params": [
+        {"name": "a", "type": "object", "description": "Dividend."},
+        {"name": "b", "type": "object", "description": "Divisor."}
+      ],
+      "returns": {"type": "object", "description": "Result of a // b."},
+      "description": "Return a // b (floor division).",
+      "deprecated": false
+    },
+    {
+      "name": "mod",
+      "signature": "mod(a, b)",
+      "params": [
+        {"name": "a", "type": "object", "description": "Left operand."},
+        {"name": "b", "type": "object", "description": "Right operand."}
+      ],
+      "returns": {"type": "object", "description": "Result of a % b."},
+      "description": "Return a % b (modulo).",
+      "deprecated": false
+    },
+    {
+      "name": "pow",
+      "signature": "pow(a, b)",
+      "params": [
+        {"name": "a", "type": "object", "description": "Base."},
+        {"name": "b", "type": "object", "description": "Exponent."}
+      ],
+      "returns": {"type": "object", "description": "Result of a ** b."},
+      "description": "Return a ** b (exponentiation).",
+      "deprecated": false
+    },
+    {
+      "name": "neg",
+      "signature": "neg(obj)",
+      "params": [
+        {"name": "obj", "type": "object", "description": "Operand."}
+      ],
+      "returns": {"type": "object", "description": "Result of -obj."},
+      "description": "Return obj negated (-obj).",
+      "deprecated": false
+    },
+    {
+      "name": "pos",
+      "signature": "pos(obj)",
+      "params": [
+        {"name": "obj", "type": "object", "description": "Operand."}
+      ],
+      "returns": {"type": "object", "description": "Result of +obj."},
+      "description": "Return obj positive (+obj).",
+      "deprecated": false
+    },
+    {
+      "name": "abs",
+      "signature": "abs(obj)",
+      "params": [
+        {"name": "obj", "type": "object", "description": "Operand."}
+      ],
+      "returns": {"type": "object", "description": "Absolute value of obj."},
+      "description": "Return the absolute value of obj.",
+      "deprecated": false
+    },
+    {
+      "name": "inv",
+      "signature": "inv(obj)",
+      "params": [
+        {"name": "obj", "type": "object", "description": "Operand."}
+      ],
+      "returns": {"type": "object", "description": "Bitwise inverse of obj."},
+      "description": "Return the bitwise inverse of obj (~obj). Alias for invert().",
+      "deprecated": false
+    },
+    {
+      "name": "invert",
+      "signature": "invert(obj)",
+      "params": [
+        {"name": "obj", "type": "object", "description": "Operand."}
+      ],
+      "returns": {"type": "object", "description": "Bitwise inverse of obj."},
+      "description": "Return the bitwise inverse of obj (~obj).",
+      "deprecated": false
+    },
+    {
+      "name": "lshift",
+      "signature": "lshift(a, b)",
+      "params": [
+        {"name": "a", "type": "int", "description": "Value to shift."},
+        {"name": "b", "type": "int", "description": "Number of bits to shift left."}
+      ],
+      "returns": {"type": "int", "description": "Result of a << b."},
+      "description": "Return a shifted left by b bits (a << b).",
+      "deprecated": false
+    },
+    {
+      "name": "rshift",
+      "signature": "rshift(a, b)",
+      "params": [
+        {"name": "a", "type": "int", "description": "Value to shift."},
+        {"name": "b", "type": "int", "description": "Number of bits to shift right."}
+      ],
+      "returns": {"type": "int", "description": "Result of a >> b."},
+      "description": "Return a shifted right by b bits (a >> b).",
+      "deprecated": false
+    },
+    {
+      "name": "and_",
+      "signature": "and_(a, b)",
+      "params": [
+        {"name": "a", "type": "int", "description": "Left operand."},
+        {"name": "b", "type": "int", "description": "Right operand."}
+      ],
+      "returns": {"type": "int", "description": "Result of a & b."},
+      "description": "Return the bitwise AND of a and b (a & b).",
+      "deprecated": false
+    },
+    {
+      "name": "or_",
+      "signature": "or_(a, b)",
+      "params": [
+        {"name": "a", "type": "int", "description": "Left operand."},
+        {"name": "b", "type": "int", "description": "Right operand."}
+      ],
+      "returns": {"type": "int", "description": "Result of a | b."},
+      "description": "Return the bitwise OR of a and b (a | b).",
+      "deprecated": false
+    },
+    {
+      "name": "xor",
+      "signature": "xor(a, b)",
+      "params": [
+        {"name": "a", "type": "int", "description": "Left operand."},
+        {"name": "b", "type": "int", "description": "Right operand."}
+      ],
+      "returns": {"type": "int", "description": "Result of a ^ b."},
+      "description": "Return the bitwise exclusive OR of a and b (a ^ b).",
+      "deprecated": false
+    },
+    {
+      "name": "not_",
+      "signature": "not_(obj)",
+      "params": [
+        {"name": "obj", "type": "object", "description": "Operand."}
+      ],
+      "returns": {"type": "bool", "description": "Result of not obj."},
+      "description": "Return the logical negation of obj (not obj).",
+      "deprecated": false
+    },
+    {
+      "name": "eq",
+      "signature": "eq(a, b)",
+      "params": [
+        {"name": "a", "type": "object", "description": "Left operand."},
+        {"name": "b", "type": "object", "description": "Right operand."}
+      ],
+      "returns": {"type": "bool", "description": "True if a == b."},
+      "description": "Return a == b.",
+      "deprecated": false
+    },
+    {
+      "name": "ne",
+      "signature": "ne(a, b)",
+      "params": [
+        {"name": "a", "type": "object", "description": "Left operand."},
+        {"name": "b", "type": "object", "description": "Right operand."}
+      ],
+      "returns": {"type": "bool", "description": "True if a != b."},
+      "description": "Return a != b.",
+      "deprecated": false
+    },
+    {
+      "name": "lt",
+      "signature": "lt(a, b)",
+      "params": [
+        {"name": "a", "type": "object", "description": "Left operand."},
+        {"name": "b", "type": "object", "description": "Right operand."}
+      ],
+      "returns": {"type": "bool", "description": "True if a < b."},
+      "description": "Return a < b.",
+      "deprecated": false
+    },
+    {
+      "name": "le",
+      "signature": "le(a, b)",
+      "params": [
+        {"name": "a", "type": "object", "description": "Left operand."},
+        {"name": "b", "type": "object", "description": "Right operand."}
+      ],
+      "returns": {"type": "bool", "description": "True if a <= b."},
+      "description": "Return a <= b.",
+      "deprecated": false
+    },
+    {
+      "name": "gt",
+      "signature": "gt(a, b)",
+      "params": [
+        {"name": "a", "type": "object", "description": "Left operand."},
+        {"name": "b", "type": "object", "description": "Right operand."}
+      ],
+      "returns": {"type": "bool", "description": "True if a > b."},
+      "description": "Return a > b.",
+      "deprecated": false
+    },
+    {
+      "name": "ge",
+      "signature": "ge(a, b)",
+      "params": [
+        {"name": "a", "type": "object", "description": "Left operand."},
+        {"name": "b", "type": "object", "description": "Right operand."}
+      ],
+      "returns": {"type": "bool", "description": "True if a >= b."},
+      "description": "Return a >= b.",
+      "deprecated": false
+    },
+    {
+      "name": "contains",
+      "signature": "contains(a, b)",
+      "params": [
+        {"name": "a", "type": "object", "description": "Container to search in."},
+        {"name": "b", "type": "object", "description": "Value to search for."}
+      ],
+      "returns": {"type": "bool", "description": "True if b is in a."},
+      "description": "Return True if b is contained in a (equivalent to b in a).",
+      "deprecated": false
+    },
+    {
+      "name": "indexOf",
+      "signature": "indexOf(a, b)",
+      "params": [
+        {"name": "a", "type": "sequence", "description": "Sequence to search."},
+        {"name": "b", "type": "object", "description": "Value to find."}
+      ],
+      "returns": {"type": "int", "description": "Index of the first occurrence of b in a."},
+      "description": "Return the index of the first occurrence of b in a. Raises ValueError if b is not found.",
+      "deprecated": false
+    },
+    {
+      "name": "countOf",
+      "signature": "countOf(a, b)",
+      "params": [
+        {"name": "a", "type": "sequence", "description": "Sequence to search."},
+        {"name": "b", "type": "object", "description": "Value to count."}
+      ],
+      "returns": {"type": "int", "description": "Number of occurrences of b in a."},
+      "description": "Return the number of occurrences of b in a.",
+      "deprecated": false
+    },
+    {
+      "name": "getitem",
+      "signature": "getitem(a, b)",
+      "params": [
+        {"name": "a", "type": "object", "description": "Object to index or key into."},
+        {"name": "b", "type": "object", "description": "Index or key."}
+      ],
+      "returns": {"type": "object", "description": "The value at a[b]."},
+      "description": "Return the value of a at index b (a[b]).",
+      "deprecated": false
+    },
+    {
+      "name": "setitem",
+      "signature": "setitem(a, b, c)",
+      "params": [
+        {"name": "a", "type": "object", "description": "Object to modify."},
+        {"name": "b", "type": "object", "description": "Index or key."},
+        {"name": "c", "type": "object", "description": "Value to set."}
+      ],
+      "returns": {"type": "None", "description": "None."},
+      "description": "Set the value of a at index b to c (a[b] = c).",
+      "deprecated": false
+    },
+    {
+      "name": "delitem",
+      "signature": "delitem(a, b)",
+      "params": [
+        {"name": "a", "type": "object", "description": "Object to modify."},
+        {"name": "b", "type": "object", "description": "Index or key to delete."}
+      ],
+      "returns": {"type": "None", "description": "None."},
+      "description": "Delete the value of a at index b (del a[b]).",
+      "deprecated": false
+    },
+    {
+      "name": "attrgetter",
+      "signature": "attrgetter(attr, *attrs)",
+      "params": [
+        {"name": "attr", "type": "str", "description": "Attribute name to retrieve. Supports dotted names for nested attributes (e.g., 'foo.bar')."},
+        {"name": "*attrs", "type": "str", "description": "Additional attribute names. If multiple are given, returns a tuple of values."}
+      ],
+      "returns": {"type": "callable", "description": "A callable that fetches the named attribute(s) from its operand."},
+      "description": "Return a callable object that fetches the given attribute(s) from its operand. After f = attrgetter('name'), f(obj) returns obj.name. Supports dotted names and multiple attributes.",
+      "deprecated": false
+    },
+    {
+      "name": "itemgetter",
+      "signature": "itemgetter(item, *items)",
+      "params": [
+        {"name": "item", "type": "object", "description": "Key or index to retrieve."},
+        {"name": "*items", "type": "object", "description": "Additional keys or indices. If multiple are given, returns a tuple of values."}
+      ],
+      "returns": {"type": "callable", "description": "A callable that fetches the given item(s) from its operand using __getitem__."},
+      "description": "Return a callable object that fetches the given item(s) from its operand using __getitem__. After f = itemgetter(2), f(r) returns r[2]. Multiple items return a tuple.",
+      "deprecated": false
+    },
+    {
+      "name": "methodcaller",
+      "signature": "methodcaller(name, *args, **kwargs)",
+      "params": [
+        {"name": "name", "type": "str", "description": "Name of the method to call."},
+        {"name": "*args", "type": "object", "description": "Positional arguments to pass to the method."},
+        {"name": "**kwargs", "type": "object", "description": "Keyword arguments to pass to the method."}
+      ],
+      "returns": {"type": "callable", "description": "A callable that calls the named method on its operand with the given arguments."},
+      "description": "Return a callable object that calls the named method on its operand. After f = methodcaller('name', 'foo', bar=1), f(obj) returns obj.name('foo', bar=1).",
+      "deprecated": false
+    },
+    {
+      "name": "iadd",
+      "signature": "iadd(a, b)",
+      "params": [
+        {"name": "a", "type": "object", "description": "Left operand (modified in place)."},
+        {"name": "b", "type": "object", "description": "Right operand."}
+      ],
+      "returns": {"type": "object", "description": "Result of a += b."},
+      "description": "Perform a += b in place and return the result.",
+      "deprecated": false
+    },
+    {
+      "name": "isub",
+      "signature": "isub(a, b)",
+      "params": [
+        {"name": "a", "type": "object", "description": "Left operand (modified in place)."},
+        {"name": "b", "type": "object", "description": "Right operand."}
+      ],
+      "returns": {"type": "object", "description": "Result of a -= b."},
+      "description": "Perform a -= b in place and return the result.",
+      "deprecated": false
+    },
+    {
+      "name": "imul",
+      "signature": "imul(a, b)",
+      "params": [
+        {"name": "a", "type": "object", "description": "Left operand (modified in place)."},
+        {"name": "b", "type": "object", "description": "Right operand."}
+      ],
+      "returns": {"type": "object", "description": "Result of a *= b."},
+      "description": "Perform a *= b in place and return the result.",
+      "deprecated": false
+    },
+    {
+      "name": "idiv",
+      "signature": "idiv(a, b)",
+      "params": [
+        {"name": "a", "type": "object", "description": "Left operand (modified in place)."},
+        {"name": "b", "type": "object", "description": "Right operand."}
+      ],
+      "returns": {"type": "object", "description": "Result of a /= b."},
+      "description": "Perform a /= b in place and return the result (classic division in Python 2).",
+      "deprecated": false
+    },
+    {
+      "name": "concat",
+      "signature": "concat(a, b)",
+      "params": [
+        {"name": "a", "type": "sequence", "description": "First sequence."},
+        {"name": "b", "type": "sequence", "description": "Second sequence."}
+      ],
+      "returns": {"type": "sequence", "description": "Concatenation of a and b."},
+      "description": "Return a + b for sequences a and b. Both must be sequences (not just iterables).",
+      "deprecated": false
+    },
+    {
+      "name": "iconcat",
+      "signature": "iconcat(a, b)",
+      "params": [
+        {"name": "a", "type": "sequence", "description": "Sequence to extend (modified in place)."},
+        {"name": "b", "type": "sequence", "description": "Sequence to append."}
+      ],
+      "returns": {"type": "sequence", "description": "Result of a += b."},
+      "description": "Perform a += b in place for sequences and return the result.",
+      "deprecated": false
+    },
+    {
+      "name": "truth",
+      "signature": "truth(obj)",
+      "params": [
+        {"name": "obj", "type": "object", "description": "Object to test."}
+      ],
+      "returns": {"type": "bool", "description": "True if obj is truthy, False otherwise."},
+      "description": "Return True if obj is true, False otherwise. Equivalent to bool(obj).",
+      "deprecated": false
+    }
+  ],
+  "classes": [],
+  "constants": [],
+  "docs_url": "https://docs.python.org/2.7/library/operator.html"
+}

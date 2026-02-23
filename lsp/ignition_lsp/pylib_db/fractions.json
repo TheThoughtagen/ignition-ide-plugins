@@ -1,0 +1,186 @@
+{
+  "module": "fractions",
+  "description": "Rational number arithmetic. Provides the Fraction class for exact representation of rational numbers and arithmetic operations.",
+  "functions": [
+    {
+      "name": "gcd",
+      "signature": "gcd(a, b)",
+      "params": [
+        {
+          "name": "a",
+          "type": "int",
+          "description": "First integer"
+        },
+        {
+          "name": "b",
+          "type": "int",
+          "description": "Second integer"
+        }
+      ],
+      "returns": {
+        "type": "int",
+        "description": "The greatest common divisor of a and b"
+      },
+      "description": "Returns the greatest common divisor of the integers a and b. If either a or b is nonzero, the value of gcd(a, b) is the largest positive integer that divides both a and b. gcd(0, 0) returns 0.",
+      "deprecated": false
+    }
+  ],
+  "classes": [
+    {
+      "name": "Fraction",
+      "description": "Represents a rational number as a pair of integers (numerator and denominator). Fraction instances are immutable and hashable, and can be used anywhere a rational number is expected. All standard arithmetic operations are supported with exact results.",
+      "constructors": [
+        {
+          "signature": "Fraction(numerator=0, denominator=1)",
+          "params": [
+            {
+              "name": "numerator",
+              "type": "int",
+              "description": "The numerator of the fraction. Default is 0."
+            },
+            {
+              "name": "denominator",
+              "type": "int",
+              "description": "The denominator of the fraction. Must be nonzero. Default is 1."
+            }
+          ],
+          "description": "Creates a Fraction from an integer numerator and denominator. The fraction is automatically normalized: the sign is always carried by the numerator, and the GCD is divided out."
+        },
+        {
+          "signature": "Fraction(float)",
+          "params": [
+            {
+              "name": "float",
+              "type": "float",
+              "description": "A floating-point number to convert to an exact Fraction representation"
+            }
+          ],
+          "description": "Creates a Fraction from a float. The result exactly equals the float value. For example, Fraction(0.5) gives Fraction(1, 2), but Fraction(0.1) gives Fraction(3602879701896397, 36028797018963968) due to float imprecision."
+        },
+        {
+          "signature": "Fraction(decimal)",
+          "params": [
+            {
+              "name": "decimal",
+              "type": "Decimal",
+              "description": "A decimal.Decimal instance to convert to a Fraction"
+            }
+          ],
+          "description": "Creates a Fraction from a Decimal instance. The result exactly equals the Decimal value."
+        },
+        {
+          "signature": "Fraction(string)",
+          "params": [
+            {
+              "name": "string",
+              "type": "str",
+              "description": "A string in the form 'numerator/denominator' (e.g. '3/7'), a decimal string (e.g. '0.25', '.5', '1.'), or a string with optional sign (e.g. '-3/7')"
+            }
+          ],
+          "description": "Creates a Fraction from a string. Accepted forms: '[-]numerator[/denominator]' (e.g. '3/7', '-1/3'), decimal notation (e.g. '0.25', '1.'), and strings with leading/trailing whitespace."
+        }
+      ],
+      "methods": [
+        {
+          "name": "limit_denominator",
+          "signature": "limit_denominator(max_denominator=10**6)",
+          "params": [
+            {
+              "name": "max_denominator",
+              "type": "int",
+              "description": "Maximum allowed denominator. Default is 10**6 (1000000)."
+            }
+          ],
+          "returns": {
+            "type": "Fraction",
+            "description": "The closest rational number with denominator at most max_denominator"
+          },
+          "description": "Finds the closest Fraction to self that has denominator at most max_denominator. Useful for finding rational approximations to floats: Fraction(3.141592653589793).limit_denominator(100) gives Fraction(311, 99).",
+          "deprecated": false
+        },
+        {
+          "name": "__add__",
+          "signature": "__add__(other)",
+          "params": [
+            {
+              "name": "other",
+              "type": "Fraction, int, or float",
+              "description": "The value to add"
+            }
+          ],
+          "returns": {
+            "type": "Fraction",
+            "description": "The sum as a Fraction (exact when adding with int or Fraction)"
+          },
+          "description": "Returns self + other. When adding two Fractions or a Fraction and an int, the result is exact. When adding with a float, the float is first converted to a Fraction.",
+          "deprecated": false
+        },
+        {
+          "name": "__sub__",
+          "signature": "__sub__(other)",
+          "params": [
+            {
+              "name": "other",
+              "type": "Fraction, int, or float",
+              "description": "The value to subtract"
+            }
+          ],
+          "returns": {
+            "type": "Fraction",
+            "description": "The difference as a Fraction"
+          },
+          "description": "Returns self - other. Supports Fraction, int, and float operands.",
+          "deprecated": false
+        },
+        {
+          "name": "__mul__",
+          "signature": "__mul__(other)",
+          "params": [
+            {
+              "name": "other",
+              "type": "Fraction, int, or float",
+              "description": "The value to multiply by"
+            }
+          ],
+          "returns": {
+            "type": "Fraction",
+            "description": "The product as a Fraction"
+          },
+          "description": "Returns self * other. Supports Fraction, int, and float operands.",
+          "deprecated": false
+        },
+        {
+          "name": "__truediv__",
+          "signature": "__truediv__(other)",
+          "params": [
+            {
+              "name": "other",
+              "type": "Fraction, int, or float",
+              "description": "The divisor"
+            }
+          ],
+          "returns": {
+            "type": "Fraction",
+            "description": "The quotient as a Fraction"
+          },
+          "description": "Returns self / other. In Python 2.7, this is invoked by the / operator when from __future__ import division is active, or by calling Fraction.__truediv__ directly. Raises ZeroDivisionError if other is zero.",
+          "deprecated": false
+        }
+      ],
+      "fields": [
+        {
+          "name": "numerator",
+          "type": "int",
+          "description": "The numerator of the fraction in lowest terms"
+        },
+        {
+          "name": "denominator",
+          "type": "int",
+          "description": "The denominator of the fraction in lowest terms (always positive)"
+        }
+      ]
+    }
+  ],
+  "constants": [],
+  "docs_url": "https://docs.python.org/2.7/library/fractions.html"
+}

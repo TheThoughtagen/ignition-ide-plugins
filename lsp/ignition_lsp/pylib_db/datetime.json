@@ -1,0 +1,830 @@
+{
+  "module": "datetime",
+  "description": "Basic date and time types. Supplies classes for manipulating dates and times in both simple and complex ways, with support for timezone-aware arithmetic.",
+  "functions": [],
+  "classes": [
+    {
+      "name": "datetime",
+      "description": "A combination of a date and a time. Attributes: year, month, day, hour, minute, second, microsecond, tzinfo.",
+      "constructors": [
+        {
+          "signature": "datetime(year, month, day, hour=0, minute=0, second=0, microsecond=0, tzinfo=None)",
+          "params": [
+            {
+              "name": "year",
+              "type": "int",
+              "description": "Year between MINYEAR and MAXYEAR inclusive"
+            },
+            {
+              "name": "month",
+              "type": "int",
+              "description": "Month between 1 and 12 inclusive"
+            },
+            {
+              "name": "day",
+              "type": "int",
+              "description": "Day between 1 and the number of days in the given month/year"
+            },
+            {
+              "name": "hour",
+              "type": "int",
+              "description": "Hour between 0 and 23 (default 0)"
+            },
+            {
+              "name": "minute",
+              "type": "int",
+              "description": "Minute between 0 and 59 (default 0)"
+            },
+            {
+              "name": "second",
+              "type": "int",
+              "description": "Second between 0 and 59 (default 0)"
+            },
+            {
+              "name": "microsecond",
+              "type": "int",
+              "description": "Microsecond between 0 and 999999 (default 0)"
+            },
+            {
+              "name": "tzinfo",
+              "type": "tzinfo or None",
+              "description": "Timezone information object (default None)"
+            }
+          ],
+          "description": "Create a new datetime instance with the given date and time attributes."
+        }
+      ],
+      "methods": [
+        {
+          "name": "now",
+          "signature": "datetime.now(tz=None)",
+          "params": [
+            {
+              "name": "tz",
+              "type": "tzinfo or None",
+              "description": "Timezone object. If None, returns local date and time."
+            }
+          ],
+          "returns": {
+            "type": "datetime",
+            "description": "Current local datetime, or timezone-aware datetime if tz is provided"
+          },
+          "description": "Return the current local date and time. If optional argument tz is not None, the current date and time is converted to tz's time zone.",
+          "static": true,
+          "deprecated": false
+        },
+        {
+          "name": "utcnow",
+          "signature": "datetime.utcnow()",
+          "params": [],
+          "returns": {
+            "type": "datetime",
+            "description": "Current UTC datetime (naive, without tzinfo)"
+          },
+          "description": "Return the current UTC date and time, with tzinfo None. This is like now() but returns the current UTC date and time as a naive datetime object.",
+          "static": true,
+          "deprecated": false
+        },
+        {
+          "name": "fromtimestamp",
+          "signature": "datetime.fromtimestamp(timestamp, tz=None)",
+          "params": [
+            {
+              "name": "timestamp",
+              "type": "float",
+              "description": "POSIX timestamp (seconds since epoch, as returned by time.time())"
+            },
+            {
+              "name": "tz",
+              "type": "tzinfo or None",
+              "description": "Timezone object. If None, the timestamp is converted to the platform's local date and time."
+            }
+          ],
+          "returns": {
+            "type": "datetime",
+            "description": "Local datetime corresponding to the timestamp"
+          },
+          "description": "Return the local date and time corresponding to the POSIX timestamp.",
+          "static": true,
+          "deprecated": false
+        },
+        {
+          "name": "strptime",
+          "signature": "datetime.strptime(date_string, format)",
+          "params": [
+            {
+              "name": "date_string",
+              "type": "str",
+              "description": "String representing a date and time"
+            },
+            {
+              "name": "format",
+              "type": "str",
+              "description": "Format string using directives like %Y, %m, %d, %H, %M, %S"
+            }
+          ],
+          "returns": {
+            "type": "datetime",
+            "description": "datetime parsed from the string according to the format"
+          },
+          "description": "Return a datetime corresponding to date_string, parsed according to the format string. Raises ValueError if the string cannot be parsed.",
+          "static": true,
+          "deprecated": false
+        },
+        {
+          "name": "combine",
+          "signature": "datetime.combine(date, time)",
+          "params": [
+            {
+              "name": "date",
+              "type": "date",
+              "description": "A date object"
+            },
+            {
+              "name": "time",
+              "type": "time",
+              "description": "A time object"
+            }
+          ],
+          "returns": {
+            "type": "datetime",
+            "description": "A new datetime with date components from the date argument and time components from the time argument"
+          },
+          "description": "Return a new datetime object whose date components are equal to the given date object's, and whose time components and tzinfo are equal to the given time object's.",
+          "static": true,
+          "deprecated": false
+        },
+        {
+          "name": "today",
+          "signature": "datetime.today()",
+          "params": [],
+          "returns": {
+            "type": "datetime",
+            "description": "Current local datetime with tzinfo None"
+          },
+          "description": "Return the current local datetime, with tzinfo None. Equivalent to datetime.fromtimestamp(time.time()).",
+          "static": true,
+          "deprecated": false
+        },
+        {
+          "name": "strftime",
+          "signature": "strftime(format)",
+          "params": [
+            {
+              "name": "format",
+              "type": "str",
+              "description": "Format string using directives like %Y (4-digit year), %m (month), %d (day), %H (hour), %M (minute), %S (second)"
+            }
+          ],
+          "returns": {
+            "type": "str",
+            "description": "String representation of the datetime according to the format"
+          },
+          "description": "Return a string representing the date and time, controlled by an explicit format string.",
+          "deprecated": false
+        },
+        {
+          "name": "date",
+          "signature": "date()",
+          "params": [],
+          "returns": {
+            "type": "date",
+            "description": "date object with same year, month, and day"
+          },
+          "description": "Return a date object with the same year, month, and day.",
+          "deprecated": false
+        },
+        {
+          "name": "time",
+          "signature": "time()",
+          "params": [],
+          "returns": {
+            "type": "time",
+            "description": "time object with same hour, minute, second, microsecond, and tzinfo None"
+          },
+          "description": "Return a time object with the same hour, minute, second, and microsecond. tzinfo is None.",
+          "deprecated": false
+        },
+        {
+          "name": "replace",
+          "signature": "replace(year=None, month=None, day=None, hour=None, minute=None, second=None, microsecond=None, tzinfo=None)",
+          "params": [
+            {
+              "name": "year",
+              "type": "int",
+              "description": "Replacement year value"
+            },
+            {
+              "name": "month",
+              "type": "int",
+              "description": "Replacement month value"
+            },
+            {
+              "name": "day",
+              "type": "int",
+              "description": "Replacement day value"
+            },
+            {
+              "name": "hour",
+              "type": "int",
+              "description": "Replacement hour value"
+            },
+            {
+              "name": "minute",
+              "type": "int",
+              "description": "Replacement minute value"
+            },
+            {
+              "name": "second",
+              "type": "int",
+              "description": "Replacement second value"
+            },
+            {
+              "name": "microsecond",
+              "type": "int",
+              "description": "Replacement microsecond value"
+            },
+            {
+              "name": "tzinfo",
+              "type": "tzinfo",
+              "description": "Replacement tzinfo value"
+            }
+          ],
+          "returns": {
+            "type": "datetime",
+            "description": "New datetime with the specified fields replaced"
+          },
+          "description": "Return a datetime with the same attributes, except for those attributes given new values by whichever keyword arguments are specified.",
+          "deprecated": false
+        },
+        {
+          "name": "isoformat",
+          "signature": "isoformat(sep='T')",
+          "params": [
+            {
+              "name": "sep",
+              "type": "str",
+              "description": "Separator between date and time portions (default 'T')"
+            }
+          ],
+          "returns": {
+            "type": "str",
+            "description": "String in ISO 8601 format: YYYY-MM-DDTHH:MM:SS[.mmmmmm][+HH:MM]"
+          },
+          "description": "Return a string representing the date and time in ISO 8601 format.",
+          "deprecated": false
+        },
+        {
+          "name": "timetuple",
+          "signature": "timetuple()",
+          "params": [],
+          "returns": {
+            "type": "time.struct_time",
+            "description": "A time.struct_time such as returned by time.localtime()"
+          },
+          "description": "Return a time.struct_time such as returned by time.localtime(). dst flag is set to -1.",
+          "deprecated": false
+        },
+        {
+          "name": "weekday",
+          "signature": "weekday()",
+          "params": [],
+          "returns": {
+            "type": "int",
+            "description": "Day of the week as an integer (Monday is 0, Sunday is 6)"
+          },
+          "description": "Return the day of the week as an integer, where Monday is 0 and Sunday is 6.",
+          "deprecated": false
+        },
+        {
+          "name": "__add__",
+          "signature": "__add__(timedelta)",
+          "params": [
+            {
+              "name": "timedelta",
+              "type": "timedelta",
+              "description": "A timedelta object to add"
+            }
+          ],
+          "returns": {
+            "type": "datetime",
+            "description": "New datetime offset by the timedelta"
+          },
+          "description": "Return a datetime that is timedelta duration after this datetime. Equivalent to datetime + timedelta.",
+          "deprecated": false
+        },
+        {
+          "name": "__sub__",
+          "signature": "__sub__(other)",
+          "params": [
+            {
+              "name": "other",
+              "type": "datetime or timedelta",
+              "description": "A datetime (returns timedelta) or timedelta (returns datetime)"
+            }
+          ],
+          "returns": {
+            "type": "datetime or timedelta",
+            "description": "timedelta if subtracting a datetime, datetime if subtracting a timedelta"
+          },
+          "description": "If other is a timedelta, returns a datetime that is timedelta duration before this datetime. If other is a datetime, returns the timedelta between the two.",
+          "deprecated": false
+        }
+      ],
+      "fields": [
+        {
+          "name": "year",
+          "type": "int",
+          "description": "Year between MINYEAR and MAXYEAR inclusive"
+        },
+        {
+          "name": "month",
+          "type": "int",
+          "description": "Month between 1 and 12 inclusive"
+        },
+        {
+          "name": "day",
+          "type": "int",
+          "description": "Day between 1 and the number of days in the given month of the given year"
+        },
+        {
+          "name": "hour",
+          "type": "int",
+          "description": "Hour in range(24)"
+        },
+        {
+          "name": "minute",
+          "type": "int",
+          "description": "Minute in range(60)"
+        },
+        {
+          "name": "second",
+          "type": "int",
+          "description": "Second in range(60)"
+        },
+        {
+          "name": "microsecond",
+          "type": "int",
+          "description": "Microsecond in range(1000000)"
+        },
+        {
+          "name": "tzinfo",
+          "type": "tzinfo or None",
+          "description": "The timezone information object or None"
+        },
+        {
+          "name": "min",
+          "type": "datetime",
+          "description": "The earliest representable datetime: datetime(MINYEAR, 1, 1)"
+        },
+        {
+          "name": "max",
+          "type": "datetime",
+          "description": "The latest representable datetime: datetime(MAXYEAR, 12, 31, 23, 59, 59, 999999)"
+        },
+        {
+          "name": "resolution",
+          "type": "timedelta",
+          "description": "The smallest possible difference between non-equal datetime objects: timedelta(microseconds=1)"
+        }
+      ]
+    },
+    {
+      "name": "date",
+      "description": "An idealized date, assuming the current Gregorian calendar always was, and always will be, in effect. Attributes: year, month, day.",
+      "constructors": [
+        {
+          "signature": "date(year, month, day)",
+          "params": [
+            {
+              "name": "year",
+              "type": "int",
+              "description": "Year between MINYEAR and MAXYEAR inclusive"
+            },
+            {
+              "name": "month",
+              "type": "int",
+              "description": "Month between 1 and 12 inclusive"
+            },
+            {
+              "name": "day",
+              "type": "int",
+              "description": "Day between 1 and the number of days in the given month/year"
+            }
+          ],
+          "description": "Create a new date instance with the given year, month, and day."
+        }
+      ],
+      "methods": [
+        {
+          "name": "today",
+          "signature": "date.today()",
+          "params": [],
+          "returns": {
+            "type": "date",
+            "description": "Current local date"
+          },
+          "description": "Return the current local date.",
+          "static": true,
+          "deprecated": false
+        },
+        {
+          "name": "fromtimestamp",
+          "signature": "date.fromtimestamp(timestamp)",
+          "params": [
+            {
+              "name": "timestamp",
+              "type": "float",
+              "description": "POSIX timestamp"
+            }
+          ],
+          "returns": {
+            "type": "date",
+            "description": "Local date corresponding to the timestamp"
+          },
+          "description": "Return the local date corresponding to the POSIX timestamp.",
+          "static": true,
+          "deprecated": false
+        },
+        {
+          "name": "fromordinal",
+          "signature": "date.fromordinal(ordinal)",
+          "params": [
+            {
+              "name": "ordinal",
+              "type": "int",
+              "description": "Proleptic Gregorian ordinal, where January 1 of year 1 has ordinal 1"
+            }
+          ],
+          "returns": {
+            "type": "date",
+            "description": "Date corresponding to the proleptic Gregorian ordinal"
+          },
+          "description": "Return the date corresponding to the proleptic Gregorian ordinal.",
+          "static": true,
+          "deprecated": false
+        },
+        {
+          "name": "strftime",
+          "signature": "strftime(format)",
+          "params": [
+            {
+              "name": "format",
+              "type": "str",
+              "description": "Format string using directives like %Y, %m, %d, %A, %B"
+            }
+          ],
+          "returns": {
+            "type": "str",
+            "description": "String representation of the date according to the format"
+          },
+          "description": "Return a string representing the date, controlled by an explicit format string.",
+          "deprecated": false
+        },
+        {
+          "name": "isoformat",
+          "signature": "isoformat()",
+          "params": [],
+          "returns": {
+            "type": "str",
+            "description": "String in ISO 8601 format: YYYY-MM-DD"
+          },
+          "description": "Return a string representing the date in ISO 8601 format: YYYY-MM-DD.",
+          "deprecated": false
+        },
+        {
+          "name": "timetuple",
+          "signature": "timetuple()",
+          "params": [],
+          "returns": {
+            "type": "time.struct_time",
+            "description": "A time.struct_time with time fields set to zero"
+          },
+          "description": "Return a time.struct_time such as returned by time.localtime(). Hours, minutes, and seconds are 0, and the DST flag is -1.",
+          "deprecated": false
+        },
+        {
+          "name": "weekday",
+          "signature": "weekday()",
+          "params": [],
+          "returns": {
+            "type": "int",
+            "description": "Day of the week (Monday is 0, Sunday is 6)"
+          },
+          "description": "Return the day of the week as an integer, where Monday is 0 and Sunday is 6.",
+          "deprecated": false
+        },
+        {
+          "name": "replace",
+          "signature": "replace(year=None, month=None, day=None)",
+          "params": [
+            {
+              "name": "year",
+              "type": "int",
+              "description": "Replacement year value"
+            },
+            {
+              "name": "month",
+              "type": "int",
+              "description": "Replacement month value"
+            },
+            {
+              "name": "day",
+              "type": "int",
+              "description": "Replacement day value"
+            }
+          ],
+          "returns": {
+            "type": "date",
+            "description": "New date with the specified fields replaced"
+          },
+          "description": "Return a date with the same value, except for those parameters given new values by whichever keyword arguments are specified.",
+          "deprecated": false
+        }
+      ],
+      "fields": [
+        {
+          "name": "year",
+          "type": "int",
+          "description": "Year between MINYEAR and MAXYEAR inclusive"
+        },
+        {
+          "name": "month",
+          "type": "int",
+          "description": "Month between 1 and 12 inclusive"
+        },
+        {
+          "name": "day",
+          "type": "int",
+          "description": "Day between 1 and the number of days in the given month/year"
+        },
+        {
+          "name": "min",
+          "type": "date",
+          "description": "The earliest representable date: date(MINYEAR, 1, 1)"
+        },
+        {
+          "name": "max",
+          "type": "date",
+          "description": "The latest representable date: date(MAXYEAR, 12, 31)"
+        },
+        {
+          "name": "resolution",
+          "type": "timedelta",
+          "description": "The smallest possible difference between non-equal date objects: timedelta(days=1)"
+        }
+      ]
+    },
+    {
+      "name": "time",
+      "description": "An idealized time, independent of any particular day, assuming every day has exactly 24*60*60 seconds. Attributes: hour, minute, second, microsecond, tzinfo.",
+      "constructors": [
+        {
+          "signature": "time(hour=0, minute=0, second=0, microsecond=0, tzinfo=None)",
+          "params": [
+            {
+              "name": "hour",
+              "type": "int",
+              "description": "Hour between 0 and 23 (default 0)"
+            },
+            {
+              "name": "minute",
+              "type": "int",
+              "description": "Minute between 0 and 59 (default 0)"
+            },
+            {
+              "name": "second",
+              "type": "int",
+              "description": "Second between 0 and 59 (default 0)"
+            },
+            {
+              "name": "microsecond",
+              "type": "int",
+              "description": "Microsecond between 0 and 999999 (default 0)"
+            },
+            {
+              "name": "tzinfo",
+              "type": "tzinfo or None",
+              "description": "Timezone information object (default None)"
+            }
+          ],
+          "description": "Create a new time instance."
+        }
+      ],
+      "methods": [
+        {
+          "name": "strftime",
+          "signature": "strftime(format)",
+          "params": [
+            {
+              "name": "format",
+              "type": "str",
+              "description": "Format string using directives like %H, %M, %S"
+            }
+          ],
+          "returns": {
+            "type": "str",
+            "description": "String representation of the time according to the format"
+          },
+          "description": "Return a string representing the time, controlled by an explicit format string.",
+          "deprecated": false
+        },
+        {
+          "name": "isoformat",
+          "signature": "isoformat()",
+          "params": [],
+          "returns": {
+            "type": "str",
+            "description": "String in ISO 8601 format: HH:MM:SS[.mmmmmm][+HH:MM]"
+          },
+          "description": "Return a string representing the time in ISO 8601 format: HH:MM:SS.mmmmmm or, if microsecond is 0, HH:MM:SS.",
+          "deprecated": false
+        },
+        {
+          "name": "replace",
+          "signature": "replace(hour=None, minute=None, second=None, microsecond=None, tzinfo=None)",
+          "params": [
+            {
+              "name": "hour",
+              "type": "int",
+              "description": "Replacement hour value"
+            },
+            {
+              "name": "minute",
+              "type": "int",
+              "description": "Replacement minute value"
+            },
+            {
+              "name": "second",
+              "type": "int",
+              "description": "Replacement second value"
+            },
+            {
+              "name": "microsecond",
+              "type": "int",
+              "description": "Replacement microsecond value"
+            },
+            {
+              "name": "tzinfo",
+              "type": "tzinfo",
+              "description": "Replacement tzinfo value"
+            }
+          ],
+          "returns": {
+            "type": "time",
+            "description": "New time with the specified fields replaced"
+          },
+          "description": "Return a time with the same value, except for those attributes given new values by whichever keyword arguments are specified.",
+          "deprecated": false
+        }
+      ],
+      "fields": [
+        {
+          "name": "hour",
+          "type": "int",
+          "description": "Hour in range(24)"
+        },
+        {
+          "name": "minute",
+          "type": "int",
+          "description": "Minute in range(60)"
+        },
+        {
+          "name": "second",
+          "type": "int",
+          "description": "Second in range(60)"
+        },
+        {
+          "name": "microsecond",
+          "type": "int",
+          "description": "Microsecond in range(1000000)"
+        },
+        {
+          "name": "tzinfo",
+          "type": "tzinfo or None",
+          "description": "The timezone information object or None"
+        },
+        {
+          "name": "min",
+          "type": "time",
+          "description": "The earliest representable time: time(0, 0, 0, 0)"
+        },
+        {
+          "name": "max",
+          "type": "time",
+          "description": "The latest representable time: time(23, 59, 59, 999999)"
+        },
+        {
+          "name": "resolution",
+          "type": "timedelta",
+          "description": "The smallest possible difference between non-equal time objects: timedelta(microseconds=1)"
+        }
+      ]
+    },
+    {
+      "name": "timedelta",
+      "description": "A duration expressing the difference between two dates, times, or datetimes. Supports addition, subtraction, multiplication, and comparison.",
+      "constructors": [
+        {
+          "signature": "timedelta(days=0, seconds=0, microseconds=0, milliseconds=0, minutes=0, hours=0, weeks=0)",
+          "params": [
+            {
+              "name": "days",
+              "type": "int or float",
+              "description": "Number of days"
+            },
+            {
+              "name": "seconds",
+              "type": "int or float",
+              "description": "Number of seconds"
+            },
+            {
+              "name": "microseconds",
+              "type": "int or float",
+              "description": "Number of microseconds"
+            },
+            {
+              "name": "milliseconds",
+              "type": "int or float",
+              "description": "Number of milliseconds (converted to microseconds internally)"
+            },
+            {
+              "name": "minutes",
+              "type": "int or float",
+              "description": "Number of minutes (converted to seconds internally)"
+            },
+            {
+              "name": "hours",
+              "type": "int or float",
+              "description": "Number of hours (converted to seconds internally)"
+            },
+            {
+              "name": "weeks",
+              "type": "int or float",
+              "description": "Number of weeks (converted to days internally)"
+            }
+          ],
+          "description": "Create a timedelta object representing a duration. Only days, seconds, and microseconds are stored internally. All arguments are converted to those three units."
+        }
+      ],
+      "methods": [
+        {
+          "name": "total_seconds",
+          "signature": "total_seconds()",
+          "params": [],
+          "returns": {
+            "type": "float",
+            "description": "Total number of seconds contained in the duration"
+          },
+          "description": "Return the total number of seconds contained in the duration. Equivalent to (td.microseconds + (td.seconds + td.days * 24 * 3600) * 10**6) / 10**6.",
+          "deprecated": false
+        }
+      ],
+      "fields": [
+        {
+          "name": "days",
+          "type": "int",
+          "description": "Between -999999999 and 999999999 inclusive"
+        },
+        {
+          "name": "seconds",
+          "type": "int",
+          "description": "Between 0 and 86399 inclusive"
+        },
+        {
+          "name": "microseconds",
+          "type": "int",
+          "description": "Between 0 and 999999 inclusive"
+        },
+        {
+          "name": "min",
+          "type": "timedelta",
+          "description": "The most negative timedelta object: timedelta(-999999999)"
+        },
+        {
+          "name": "max",
+          "type": "timedelta",
+          "description": "The most positive timedelta object: timedelta(days=999999999, hours=23, minutes=59, seconds=59, microseconds=999999)"
+        },
+        {
+          "name": "resolution",
+          "type": "timedelta",
+          "description": "The smallest possible difference between non-equal timedelta objects: timedelta(microseconds=1)"
+        }
+      ]
+    }
+  ],
+  "constants": [
+    {
+      "name": "MINYEAR",
+      "type": "int",
+      "description": "The smallest year number allowed in a date or datetime object. MINYEAR is 1."
+    },
+    {
+      "name": "MAXYEAR",
+      "type": "int",
+      "description": "The largest year number allowed in a date or datetime object. MAXYEAR is 9999."
+    }
+  ],
+  "docs_url": "https://docs.python.org/2.7/library/datetime.html"
+}

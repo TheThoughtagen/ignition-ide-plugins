@@ -1,0 +1,626 @@
+{
+  "module": "random",
+  "description": "Generate pseudo-random numbers. Implements pseudo-random number generators for various distributions.",
+  "functions": [
+    {
+      "name": "seed",
+      "signature": "seed([x])",
+      "params": [
+        {
+          "name": "x",
+          "type": "hashable",
+          "description": "Seed value. If omitted or None, the current system time is used. If x is an int or long, it is used directly."
+        }
+      ],
+      "returns": {
+        "type": "None",
+        "description": "No return value"
+      },
+      "description": "Initializes the random number generator. If x is omitted or None, the current system time is used. If x is an int or long, it is used directly as the seed.",
+      "deprecated": false
+    },
+    {
+      "name": "random",
+      "signature": "random()",
+      "params": [],
+      "returns": {
+        "type": "float",
+        "description": "A random floating-point number in the range [0.0, 1.0)"
+      },
+      "description": "Returns a random floating-point number N such that 0.0 <= N < 1.0.",
+      "deprecated": false
+    },
+    {
+      "name": "uniform",
+      "signature": "uniform(a, b)",
+      "params": [
+        {
+          "name": "a",
+          "type": "float",
+          "description": "Lower bound (inclusive)"
+        },
+        {
+          "name": "b",
+          "type": "float",
+          "description": "Upper bound (may be inclusive depending on rounding)"
+        }
+      ],
+      "returns": {
+        "type": "float",
+        "description": "A random floating-point number N such that a <= N <= b (or b <= N <= a)"
+      },
+      "description": "Returns a random floating-point number N such that a <= N <= b for a <= b and b <= N <= a for b < a. The end-point value b may or may not be included depending on floating-point rounding.",
+      "deprecated": false
+    },
+    {
+      "name": "randint",
+      "signature": "randint(a, b)",
+      "params": [
+        {
+          "name": "a",
+          "type": "int",
+          "description": "Lower bound (inclusive)"
+        },
+        {
+          "name": "b",
+          "type": "int",
+          "description": "Upper bound (inclusive)"
+        }
+      ],
+      "returns": {
+        "type": "int",
+        "description": "A random integer N such that a <= N <= b"
+      },
+      "description": "Returns a random integer N such that a <= N <= b. Both endpoints are included.",
+      "deprecated": false
+    },
+    {
+      "name": "randrange",
+      "signature": "randrange(stop) or randrange(start, stop[, step])",
+      "params": [
+        {
+          "name": "start",
+          "type": "int",
+          "description": "Start of range (inclusive). Default is 0."
+        },
+        {
+          "name": "stop",
+          "type": "int",
+          "description": "End of range (exclusive)"
+        },
+        {
+          "name": "step",
+          "type": "int",
+          "description": "Step value. Default is 1."
+        }
+      ],
+      "returns": {
+        "type": "int",
+        "description": "A randomly selected element from range(start, stop, step)"
+      },
+      "description": "Returns a randomly selected element from range(start, stop, step). Equivalent to choice(range(start, stop, step)) but does not build the full range object.",
+      "deprecated": false
+    },
+    {
+      "name": "choice",
+      "signature": "choice(seq)",
+      "params": [
+        {
+          "name": "seq",
+          "type": "sequence",
+          "description": "A non-empty sequence (list, tuple, string, etc.)"
+        }
+      ],
+      "returns": {
+        "type": "any",
+        "description": "A random element from the sequence"
+      },
+      "description": "Returns a random element from the non-empty sequence seq. Raises IndexError if seq is empty.",
+      "deprecated": false
+    },
+    {
+      "name": "shuffle",
+      "signature": "shuffle(x[, random])",
+      "params": [
+        {
+          "name": "x",
+          "type": "list",
+          "description": "The list to shuffle in place"
+        },
+        {
+          "name": "random",
+          "type": "callable",
+          "description": "Optional zero-argument function returning a random float in [0.0, 1.0). Defaults to the random() function."
+        }
+      ],
+      "returns": {
+        "type": "None",
+        "description": "No return value; the list is modified in place"
+      },
+      "description": "Shuffles the list x in place. The optional argument random is a zero-argument function returning a random float in [0.0, 1.0); by default, this is the module's random() function.",
+      "deprecated": false
+    },
+    {
+      "name": "sample",
+      "signature": "sample(population, k)",
+      "params": [
+        {
+          "name": "population",
+          "type": "sequence or set",
+          "description": "The population to sample from"
+        },
+        {
+          "name": "k",
+          "type": "int",
+          "description": "Number of unique elements to choose"
+        }
+      ],
+      "returns": {
+        "type": "list",
+        "description": "A new list containing k unique elements chosen from the population"
+      },
+      "description": "Returns a k-length list of unique elements chosen from the population sequence or set. Used for random sampling without replacement. The original population is left unchanged.",
+      "deprecated": false
+    },
+    {
+      "name": "getrandbits",
+      "signature": "getrandbits(k)",
+      "params": [
+        {
+          "name": "k",
+          "type": "int",
+          "description": "Number of random bits to generate"
+        }
+      ],
+      "returns": {
+        "type": "long",
+        "description": "A Python long integer with k random bits"
+      },
+      "description": "Returns a Python long integer with k random bits. Useful for methods like randrange() that handle arbitrarily large ranges.",
+      "deprecated": false
+    },
+    {
+      "name": "gauss",
+      "signature": "gauss(mu, sigma)",
+      "params": [
+        {
+          "name": "mu",
+          "type": "float",
+          "description": "The mean"
+        },
+        {
+          "name": "sigma",
+          "type": "float",
+          "description": "The standard deviation"
+        }
+      ],
+      "returns": {
+        "type": "float",
+        "description": "A random number from the Gaussian distribution"
+      },
+      "description": "Returns a random floating-point number from a Gaussian (normal) distribution with mean mu and standard deviation sigma. Slightly faster than normalvariate() but not thread-safe.",
+      "deprecated": false
+    },
+    {
+      "name": "normalvariate",
+      "signature": "normalvariate(mu, sigma)",
+      "params": [
+        {
+          "name": "mu",
+          "type": "float",
+          "description": "The mean"
+        },
+        {
+          "name": "sigma",
+          "type": "float",
+          "description": "The standard deviation"
+        }
+      ],
+      "returns": {
+        "type": "float",
+        "description": "A random number from the normal distribution"
+      },
+      "description": "Returns a random floating-point number from a normal (Gaussian) distribution with mean mu and standard deviation sigma. Thread-safe alternative to gauss().",
+      "deprecated": false
+    },
+    {
+      "name": "expovariate",
+      "signature": "expovariate(lambd)",
+      "params": [
+        {
+          "name": "lambd",
+          "type": "float",
+          "description": "The rate parameter (1.0 / desired mean). Must be nonzero."
+        }
+      ],
+      "returns": {
+        "type": "float",
+        "description": "A random number from the exponential distribution"
+      },
+      "description": "Returns a random floating-point number from an exponential distribution. lambd is 1.0 divided by the desired mean. Return values range from 0 to positive infinity if lambd is positive, or from negative infinity to 0 if lambd is negative.",
+      "deprecated": false
+    },
+    {
+      "name": "triangular",
+      "signature": "triangular([low[, high[, mode]]])",
+      "params": [
+        {
+          "name": "low",
+          "type": "float",
+          "description": "Lower bound. Default is 0.0."
+        },
+        {
+          "name": "high",
+          "type": "float",
+          "description": "Upper bound. Default is 1.0."
+        },
+        {
+          "name": "mode",
+          "type": "float",
+          "description": "The mode (peak) of the distribution. Default is midpoint of low and high."
+        }
+      ],
+      "returns": {
+        "type": "float",
+        "description": "A random number from the triangular distribution"
+      },
+      "description": "Returns a random floating-point number N such that low <= N <= high with the specified mode between those bounds. The mode defaults to the midpoint between low and high.",
+      "deprecated": false
+    },
+    {
+      "name": "betavariate",
+      "signature": "betavariate(alpha, beta)",
+      "params": [
+        {
+          "name": "alpha",
+          "type": "float",
+          "description": "Alpha parameter (> 0)"
+        },
+        {
+          "name": "beta",
+          "type": "float",
+          "description": "Beta parameter (> 0)"
+        }
+      ],
+      "returns": {
+        "type": "float",
+        "description": "A random number in the range [0, 1] from the Beta distribution"
+      },
+      "description": "Returns a random floating-point number from the Beta distribution. Conditions on the parameters are alpha > 0 and beta > 0. Returned values range between 0 and 1.",
+      "deprecated": false
+    },
+    {
+      "name": "gammavariate",
+      "signature": "gammavariate(alpha, beta)",
+      "params": [
+        {
+          "name": "alpha",
+          "type": "float",
+          "description": "Shape parameter (> 0)"
+        },
+        {
+          "name": "beta",
+          "type": "float",
+          "description": "Scale parameter (> 0)"
+        }
+      ],
+      "returns": {
+        "type": "float",
+        "description": "A random number from the Gamma distribution"
+      },
+      "description": "Returns a random floating-point number from the Gamma distribution. Conditions on the parameters are alpha > 0 and beta > 0. The probability distribution function is: pdf(x) = (x**(alpha-1) * exp(-x/beta)) / (gamma(alpha) * beta**alpha).",
+      "deprecated": false
+    },
+    {
+      "name": "paretovariate",
+      "signature": "paretovariate(alpha)",
+      "params": [
+        {
+          "name": "alpha",
+          "type": "float",
+          "description": "Shape parameter"
+        }
+      ],
+      "returns": {
+        "type": "float",
+        "description": "A random number from the Pareto distribution"
+      },
+      "description": "Returns a random floating-point number from the Pareto distribution with shape parameter alpha.",
+      "deprecated": false
+    },
+    {
+      "name": "weibullvariate",
+      "signature": "weibullvariate(alpha, beta)",
+      "params": [
+        {
+          "name": "alpha",
+          "type": "float",
+          "description": "Scale parameter"
+        },
+        {
+          "name": "beta",
+          "type": "float",
+          "description": "Shape parameter"
+        }
+      ],
+      "returns": {
+        "type": "float",
+        "description": "A random number from the Weibull distribution"
+      },
+      "description": "Returns a random floating-point number from the Weibull distribution with scale parameter alpha and shape parameter beta.",
+      "deprecated": false
+    },
+    {
+      "name": "vonmisesvariate",
+      "signature": "vonmisesvariate(mu, kappa)",
+      "params": [
+        {
+          "name": "mu",
+          "type": "float",
+          "description": "Mean angle, in radians (between 0 and 2*pi)"
+        },
+        {
+          "name": "kappa",
+          "type": "float",
+          "description": "Concentration parameter (>= 0). When kappa is 0, the distribution is uniform over 0 to 2*pi."
+        }
+      ],
+      "returns": {
+        "type": "float",
+        "description": "A random angle in radians from the von Mises distribution"
+      },
+      "description": "Returns a random floating-point number from the von Mises distribution (circular normal distribution). mu is the mean angle in radians, and kappa is the concentration parameter.",
+      "deprecated": false
+    }
+  ],
+  "classes": [
+    {
+      "name": "Random",
+      "description": "Class that implements the default pseudo-random number generator. All module-level functions (random(), randint(), choice(), etc.) are bound methods of a hidden instance of this class. You can instantiate your own Random objects to get independent generators.",
+      "constructors": [
+        {
+          "signature": "Random([x])",
+          "params": [
+            {
+              "name": "x",
+              "type": "hashable",
+              "description": "Optional seed value. If omitted, the current system time is used."
+            }
+          ],
+          "description": "Creates a new Random instance, optionally seeded with x."
+        }
+      ],
+      "methods": [
+        {
+          "name": "seed",
+          "signature": "seed([x])",
+          "params": [
+            {
+              "name": "x",
+              "type": "hashable",
+              "description": "Seed value. If omitted or None, the current system time is used."
+            }
+          ],
+          "returns": {
+            "type": "None",
+            "description": "No return value"
+          },
+          "description": "Initializes the internal state of the random number generator.",
+          "deprecated": false
+        },
+        {
+          "name": "getstate",
+          "signature": "getstate()",
+          "params": [],
+          "returns": {
+            "type": "tuple",
+            "description": "An object capturing the current internal state of the generator"
+          },
+          "description": "Returns an object capturing the current internal state of the generator. This object can be passed to setstate() to restore the state.",
+          "deprecated": false
+        },
+        {
+          "name": "setstate",
+          "signature": "setstate(state)",
+          "params": [
+            {
+              "name": "state",
+              "type": "tuple",
+              "description": "A state object as returned by getstate()"
+            }
+          ],
+          "returns": {
+            "type": "None",
+            "description": "No return value"
+          },
+          "description": "Restores the internal state of the generator to the state returned by a previous call to getstate().",
+          "deprecated": false
+        },
+        {
+          "name": "jumpahead",
+          "signature": "jumpahead(n)",
+          "params": [
+            {
+              "name": "n",
+              "type": "int",
+              "description": "A non-negative integer"
+            }
+          ],
+          "returns": {
+            "type": "None",
+            "description": "No return value"
+          },
+          "description": "Changes the internal state to one that is likely far away from the current state. n is a non-negative integer used to scramble the current state. Useful for multi-threaded programs.",
+          "deprecated": false
+        },
+        {
+          "name": "random",
+          "signature": "random()",
+          "params": [],
+          "returns": {
+            "type": "float",
+            "description": "A random float in [0.0, 1.0)"
+          },
+          "description": "Returns the next random floating-point number in the range [0.0, 1.0).",
+          "deprecated": false
+        },
+        {
+          "name": "uniform",
+          "signature": "uniform(a, b)",
+          "params": [
+            {
+              "name": "a",
+              "type": "float",
+              "description": "Lower bound"
+            },
+            {
+              "name": "b",
+              "type": "float",
+              "description": "Upper bound"
+            }
+          ],
+          "returns": {
+            "type": "float",
+            "description": "A random float N where a <= N <= b"
+          },
+          "description": "Returns a random floating-point number N such that a <= N <= b.",
+          "deprecated": false
+        },
+        {
+          "name": "randint",
+          "signature": "randint(a, b)",
+          "params": [
+            {
+              "name": "a",
+              "type": "int",
+              "description": "Lower bound (inclusive)"
+            },
+            {
+              "name": "b",
+              "type": "int",
+              "description": "Upper bound (inclusive)"
+            }
+          ],
+          "returns": {
+            "type": "int",
+            "description": "A random integer N where a <= N <= b"
+          },
+          "description": "Returns a random integer N such that a <= N <= b.",
+          "deprecated": false
+        },
+        {
+          "name": "choice",
+          "signature": "choice(seq)",
+          "params": [
+            {
+              "name": "seq",
+              "type": "sequence",
+              "description": "A non-empty sequence"
+            }
+          ],
+          "returns": {
+            "type": "any",
+            "description": "A random element from the sequence"
+          },
+          "description": "Returns a random element from the non-empty sequence.",
+          "deprecated": false
+        },
+        {
+          "name": "shuffle",
+          "signature": "shuffle(x[, random])",
+          "params": [
+            {
+              "name": "x",
+              "type": "list",
+              "description": "The list to shuffle in place"
+            },
+            {
+              "name": "random",
+              "type": "callable",
+              "description": "Optional random function returning float in [0.0, 1.0)"
+            }
+          ],
+          "returns": {
+            "type": "None",
+            "description": "No return value; list is modified in place"
+          },
+          "description": "Shuffles the list x in place.",
+          "deprecated": false
+        },
+        {
+          "name": "sample",
+          "signature": "sample(population, k)",
+          "params": [
+            {
+              "name": "population",
+              "type": "sequence or set",
+              "description": "The population to sample from"
+            },
+            {
+              "name": "k",
+              "type": "int",
+              "description": "Number of elements to choose"
+            }
+          ],
+          "returns": {
+            "type": "list",
+            "description": "A list of k unique elements"
+          },
+          "description": "Returns a k-length list of unique elements chosen from the population.",
+          "deprecated": false
+        }
+      ],
+      "fields": []
+    },
+    {
+      "name": "SystemRandom",
+      "description": "Class that uses os.urandom() to generate random numbers from sources provided by the operating system. Not all methods are available (notably getstate() and setstate() raise NotImplementedError). Use this when cryptographic-quality randomness is needed.",
+      "constructors": [
+        {
+          "signature": "SystemRandom([x])",
+          "params": [
+            {
+              "name": "x",
+              "type": "any",
+              "description": "Optional seed value. Ignored by SystemRandom since entropy comes from the OS."
+            }
+          ],
+          "description": "Creates a new SystemRandom instance. The seed argument is ignored; entropy comes from the operating system."
+        }
+      ],
+      "methods": [
+        {
+          "name": "random",
+          "signature": "random()",
+          "params": [],
+          "returns": {
+            "type": "float",
+            "description": "A random float in [0.0, 1.0) from OS entropy"
+          },
+          "description": "Returns the next random floating-point number using OS-supplied entropy.",
+          "deprecated": false
+        },
+        {
+          "name": "getrandbits",
+          "signature": "getrandbits(k)",
+          "params": [
+            {
+              "name": "k",
+              "type": "int",
+              "description": "Number of random bits"
+            }
+          ],
+          "returns": {
+            "type": "long",
+            "description": "A long integer with k random bits"
+          },
+          "description": "Returns a long integer with k random bits, sourced from the OS.",
+          "deprecated": false
+        }
+      ],
+      "fields": []
+    }
+  ],
+  "constants": [],
+  "docs_url": "https://docs.python.org/2.7/library/random.html"
+}

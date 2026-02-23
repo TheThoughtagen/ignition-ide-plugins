@@ -1,0 +1,43 @@
+{
+  "module": "glob",
+  "description": "Unix style pathname pattern expansion using shell-style wildcards.",
+  "functions": [
+    {
+      "name": "glob",
+      "signature": "glob(pathname)",
+      "params": [
+        {
+          "name": "pathname",
+          "type": "str",
+          "description": "A pathname pattern containing shell-style wildcards: *, ?, and [seq] character ranges."
+        }
+      ],
+      "returns": {
+        "type": "list",
+        "description": "A list of path names matching pathname. The list may be empty if no matches are found."
+      },
+      "description": "Return a list of paths matching a pathname pattern. The pattern may contain simple shell-style wildcards: * matches everything, ? matches any single character, [seq] matches any character in seq, and [!seq] matches any character not in seq. Does not include filenames starting with a dot unless the pattern also starts with a dot.",
+      "deprecated": false
+    },
+    {
+      "name": "iglob",
+      "signature": "iglob(pathname)",
+      "params": [
+        {
+          "name": "pathname",
+          "type": "str",
+          "description": "A pathname pattern containing shell-style wildcards."
+        }
+      ],
+      "returns": {
+        "type": "iterator",
+        "description": "An iterator yielding path names matching pathname."
+      },
+      "description": "Return an iterator which yields the same values as glob() without storing them all simultaneously. Useful for large directories where you want to process matches one at a time.",
+      "deprecated": false
+    }
+  ],
+  "classes": [],
+  "constants": [],
+  "docs_url": "https://docs.python.org/2.7/library/glob.html"
+}
