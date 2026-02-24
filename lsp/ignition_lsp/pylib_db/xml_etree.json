@@ -1,0 +1,915 @@
+{
+  "module": "xml.etree.ElementTree",
+  "description": "Lightweight and Pythonic API for parsing and creating XML data. Provides Element, ElementTree, and iterparse for efficient XML processing.",
+  "functions": [
+    {
+      "name": "parse",
+      "signature": "parse(source, parser=None)",
+      "params": [
+        {
+          "name": "source",
+          "type": "str or file",
+          "description": "Filename or file-like object containing XML data"
+        },
+        {
+          "name": "parser",
+          "type": "XMLParser",
+          "description": "Optional XML parser instance. If not given, the standard XMLParser is used."
+        }
+      ],
+      "returns": {
+        "type": "ElementTree",
+        "description": "An ElementTree instance with the parsed document"
+      },
+      "description": "Parse an XML document from a file into an ElementTree. The source can be a filename string or a file-like object.",
+      "deprecated": false
+    },
+    {
+      "name": "fromstring",
+      "signature": "fromstring(text)",
+      "params": [
+        {
+          "name": "text",
+          "type": "str",
+          "description": "XML string to parse"
+        }
+      ],
+      "returns": {
+        "type": "Element",
+        "description": "The root Element of the parsed XML"
+      },
+      "description": "Parse an XML string and return the root Element. Equivalent to XML().",
+      "deprecated": false
+    },
+    {
+      "name": "tostring",
+      "signature": "tostring(element, encoding='us-ascii', method='xml')",
+      "params": [
+        {
+          "name": "element",
+          "type": "Element",
+          "description": "The Element to serialize"
+        },
+        {
+          "name": "encoding",
+          "type": "str",
+          "description": "Output encoding. Use 'unicode' to get a Unicode string instead of bytes."
+        },
+        {
+          "name": "method",
+          "type": "str",
+          "description": "Output method: 'xml', 'html', or 'text'"
+        }
+      ],
+      "returns": {
+        "type": "str",
+        "description": "XML string representation of the element and its children"
+      },
+      "description": "Generate a string representation of an XML element, including all subelements.",
+      "deprecated": false
+    },
+    {
+      "name": "Element",
+      "signature": "Element(tag, attrib={}, **extra)",
+      "params": [
+        {
+          "name": "tag",
+          "type": "str",
+          "description": "The element tag name"
+        },
+        {
+          "name": "attrib",
+          "type": "dict",
+          "description": "Dictionary of element attributes"
+        },
+        {
+          "name": "**extra",
+          "type": "str",
+          "description": "Additional attributes given as keyword arguments"
+        }
+      ],
+      "returns": {
+        "type": "Element",
+        "description": "A new Element instance"
+      },
+      "description": "Create a new Element with the given tag and attributes. This is the Element factory function.",
+      "deprecated": false
+    },
+    {
+      "name": "SubElement",
+      "signature": "SubElement(parent, tag, attrib={}, **extra)",
+      "params": [
+        {
+          "name": "parent",
+          "type": "Element",
+          "description": "The parent element to append the new element to"
+        },
+        {
+          "name": "tag",
+          "type": "str",
+          "description": "The tag name for the new subelement"
+        },
+        {
+          "name": "attrib",
+          "type": "dict",
+          "description": "Dictionary of element attributes"
+        },
+        {
+          "name": "**extra",
+          "type": "str",
+          "description": "Additional attributes given as keyword arguments"
+        }
+      ],
+      "returns": {
+        "type": "Element",
+        "description": "The new child Element"
+      },
+      "description": "Create a new Element and append it to the parent element. This is a convenience function combining Element creation and appending.",
+      "deprecated": false
+    },
+    {
+      "name": "Comment",
+      "signature": "Comment(text=None)",
+      "params": [
+        {
+          "name": "text",
+          "type": "str",
+          "description": "Comment text"
+        }
+      ],
+      "returns": {
+        "type": "Element",
+        "description": "An Element representing an XML comment"
+      },
+      "description": "Create a comment element. The comment element has a special tag and the given text.",
+      "deprecated": false
+    },
+    {
+      "name": "ProcessingInstruction",
+      "signature": "ProcessingInstruction(target, text=None)",
+      "params": [
+        {
+          "name": "target",
+          "type": "str",
+          "description": "Processing instruction target name"
+        },
+        {
+          "name": "text",
+          "type": "str",
+          "description": "Processing instruction content"
+        }
+      ],
+      "returns": {
+        "type": "Element",
+        "description": "An Element representing an XML processing instruction"
+      },
+      "description": "Create a processing instruction element.",
+      "deprecated": false
+    },
+    {
+      "name": "XML",
+      "signature": "XML(text)",
+      "params": [
+        {
+          "name": "text",
+          "type": "str",
+          "description": "XML string to parse"
+        }
+      ],
+      "returns": {
+        "type": "Element",
+        "description": "The root Element of the parsed XML"
+      },
+      "description": "Parse an XML string and return the root Element. Same as fromstring().",
+      "deprecated": false
+    },
+    {
+      "name": "XMLID",
+      "signature": "XMLID(text)",
+      "params": [
+        {
+          "name": "text",
+          "type": "str",
+          "description": "XML string to parse"
+        }
+      ],
+      "returns": {
+        "type": "tuple",
+        "description": "A tuple of (root Element, dict mapping id attributes to Elements)"
+      },
+      "description": "Parse an XML string and return a tuple of the root element and a dictionary mapping id attributes to their elements.",
+      "deprecated": false
+    },
+    {
+      "name": "register_namespace",
+      "signature": "register_namespace(prefix, uri)",
+      "params": [
+        {
+          "name": "prefix",
+          "type": "str",
+          "description": "Namespace prefix to register"
+        },
+        {
+          "name": "uri",
+          "type": "str",
+          "description": "Namespace URI"
+        }
+      ],
+      "returns": {
+        "type": "None",
+        "description": "No return value"
+      },
+      "description": "Register a namespace prefix. The prefix is used in serialization to generate namespace declarations. The registry is global.",
+      "deprecated": false
+    },
+    {
+      "name": "iselement",
+      "signature": "iselement(element)",
+      "params": [
+        {
+          "name": "element",
+          "type": "any",
+          "description": "Object to test"
+        }
+      ],
+      "returns": {
+        "type": "bool",
+        "description": "True if the object appears to be an Element"
+      },
+      "description": "Check if an object appears to be a valid Element object. Tests for tag attribute presence.",
+      "deprecated": false
+    },
+    {
+      "name": "dump",
+      "signature": "dump(elem)",
+      "params": [
+        {
+          "name": "elem",
+          "type": "Element or ElementTree",
+          "description": "Element or ElementTree to write"
+        }
+      ],
+      "returns": {
+        "type": "None",
+        "description": "Writes to sys.stdout; no return value"
+      },
+      "description": "Write an element tree or element structure to sys.stdout as XML. Useful for debugging.",
+      "deprecated": false
+    },
+    {
+      "name": "iterparse",
+      "signature": "iterparse(source, events=None, parser=None)",
+      "params": [
+        {
+          "name": "source",
+          "type": "str or file",
+          "description": "Filename or file-like object containing XML data"
+        },
+        {
+          "name": "events",
+          "type": "tuple",
+          "description": "Sequence of events to report. Supported: 'start', 'end', 'start-ns', 'end-ns'. Default is ('end',)."
+        },
+        {
+          "name": "parser",
+          "type": "XMLParser",
+          "description": "Optional parser instance"
+        }
+      ],
+      "returns": {
+        "type": "iterator",
+        "description": "An iterator yielding (event, element) tuples"
+      },
+      "description": "Incrementally parse an XML document and yield (event, element) tuples. Memory-efficient for large documents since elements can be discarded after processing.",
+      "deprecated": false
+    }
+  ],
+  "classes": [
+    {
+      "name": "Element",
+      "description": "The Element type is a flexible container object for storing hierarchical data. Each element has a tag, text, tail, a dictionary of attributes, and a list of child elements.",
+      "constructors": [
+        {
+          "signature": "Element(tag, attrib={}, **extra)",
+          "params": [
+            {
+              "name": "tag",
+              "type": "str",
+              "description": "The element tag name string"
+            },
+            {
+              "name": "attrib",
+              "type": "dict",
+              "description": "Dictionary of element attributes"
+            },
+            {
+              "name": "**extra",
+              "type": "str",
+              "description": "Additional attributes as keyword arguments"
+            }
+          ],
+          "description": "Create a new Element with the given tag and attributes."
+        }
+      ],
+      "methods": [
+        {
+          "name": "append",
+          "signature": "append(subelement)",
+          "params": [
+            {
+              "name": "subelement",
+              "type": "Element",
+              "description": "Element to add as a child"
+            }
+          ],
+          "returns": {
+            "type": "None",
+            "description": "No return value"
+          },
+          "description": "Add a subelement to the end of this element's list of children.",
+          "deprecated": false
+        },
+        {
+          "name": "extend",
+          "signature": "extend(subelements)",
+          "params": [
+            {
+              "name": "subelements",
+              "type": "iterable",
+              "description": "Iterable of Element objects to add"
+            }
+          ],
+          "returns": {
+            "type": "None",
+            "description": "No return value"
+          },
+          "description": "Append subelements from an iterable of elements.",
+          "deprecated": false
+        },
+        {
+          "name": "find",
+          "signature": "find(match, namespaces=None)",
+          "params": [
+            {
+              "name": "match",
+              "type": "str",
+              "description": "XPath-like path expression to match. Supports tag names, '.', '*', '//', '..', and [@attrib] predicates."
+            },
+            {
+              "name": "namespaces",
+              "type": "dict",
+              "description": "Optional namespace prefix mapping"
+            }
+          ],
+          "returns": {
+            "type": "Element or None",
+            "description": "First matching Element or None if not found"
+          },
+          "description": "Find the first subelement matching the given path expression. Returns the first match or None.",
+          "deprecated": false
+        },
+        {
+          "name": "findall",
+          "signature": "findall(match, namespaces=None)",
+          "params": [
+            {
+              "name": "match",
+              "type": "str",
+              "description": "XPath-like path expression to match"
+            },
+            {
+              "name": "namespaces",
+              "type": "dict",
+              "description": "Optional namespace prefix mapping"
+            }
+          ],
+          "returns": {
+            "type": "list",
+            "description": "List of matching Element objects"
+          },
+          "description": "Find all matching subelements. Returns a list of all matching elements in document order.",
+          "deprecated": false
+        },
+        {
+          "name": "findtext",
+          "signature": "findtext(match, default=None, namespaces=None)",
+          "params": [
+            {
+              "name": "match",
+              "type": "str",
+              "description": "XPath-like path expression to match"
+            },
+            {
+              "name": "default",
+              "type": "str",
+              "description": "Value to return if no match is found"
+            },
+            {
+              "name": "namespaces",
+              "type": "dict",
+              "description": "Optional namespace prefix mapping"
+            }
+          ],
+          "returns": {
+            "type": "str",
+            "description": "Text content of the first matching element, or default"
+          },
+          "description": "Find text for the first subelement matching the path. Returns the text content or the default value.",
+          "deprecated": false
+        },
+        {
+          "name": "getiterator",
+          "signature": "getiterator(tag=None)",
+          "params": [
+            {
+              "name": "tag",
+              "type": "str",
+              "description": "Tag to filter by. If None or '*', all elements are included."
+            }
+          ],
+          "returns": {
+            "type": "list",
+            "description": "List of elements in document order"
+          },
+          "description": "Return a list of all elements in the subtree in document order. Deprecated; use iter() instead.",
+          "deprecated": true
+        },
+        {
+          "name": "iter",
+          "signature": "iter(tag=None)",
+          "params": [
+            {
+              "name": "tag",
+              "type": "str",
+              "description": "Tag to filter by. If None or '*', all elements are yielded."
+            }
+          ],
+          "returns": {
+            "type": "iterator",
+            "description": "Iterator over matching Element objects in document order"
+          },
+          "description": "Create a tree iterator over this element and all subelements. Yields elements in document order.",
+          "deprecated": false
+        },
+        {
+          "name": "iterfind",
+          "signature": "iterfind(match, namespaces=None)",
+          "params": [
+            {
+              "name": "match",
+              "type": "str",
+              "description": "XPath-like path expression to match"
+            },
+            {
+              "name": "namespaces",
+              "type": "dict",
+              "description": "Optional namespace prefix mapping"
+            }
+          ],
+          "returns": {
+            "type": "iterator",
+            "description": "Iterator over matching Element objects"
+          },
+          "description": "Find all matching subelements by path expression. Returns an iterable yielding matched elements in document order.",
+          "deprecated": false
+        },
+        {
+          "name": "itertext",
+          "signature": "itertext()",
+          "params": [],
+          "returns": {
+            "type": "iterator",
+            "description": "Iterator over text strings"
+          },
+          "description": "Create a text iterator. Yields all inner text from this element and its subelements, in document order.",
+          "deprecated": false
+        },
+        {
+          "name": "insert",
+          "signature": "insert(index, element)",
+          "params": [
+            {
+              "name": "index",
+              "type": "int",
+              "description": "Position at which to insert"
+            },
+            {
+              "name": "element",
+              "type": "Element",
+              "description": "Element to insert"
+            }
+          ],
+          "returns": {
+            "type": "None",
+            "description": "No return value"
+          },
+          "description": "Insert a subelement at the given position.",
+          "deprecated": false
+        },
+        {
+          "name": "items",
+          "signature": "items()",
+          "params": [],
+          "returns": {
+            "type": "list",
+            "description": "List of (name, value) tuples for element attributes"
+          },
+          "description": "Return element attributes as a list of (name, value) pairs.",
+          "deprecated": false
+        },
+        {
+          "name": "keys",
+          "signature": "keys()",
+          "params": [],
+          "returns": {
+            "type": "list",
+            "description": "List of attribute name strings"
+          },
+          "description": "Return a list of element attribute names.",
+          "deprecated": false
+        },
+        {
+          "name": "get",
+          "signature": "get(key, default=None)",
+          "params": [
+            {
+              "name": "key",
+              "type": "str",
+              "description": "Attribute name to look up"
+            },
+            {
+              "name": "default",
+              "type": "str",
+              "description": "Value to return if attribute is not found"
+            }
+          ],
+          "returns": {
+            "type": "str",
+            "description": "Attribute value or default"
+          },
+          "description": "Get an element attribute value. Returns the default if the attribute is not found.",
+          "deprecated": false
+        },
+        {
+          "name": "set",
+          "signature": "set(key, value)",
+          "params": [
+            {
+              "name": "key",
+              "type": "str",
+              "description": "Attribute name"
+            },
+            {
+              "name": "value",
+              "type": "str",
+              "description": "Attribute value"
+            }
+          ],
+          "returns": {
+            "type": "None",
+            "description": "No return value"
+          },
+          "description": "Set an element attribute value.",
+          "deprecated": false
+        },
+        {
+          "name": "remove",
+          "signature": "remove(subelement)",
+          "params": [
+            {
+              "name": "subelement",
+              "type": "Element",
+              "description": "Child element to remove"
+            }
+          ],
+          "returns": {
+            "type": "None",
+            "description": "No return value"
+          },
+          "description": "Remove a subelement from the element. Compares by identity, not value. Raises ValueError if the subelement is not found.",
+          "deprecated": false
+        },
+        {
+          "name": "clear",
+          "signature": "clear()",
+          "params": [],
+          "returns": {
+            "type": "None",
+            "description": "No return value"
+          },
+          "description": "Reset the element. Removes all subelements, clears all attributes, and sets text and tail to None.",
+          "deprecated": false
+        },
+        {
+          "name": "makeelement",
+          "signature": "makeelement(tag, attrib)",
+          "params": [
+            {
+              "name": "tag",
+              "type": "str",
+              "description": "Tag name for the new element"
+            },
+            {
+              "name": "attrib",
+              "type": "dict",
+              "description": "Attribute dictionary for the new element"
+            }
+          ],
+          "returns": {
+            "type": "Element",
+            "description": "A new Element instance"
+          },
+          "description": "Create a new element with the same type as this element. Subclasses may override to control element instantiation.",
+          "deprecated": false
+        }
+      ],
+      "fields": [
+        {
+          "name": "tag",
+          "type": "str",
+          "description": "The element's tag name string"
+        },
+        {
+          "name": "text",
+          "type": "str",
+          "description": "Text content before the first child element, or None"
+        },
+        {
+          "name": "tail",
+          "type": "str",
+          "description": "Text content after this element's end tag and before the next sibling, or None"
+        },
+        {
+          "name": "attrib",
+          "type": "dict",
+          "description": "Dictionary of element attributes"
+        }
+      ]
+    },
+    {
+      "name": "ElementTree",
+      "description": "Represents an entire XML document as a tree. Wraps a root Element and provides methods for serialization and parsing.",
+      "constructors": [
+        {
+          "signature": "ElementTree(element=None, file=None)",
+          "params": [
+            {
+              "name": "element",
+              "type": "Element",
+              "description": "Root element to use. If not given and file is provided, the root is loaded from the file."
+            },
+            {
+              "name": "file",
+              "type": "str or file",
+              "description": "Filename or file-like object to load XML from"
+            }
+          ],
+          "description": "Create a new ElementTree. If element is given, it becomes the root. If file is given, the tree is initialized from the file."
+        }
+      ],
+      "methods": [
+        {
+          "name": "parse",
+          "signature": "parse(source, parser=None)",
+          "params": [
+            {
+              "name": "source",
+              "type": "str or file",
+              "description": "Filename or file-like object to parse"
+            },
+            {
+              "name": "parser",
+              "type": "XMLParser",
+              "description": "Optional parser instance"
+            }
+          ],
+          "returns": {
+            "type": "Element",
+            "description": "The root element of the parsed tree"
+          },
+          "description": "Load an external XML document into this ElementTree. Replaces the current root element. Returns the new root.",
+          "deprecated": false
+        },
+        {
+          "name": "getroot",
+          "signature": "getroot()",
+          "params": [],
+          "returns": {
+            "type": "Element",
+            "description": "The root Element of the tree"
+          },
+          "description": "Return the root element of this tree.",
+          "deprecated": false
+        },
+        {
+          "name": "write",
+          "signature": "write(file, encoding='us-ascii', xml_declaration=None, default_namespace=None, method='xml')",
+          "params": [
+            {
+              "name": "file",
+              "type": "str or file",
+              "description": "Filename or file-like object to write to"
+            },
+            {
+              "name": "encoding",
+              "type": "str",
+              "description": "Output encoding (default 'us-ascii')"
+            },
+            {
+              "name": "xml_declaration",
+              "type": "bool",
+              "description": "Whether to write an XML declaration. None means write it only if encoding is not us-ascii or UTF-8."
+            },
+            {
+              "name": "default_namespace",
+              "type": "str",
+              "description": "Default XML namespace URI"
+            },
+            {
+              "name": "method",
+              "type": "str",
+              "description": "Output method: 'xml', 'html', or 'text'"
+            }
+          ],
+          "returns": {
+            "type": "None",
+            "description": "Writes to file; no return value"
+          },
+          "description": "Write the element tree to a file as XML.",
+          "deprecated": false
+        },
+        {
+          "name": "find",
+          "signature": "find(match, namespaces=None)",
+          "params": [
+            {
+              "name": "match",
+              "type": "str",
+              "description": "XPath-like path expression"
+            },
+            {
+              "name": "namespaces",
+              "type": "dict",
+              "description": "Optional namespace prefix mapping"
+            }
+          ],
+          "returns": {
+            "type": "Element or None",
+            "description": "First matching element or None"
+          },
+          "description": "Find the first element matching the path, starting from the root.",
+          "deprecated": false
+        },
+        {
+          "name": "findall",
+          "signature": "findall(match, namespaces=None)",
+          "params": [
+            {
+              "name": "match",
+              "type": "str",
+              "description": "XPath-like path expression"
+            },
+            {
+              "name": "namespaces",
+              "type": "dict",
+              "description": "Optional namespace prefix mapping"
+            }
+          ],
+          "returns": {
+            "type": "list",
+            "description": "List of matching Element objects"
+          },
+          "description": "Find all elements matching the path, starting from the root.",
+          "deprecated": false
+        },
+        {
+          "name": "findtext",
+          "signature": "findtext(match, default=None, namespaces=None)",
+          "params": [
+            {
+              "name": "match",
+              "type": "str",
+              "description": "XPath-like path expression"
+            },
+            {
+              "name": "default",
+              "type": "str",
+              "description": "Value to return if no match"
+            },
+            {
+              "name": "namespaces",
+              "type": "dict",
+              "description": "Optional namespace prefix mapping"
+            }
+          ],
+          "returns": {
+            "type": "str",
+            "description": "Text content of the first match, or default"
+          },
+          "description": "Find text for the first element matching the path, starting from the root.",
+          "deprecated": false
+        },
+        {
+          "name": "iter",
+          "signature": "iter(tag=None)",
+          "params": [
+            {
+              "name": "tag",
+              "type": "str",
+              "description": "Tag to filter by. If None or '*', all elements are yielded."
+            }
+          ],
+          "returns": {
+            "type": "iterator",
+            "description": "Iterator over matching Element objects"
+          },
+          "description": "Create and return a tree iterator for the root element and all subelements.",
+          "deprecated": false
+        },
+        {
+          "name": "iterfind",
+          "signature": "iterfind(match, namespaces=None)",
+          "params": [
+            {
+              "name": "match",
+              "type": "str",
+              "description": "XPath-like path expression"
+            },
+            {
+              "name": "namespaces",
+              "type": "dict",
+              "description": "Optional namespace prefix mapping"
+            }
+          ],
+          "returns": {
+            "type": "iterator",
+            "description": "Iterator over matching Element objects"
+          },
+          "description": "Find all matching elements by path. Returns an iterable yielding matched elements.",
+          "deprecated": false
+        }
+      ],
+      "fields": []
+    },
+    {
+      "name": "XMLParser",
+      "description": "An incremental XML parser driven by explicit push calls. Builds an element structure from XML text incrementally.",
+      "constructors": [
+        {
+          "signature": "XMLParser(html=0, target=None, encoding=None)",
+          "params": [
+            {
+              "name": "html",
+              "type": "int",
+              "description": "Set to non-zero to use HTML parsing mode (deprecated and not well supported)"
+            },
+            {
+              "name": "target",
+              "type": "object",
+              "description": "Target object with start(), end(), data(), and close() methods. Defaults to TreeBuilder."
+            },
+            {
+              "name": "encoding",
+              "type": "str",
+              "description": "Optional encoding to override the encoding declared in the XML"
+            }
+          ],
+          "description": "Create an XML parser with optional target and encoding."
+        }
+      ],
+      "methods": [
+        {
+          "name": "feed",
+          "signature": "feed(data)",
+          "params": [
+            {
+              "name": "data",
+              "type": "str",
+              "description": "XML text chunk to feed to the parser"
+            }
+          ],
+          "returns": {
+            "type": "None",
+            "description": "No return value"
+          },
+          "description": "Feed XML data to the parser. Can be called multiple times with chunks of data.",
+          "deprecated": false
+        },
+        {
+          "name": "close",
+          "signature": "close()",
+          "params": [],
+          "returns": {
+            "type": "Element",
+            "description": "The root element of the parsed tree"
+          },
+          "description": "Finish feeding data to the parser. Returns the result of calling the target's close() method, which is typically the root element.",
+          "deprecated": false
+        }
+      ],
+      "fields": []
+    }
+  ],
+  "constants": [],
+  "docs_url": "https://docs.python.org/2.7/library/xml.etree.elementtree.html"
+}

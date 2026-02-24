@@ -1,0 +1,159 @@
+{
+  "module": "types",
+  "description": "Names for built-in types. Provides names for type objects that correspond to Python's built-in types, useful for isinstance() checks and type comparisons.",
+  "functions": [],
+  "classes": [],
+  "constants": [
+    {
+      "name": "NoneType",
+      "type": "type",
+      "description": "The type of None"
+    },
+    {
+      "name": "TypeType",
+      "type": "type",
+      "description": "The type of type objects; alias for the built-in type"
+    },
+    {
+      "name": "BooleanType",
+      "type": "type",
+      "description": "The type of True and False; alias for bool"
+    },
+    {
+      "name": "IntType",
+      "type": "type",
+      "description": "The type of integers; alias for int"
+    },
+    {
+      "name": "LongType",
+      "type": "type",
+      "description": "The type of long integers; alias for long"
+    },
+    {
+      "name": "FloatType",
+      "type": "type",
+      "description": "The type of floating point numbers; alias for float"
+    },
+    {
+      "name": "ComplexType",
+      "type": "type",
+      "description": "The type of complex numbers; alias for complex"
+    },
+    {
+      "name": "StringType",
+      "type": "type",
+      "description": "The type of byte strings; alias for str"
+    },
+    {
+      "name": "UnicodeType",
+      "type": "type",
+      "description": "The type of Unicode strings; alias for unicode"
+    },
+    {
+      "name": "TupleType",
+      "type": "type",
+      "description": "The type of tuples; alias for tuple"
+    },
+    {
+      "name": "ListType",
+      "type": "type",
+      "description": "The type of lists; alias for list"
+    },
+    {
+      "name": "DictType",
+      "type": "type",
+      "description": "The type of dictionaries; alias for dict"
+    },
+    {
+      "name": "DictionaryType",
+      "type": "type",
+      "description": "Alternate name for the type of dictionaries; alias for dict. Same as DictType."
+    },
+    {
+      "name": "FunctionType",
+      "type": "type",
+      "description": "The type of user-defined functions created by def statements"
+    },
+    {
+      "name": "LambdaType",
+      "type": "type",
+      "description": "The type of functions created by lambda expressions. Same as FunctionType."
+    },
+    {
+      "name": "GeneratorType",
+      "type": "type",
+      "description": "The type of generator-iterator objects produced by generator functions"
+    },
+    {
+      "name": "CodeType",
+      "type": "type",
+      "description": "The type of code objects such as those returned by compile()"
+    },
+    {
+      "name": "FrameType",
+      "type": "type",
+      "description": "The type of frame objects found in traceback objects (tb.tb_frame)"
+    },
+    {
+      "name": "TracebackType",
+      "type": "type",
+      "description": "The type of traceback objects found in sys.exc_info()[2]"
+    },
+    {
+      "name": "MethodType",
+      "type": "type",
+      "description": "The type of bound methods of user-defined class instances"
+    },
+    {
+      "name": "BuiltinFunctionType",
+      "type": "type",
+      "description": "The type of built-in functions like len() or sys.exit()"
+    },
+    {
+      "name": "BuiltinMethodType",
+      "type": "type",
+      "description": "The type of built-in methods; alias for BuiltinFunctionType. Same object as BuiltinFunctionType."
+    },
+    {
+      "name": "ModuleType",
+      "type": "type",
+      "description": "The type of modules such as those created by import statements"
+    },
+    {
+      "name": "FileType",
+      "type": "type",
+      "description": "The type of open file objects such as sys.stdout; alias for file"
+    },
+    {
+      "name": "ClassType",
+      "type": "type",
+      "description": "The type of old-style (classic) class objects"
+    },
+    {
+      "name": "InstanceType",
+      "type": "type",
+      "description": "The type of instances of old-style (classic) classes"
+    },
+    {
+      "name": "UnboundMethodType",
+      "type": "type",
+      "description": "The type of unbound methods of user-defined classes. Same as MethodType in Python 2.7."
+    },
+    {
+      "name": "StringTypes",
+      "type": "tuple",
+      "description": "A tuple containing StringType and UnicodeType. Useful for isinstance() checks against any string type: isinstance(x, types.StringTypes)"
+    },
+    {
+      "name": "BufferType",
+      "type": "type",
+      "description": "The type of buffer objects created by the buffer() built-in function"
+    },
+    {
+      "name": "SliceType",
+      "type": "type",
+      "description": "The type of slice objects such as those created by slice() or extended slicing syntax"
+    }
+  ],
+  "docs_url": "https://docs.python.org/2.7/library/types.html"
+}

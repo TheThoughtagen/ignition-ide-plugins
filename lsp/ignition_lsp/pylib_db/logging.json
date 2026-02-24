@@ -1,0 +1,1107 @@
+{
+  "module": "logging",
+  "description": "Flexible event logging system for applications and libraries.",
+  "functions": [
+    {
+      "name": "getLogger",
+      "signature": "getLogger([name])",
+      "params": [
+        {
+          "name": "name",
+          "type": "str",
+          "description": "Logger name, typically a dot-separated hierarchical name. If omitted, returns the root logger."
+        }
+      ],
+      "returns": {
+        "type": "Logger",
+        "description": "A logger with the specified name, creating it if necessary."
+      },
+      "description": "Return a logger with the specified name, creating it if necessary. If no name is specified, return the root logger.",
+      "deprecated": false
+    },
+    {
+      "name": "basicConfig",
+      "signature": "basicConfig(**kwargs)",
+      "params": [
+        {
+          "name": "filename",
+          "type": "str",
+          "description": "Use a FileHandler with the specified filename rather than a StreamHandler."
+        },
+        {
+          "name": "filemode",
+          "type": "str",
+          "description": "File mode for filename. Defaults to 'a'."
+        },
+        {
+          "name": "format",
+          "type": "str",
+          "description": "Format string for the handler. Defaults to '%(levelname)s:%(name)s:%(message)s'."
+        },
+        {
+          "name": "datefmt",
+          "type": "str",
+          "description": "Date/time format string for asctime in the format string."
+        },
+        {
+          "name": "level",
+          "type": "int",
+          "description": "Set the root logger level to the specified level."
+        },
+        {
+          "name": "stream",
+          "type": "stream",
+          "description": "Use the specified stream to initialize the StreamHandler. Incompatible with filename."
+        }
+      ],
+      "returns": {
+        "type": "None",
+        "description": "No return value."
+      },
+      "description": "Do basic configuration for the logging system. Does nothing if the root logger already has handlers configured.",
+      "deprecated": false
+    },
+    {
+      "name": "debug",
+      "signature": "debug(msg, *args, **kwargs)",
+      "params": [
+        {
+          "name": "msg",
+          "type": "str",
+          "description": "The message format string."
+        },
+        {
+          "name": "args",
+          "type": "tuple",
+          "description": "Arguments merged into msg using string formatting."
+        },
+        {
+          "name": "exc_info",
+          "type": "bool",
+          "description": "If true, exception information is added to the message."
+        }
+      ],
+      "returns": {
+        "type": "None",
+        "description": "No return value."
+      },
+      "description": "Log a message with level DEBUG on the root logger.",
+      "deprecated": false
+    },
+    {
+      "name": "info",
+      "signature": "info(msg, *args, **kwargs)",
+      "params": [
+        {
+          "name": "msg",
+          "type": "str",
+          "description": "The message format string."
+        },
+        {
+          "name": "args",
+          "type": "tuple",
+          "description": "Arguments merged into msg using string formatting."
+        },
+        {
+          "name": "exc_info",
+          "type": "bool",
+          "description": "If true, exception information is added to the message."
+        }
+      ],
+      "returns": {
+        "type": "None",
+        "description": "No return value."
+      },
+      "description": "Log a message with level INFO on the root logger.",
+      "deprecated": false
+    },
+    {
+      "name": "warning",
+      "signature": "warning(msg, *args, **kwargs)",
+      "params": [
+        {
+          "name": "msg",
+          "type": "str",
+          "description": "The message format string."
+        },
+        {
+          "name": "args",
+          "type": "tuple",
+          "description": "Arguments merged into msg using string formatting."
+        },
+        {
+          "name": "exc_info",
+          "type": "bool",
+          "description": "If true, exception information is added to the message."
+        }
+      ],
+      "returns": {
+        "type": "None",
+        "description": "No return value."
+      },
+      "description": "Log a message with level WARNING on the root logger.",
+      "deprecated": false
+    },
+    {
+      "name": "error",
+      "signature": "error(msg, *args, **kwargs)",
+      "params": [
+        {
+          "name": "msg",
+          "type": "str",
+          "description": "The message format string."
+        },
+        {
+          "name": "args",
+          "type": "tuple",
+          "description": "Arguments merged into msg using string formatting."
+        },
+        {
+          "name": "exc_info",
+          "type": "bool",
+          "description": "If true, exception information is added to the message."
+        }
+      ],
+      "returns": {
+        "type": "None",
+        "description": "No return value."
+      },
+      "description": "Log a message with level ERROR on the root logger.",
+      "deprecated": false
+    },
+    {
+      "name": "critical",
+      "signature": "critical(msg, *args, **kwargs)",
+      "params": [
+        {
+          "name": "msg",
+          "type": "str",
+          "description": "The message format string."
+        },
+        {
+          "name": "args",
+          "type": "tuple",
+          "description": "Arguments merged into msg using string formatting."
+        },
+        {
+          "name": "exc_info",
+          "type": "bool",
+          "description": "If true, exception information is added to the message."
+        }
+      ],
+      "returns": {
+        "type": "None",
+        "description": "No return value."
+      },
+      "description": "Log a message with level CRITICAL on the root logger.",
+      "deprecated": false
+    },
+    {
+      "name": "exception",
+      "signature": "exception(msg, *args)",
+      "params": [
+        {
+          "name": "msg",
+          "type": "str",
+          "description": "The message format string."
+        },
+        {
+          "name": "args",
+          "type": "tuple",
+          "description": "Arguments merged into msg using string formatting."
+        }
+      ],
+      "returns": {
+        "type": "None",
+        "description": "No return value."
+      },
+      "description": "Log a message with level ERROR on the root logger, with exception information. Should only be called from an exception handler.",
+      "deprecated": false
+    },
+    {
+      "name": "log",
+      "signature": "log(level, msg, *args, **kwargs)",
+      "params": [
+        {
+          "name": "level",
+          "type": "int",
+          "description": "The numeric logging level."
+        },
+        {
+          "name": "msg",
+          "type": "str",
+          "description": "The message format string."
+        },
+        {
+          "name": "args",
+          "type": "tuple",
+          "description": "Arguments merged into msg using string formatting."
+        },
+        {
+          "name": "exc_info",
+          "type": "bool",
+          "description": "If true, exception information is added to the message."
+        }
+      ],
+      "returns": {
+        "type": "None",
+        "description": "No return value."
+      },
+      "description": "Log a message with the given level on the root logger.",
+      "deprecated": false
+    },
+    {
+      "name": "disable",
+      "signature": "disable(level)",
+      "params": [
+        {
+          "name": "level",
+          "type": "int",
+          "description": "All logging calls at this level and below will be disabled."
+        }
+      ],
+      "returns": {
+        "type": "None",
+        "description": "No return value."
+      },
+      "description": "Provides an overriding level for all loggers which takes precedence over the logger's own level.",
+      "deprecated": false
+    },
+    {
+      "name": "addLevelName",
+      "signature": "addLevelName(level, levelName)",
+      "params": [
+        {
+          "name": "level",
+          "type": "int",
+          "description": "The numeric level value."
+        },
+        {
+          "name": "levelName",
+          "type": "str",
+          "description": "The text name to associate with the level."
+        }
+      ],
+      "returns": {
+        "type": "None",
+        "description": "No return value."
+      },
+      "description": "Associate levelName with level. Used to define custom levels.",
+      "deprecated": false
+    },
+    {
+      "name": "getLevelName",
+      "signature": "getLevelName(level)",
+      "params": [
+        {
+          "name": "level",
+          "type": "int",
+          "description": "The numeric logging level."
+        }
+      ],
+      "returns": {
+        "type": "str",
+        "description": "The text representation of the logging level."
+      },
+      "description": "Return the textual representation of a logging level. If the level is not found, returns 'Level %s' % level.",
+      "deprecated": false
+    },
+    {
+      "name": "makeLogRecord",
+      "signature": "makeLogRecord(attrdict)",
+      "params": [
+        {
+          "name": "attrdict",
+          "type": "dict",
+          "description": "Dictionary of attributes to set on the LogRecord."
+        }
+      ],
+      "returns": {
+        "type": "LogRecord",
+        "description": "A new LogRecord whose attributes are defined by the dictionary."
+      },
+      "description": "Create a new LogRecord with attributes defined by the given dictionary. Useful for reconstituting a LogRecord from a pickled event.",
+      "deprecated": false
+    },
+    {
+      "name": "setLoggerClass",
+      "signature": "setLoggerClass(klass)",
+      "params": [
+        {
+          "name": "klass",
+          "type": "type",
+          "description": "A subclass of Logger to be used when instantiating new loggers."
+        }
+      ],
+      "returns": {
+        "type": "None",
+        "description": "No return value."
+      },
+      "description": "Set the class to be used when instantiating a logger. The class should define __init__() such that only a name argument is required.",
+      "deprecated": false
+    }
+  ],
+  "classes": [
+    {
+      "name": "Logger",
+      "description": "Loggers are never instantiated directly; always use logging.getLogger(name). A logger represents a single logging channel.",
+      "methods": [
+        {
+          "name": "debug",
+          "signature": "debug(msg, *args, **kwargs)",
+          "params": [
+            {
+              "name": "msg",
+              "type": "str",
+              "description": "The message format string."
+            },
+            {
+              "name": "args",
+              "type": "tuple",
+              "description": "Arguments merged into msg using string formatting."
+            },
+            {
+              "name": "exc_info",
+              "type": "bool",
+              "description": "If true, exception information is added to the message."
+            }
+          ],
+          "returns": {
+            "type": "None",
+            "description": "No return value."
+          },
+          "description": "Log a message with level DEBUG on this logger."
+        },
+        {
+          "name": "info",
+          "signature": "info(msg, *args, **kwargs)",
+          "params": [
+            {
+              "name": "msg",
+              "type": "str",
+              "description": "The message format string."
+            },
+            {
+              "name": "args",
+              "type": "tuple",
+              "description": "Arguments merged into msg using string formatting."
+            },
+            {
+              "name": "exc_info",
+              "type": "bool",
+              "description": "If true, exception information is added to the message."
+            }
+          ],
+          "returns": {
+            "type": "None",
+            "description": "No return value."
+          },
+          "description": "Log a message with level INFO on this logger."
+        },
+        {
+          "name": "warning",
+          "signature": "warning(msg, *args, **kwargs)",
+          "params": [
+            {
+              "name": "msg",
+              "type": "str",
+              "description": "The message format string."
+            },
+            {
+              "name": "args",
+              "type": "tuple",
+              "description": "Arguments merged into msg using string formatting."
+            },
+            {
+              "name": "exc_info",
+              "type": "bool",
+              "description": "If true, exception information is added to the message."
+            }
+          ],
+          "returns": {
+            "type": "None",
+            "description": "No return value."
+          },
+          "description": "Log a message with level WARNING on this logger."
+        },
+        {
+          "name": "error",
+          "signature": "error(msg, *args, **kwargs)",
+          "params": [
+            {
+              "name": "msg",
+              "type": "str",
+              "description": "The message format string."
+            },
+            {
+              "name": "args",
+              "type": "tuple",
+              "description": "Arguments merged into msg using string formatting."
+            },
+            {
+              "name": "exc_info",
+              "type": "bool",
+              "description": "If true, exception information is added to the message."
+            }
+          ],
+          "returns": {
+            "type": "None",
+            "description": "No return value."
+          },
+          "description": "Log a message with level ERROR on this logger."
+        },
+        {
+          "name": "critical",
+          "signature": "critical(msg, *args, **kwargs)",
+          "params": [
+            {
+              "name": "msg",
+              "type": "str",
+              "description": "The message format string."
+            },
+            {
+              "name": "args",
+              "type": "tuple",
+              "description": "Arguments merged into msg using string formatting."
+            },
+            {
+              "name": "exc_info",
+              "type": "bool",
+              "description": "If true, exception information is added to the message."
+            }
+          ],
+          "returns": {
+            "type": "None",
+            "description": "No return value."
+          },
+          "description": "Log a message with level CRITICAL on this logger."
+        },
+        {
+          "name": "exception",
+          "signature": "exception(msg, *args)",
+          "params": [
+            {
+              "name": "msg",
+              "type": "str",
+              "description": "The message format string."
+            },
+            {
+              "name": "args",
+              "type": "tuple",
+              "description": "Arguments merged into msg using string formatting."
+            }
+          ],
+          "returns": {
+            "type": "None",
+            "description": "No return value."
+          },
+          "description": "Log a message with level ERROR on this logger, with exception information. Should only be called from an exception handler."
+        },
+        {
+          "name": "log",
+          "signature": "log(level, msg, *args, **kwargs)",
+          "params": [
+            {
+              "name": "level",
+              "type": "int",
+              "description": "The numeric logging level."
+            },
+            {
+              "name": "msg",
+              "type": "str",
+              "description": "The message format string."
+            },
+            {
+              "name": "args",
+              "type": "tuple",
+              "description": "Arguments merged into msg using string formatting."
+            },
+            {
+              "name": "exc_info",
+              "type": "bool",
+              "description": "If true, exception information is added to the message."
+            }
+          ],
+          "returns": {
+            "type": "None",
+            "description": "No return value."
+          },
+          "description": "Log a message with the given integer level on this logger."
+        },
+        {
+          "name": "setLevel",
+          "signature": "setLevel(level)",
+          "params": [
+            {
+              "name": "level",
+              "type": "int|str",
+              "description": "The logging level, as an integer or string name (e.g. 'INFO')."
+            }
+          ],
+          "returns": {
+            "type": "None",
+            "description": "No return value."
+          },
+          "description": "Set the logging level of this logger. Messages below this level will be ignored."
+        },
+        {
+          "name": "addHandler",
+          "signature": "addHandler(hdlr)",
+          "params": [
+            {
+              "name": "hdlr",
+              "type": "Handler",
+              "description": "A handler to add to this logger."
+            }
+          ],
+          "returns": {
+            "type": "None",
+            "description": "No return value."
+          },
+          "description": "Add the specified handler to this logger."
+        },
+        {
+          "name": "removeHandler",
+          "signature": "removeHandler(hdlr)",
+          "params": [
+            {
+              "name": "hdlr",
+              "type": "Handler",
+              "description": "A handler to remove from this logger."
+            }
+          ],
+          "returns": {
+            "type": "None",
+            "description": "No return value."
+          },
+          "description": "Remove the specified handler from this logger."
+        },
+        {
+          "name": "addFilter",
+          "signature": "addFilter(filt)",
+          "params": [
+            {
+              "name": "filt",
+              "type": "Filter",
+              "description": "A filter to add to this logger."
+            }
+          ],
+          "returns": {
+            "type": "None",
+            "description": "No return value."
+          },
+          "description": "Add the specified filter to this logger."
+        },
+        {
+          "name": "removeFilter",
+          "signature": "removeFilter(filt)",
+          "params": [
+            {
+              "name": "filt",
+              "type": "Filter",
+              "description": "A filter to remove from this logger."
+            }
+          ],
+          "returns": {
+            "type": "None",
+            "description": "No return value."
+          },
+          "description": "Remove the specified filter from this logger."
+        },
+        {
+          "name": "isEnabledFor",
+          "signature": "isEnabledFor(level)",
+          "params": [
+            {
+              "name": "level",
+              "type": "int",
+              "description": "The numeric logging level to check."
+            }
+          ],
+          "returns": {
+            "type": "bool",
+            "description": "True if a message at the given level would be processed by this logger."
+          },
+          "description": "Check if this logger is enabled for the given level."
+        },
+        {
+          "name": "getEffectiveLevel",
+          "signature": "getEffectiveLevel()",
+          "params": [],
+          "returns": {
+            "type": "int",
+            "description": "The effective logging level."
+          },
+          "description": "Return the effective level for this logger. If a level has been set, return it. Otherwise, traverse to the parent until a level is found."
+        },
+        {
+          "name": "getChild",
+          "signature": "getChild(suffix)",
+          "params": [
+            {
+              "name": "suffix",
+              "type": "str",
+              "description": "The suffix to append to this logger's name."
+            }
+          ],
+          "returns": {
+            "type": "Logger",
+            "description": "A child logger."
+          },
+          "description": "Return a logger which is a descendant of this logger, determined by the suffix."
+        },
+        {
+          "name": "hasHandlers",
+          "signature": "hasHandlers()",
+          "params": [],
+          "returns": {
+            "type": "bool",
+            "description": "True if a handler was found."
+          },
+          "description": "Check if this logger has any handlers configured. Looks up the logger hierarchy."
+        }
+      ],
+      "fields": [
+        {
+          "name": "propagate",
+          "type": "bool",
+          "description": "If true, events are passed to handlers of higher level loggers. Defaults to True."
+        },
+        {
+          "name": "handlers",
+          "type": "list",
+          "description": "The list of handlers directly attached to this logger instance."
+        },
+        {
+          "name": "level",
+          "type": "int",
+          "description": "The logging level set for this logger."
+        },
+        {
+          "name": "name",
+          "type": "str",
+          "description": "The name of this logger."
+        },
+        {
+          "name": "parent",
+          "type": "Logger",
+          "description": "The parent logger in the hierarchy."
+        }
+      ]
+    },
+    {
+      "name": "Handler",
+      "description": "Base class for handlers. Handlers send log records to the appropriate destination. Never instantiate directly; use subclasses.",
+      "constructors": [
+        {
+          "signature": "Handler(level=NOTSET)",
+          "params": [
+            {
+              "name": "level",
+              "type": "int",
+              "description": "Initial logging level. Defaults to NOTSET (all messages processed)."
+            }
+          ],
+          "description": "Initialize the handler with an optional level."
+        }
+      ],
+      "methods": [
+        {
+          "name": "emit",
+          "signature": "emit(record)",
+          "params": [
+            {
+              "name": "record",
+              "type": "LogRecord",
+              "description": "The log record to emit."
+            }
+          ],
+          "returns": {
+            "type": "None",
+            "description": "No return value."
+          },
+          "description": "Do whatever it takes to actually log the specified record. Subclasses must implement this."
+        },
+        {
+          "name": "handle",
+          "signature": "handle(record)",
+          "params": [
+            {
+              "name": "record",
+              "type": "LogRecord",
+              "description": "The log record to handle."
+            }
+          ],
+          "returns": {
+            "type": "None",
+            "description": "No return value."
+          },
+          "description": "Conditionally emit the specified record, depending on filters which may have been added."
+        },
+        {
+          "name": "setFormatter",
+          "signature": "setFormatter(fmt)",
+          "params": [
+            {
+              "name": "fmt",
+              "type": "Formatter",
+              "description": "The formatter to use for this handler."
+            }
+          ],
+          "returns": {
+            "type": "None",
+            "description": "No return value."
+          },
+          "description": "Set the Formatter for this handler."
+        },
+        {
+          "name": "addFilter",
+          "signature": "addFilter(filt)",
+          "params": [
+            {
+              "name": "filt",
+              "type": "Filter",
+              "description": "A filter to add."
+            }
+          ],
+          "returns": {
+            "type": "None",
+            "description": "No return value."
+          },
+          "description": "Add the specified filter to this handler."
+        },
+        {
+          "name": "removeFilter",
+          "signature": "removeFilter(filt)",
+          "params": [
+            {
+              "name": "filt",
+              "type": "Filter",
+              "description": "A filter to remove."
+            }
+          ],
+          "returns": {
+            "type": "None",
+            "description": "No return value."
+          },
+          "description": "Remove the specified filter from this handler."
+        },
+        {
+          "name": "setLevel",
+          "signature": "setLevel(level)",
+          "params": [
+            {
+              "name": "level",
+              "type": "int|str",
+              "description": "The logging level."
+            }
+          ],
+          "returns": {
+            "type": "None",
+            "description": "No return value."
+          },
+          "description": "Set the logging level of this handler. Records below this level are ignored."
+        },
+        {
+          "name": "close",
+          "signature": "close()",
+          "params": [],
+          "returns": {
+            "type": "None",
+            "description": "No return value."
+          },
+          "description": "Tidy up any resources used by the handler."
+        },
+        {
+          "name": "flush",
+          "signature": "flush()",
+          "params": [],
+          "returns": {
+            "type": "None",
+            "description": "No return value."
+          },
+          "description": "Ensure all logging output has been flushed."
+        }
+      ]
+    },
+    {
+      "name": "Formatter",
+      "description": "Responsible for converting a LogRecord to an output string to be interpreted by a human or external system.",
+      "constructors": [
+        {
+          "signature": "Formatter(fmt=None, datefmt=None)",
+          "params": [
+            {
+              "name": "fmt",
+              "type": "str",
+              "description": "A format string using LogRecord attributes (e.g. '%(name)s - %(levelname)s - %(message)s'). Defaults to raw message."
+            },
+            {
+              "name": "datefmt",
+              "type": "str",
+              "description": "A date/time format string for time.strftime(). Defaults to ISO8601."
+            }
+          ],
+          "description": "Initialize the formatter with optional format and date format strings."
+        }
+      ],
+      "methods": [
+        {
+          "name": "format",
+          "signature": "format(record)",
+          "params": [
+            {
+              "name": "record",
+              "type": "LogRecord",
+              "description": "The log record to format."
+            }
+          ],
+          "returns": {
+            "type": "str",
+            "description": "The formatted log string."
+          },
+          "description": "Format the specified record as text."
+        },
+        {
+          "name": "formatTime",
+          "signature": "formatTime(record, datefmt=None)",
+          "params": [
+            {
+              "name": "record",
+              "type": "LogRecord",
+              "description": "The log record."
+            },
+            {
+              "name": "datefmt",
+              "type": "str",
+              "description": "Optional date format string override."
+            }
+          ],
+          "returns": {
+            "type": "str",
+            "description": "The formatted time string."
+          },
+          "description": "Format the creation time of the record."
+        },
+        {
+          "name": "formatException",
+          "signature": "formatException(exc_info)",
+          "params": [
+            {
+              "name": "exc_info",
+              "type": "tuple",
+              "description": "Exception tuple (type, value, traceback)."
+            }
+          ],
+          "returns": {
+            "type": "str",
+            "description": "The formatted exception string."
+          },
+          "description": "Format the specified exception information as a string."
+        }
+      ]
+    },
+    {
+      "name": "StreamHandler",
+      "description": "A handler that writes logging output to a stream such as sys.stdout or sys.stderr.",
+      "constructors": [
+        {
+          "signature": "StreamHandler(stream=None)",
+          "params": [
+            {
+              "name": "stream",
+              "type": "stream",
+              "description": "The output stream. Defaults to sys.stderr."
+            }
+          ],
+          "description": "Initialize the handler with the given stream."
+        }
+      ],
+      "methods": [
+        {
+          "name": "emit",
+          "signature": "emit(record)",
+          "params": [
+            {
+              "name": "record",
+              "type": "LogRecord",
+              "description": "The log record to emit."
+            }
+          ],
+          "returns": {
+            "type": "None",
+            "description": "No return value."
+          },
+          "description": "Write the formatted record to the stream."
+        },
+        {
+          "name": "flush",
+          "signature": "flush()",
+          "params": [],
+          "returns": {
+            "type": "None",
+            "description": "No return value."
+          },
+          "description": "Flush the stream."
+        }
+      ]
+    },
+    {
+      "name": "FileHandler",
+      "description": "A handler that writes formatted logging records to disk files.",
+      "constructors": [
+        {
+          "signature": "FileHandler(filename, mode='a', encoding=None, delay=False)",
+          "params": [
+            {
+              "name": "filename",
+              "type": "str",
+              "description": "Path to the log file."
+            },
+            {
+              "name": "mode",
+              "type": "str",
+              "description": "File open mode. Defaults to 'a' (append)."
+            },
+            {
+              "name": "encoding",
+              "type": "str",
+              "description": "File encoding. If None, the default encoding is used."
+            },
+            {
+              "name": "delay",
+              "type": "bool",
+              "description": "If true, file opening is deferred until the first emit() call."
+            }
+          ],
+          "description": "Open the specified file and use it as the stream for logging."
+        }
+      ],
+      "methods": [
+        {
+          "name": "emit",
+          "signature": "emit(record)",
+          "params": [
+            {
+              "name": "record",
+              "type": "LogRecord",
+              "description": "The log record to emit."
+            }
+          ],
+          "returns": {
+            "type": "None",
+            "description": "No return value."
+          },
+          "description": "Write the formatted record to the file."
+        },
+        {
+          "name": "close",
+          "signature": "close()",
+          "params": [],
+          "returns": {
+            "type": "None",
+            "description": "No return value."
+          },
+          "description": "Close the file."
+        }
+      ]
+    },
+    {
+      "name": "NullHandler",
+      "description": "A no-op handler. Used by library authors to prevent 'No handler found' warnings. Available since Python 2.7.",
+      "constructors": [
+        {
+          "signature": "NullHandler()",
+          "params": [],
+          "description": "Create a NullHandler instance."
+        }
+      ],
+      "methods": [
+        {
+          "name": "emit",
+          "signature": "emit(record)",
+          "params": [
+            {
+              "name": "record",
+              "type": "LogRecord",
+              "description": "The log record (ignored)."
+            }
+          ],
+          "returns": {
+            "type": "None",
+            "description": "No return value."
+          },
+          "description": "This method does nothing."
+        }
+      ]
+    },
+    {
+      "name": "Filter",
+      "description": "A filter that allows only records from a specific logger and its children to pass through.",
+      "constructors": [
+        {
+          "signature": "Filter(name='')",
+          "params": [
+            {
+              "name": "name",
+              "type": "str",
+              "description": "Logger name prefix. If empty, all records are allowed."
+            }
+          ],
+          "description": "Initialize with the name of the logger which, together with its children, will have its events allowed through."
+        }
+      ],
+      "methods": [
+        {
+          "name": "filter",
+          "signature": "filter(record)",
+          "params": [
+            {
+              "name": "record",
+              "type": "LogRecord",
+              "description": "The log record to check."
+            }
+          ],
+          "returns": {
+            "type": "bool",
+            "description": "True if the record should be logged, False otherwise."
+          },
+          "description": "Determine if the specified record should be logged. Returns True if the record should be processed."
+        }
+      ]
+    }
+  ],
+  "constants": [
+    {
+      "name": "DEBUG",
+      "type": "int",
+      "description": "Numeric level 10. Detailed information, typically of interest only when diagnosing problems."
+    },
+    {
+      "name": "INFO",
+      "type": "int",
+      "description": "Numeric level 20. Confirmation that things are working as expected."
+    },
+    {
+      "name": "WARNING",
+      "type": "int",
+      "description": "Numeric level 30. An indication that something unexpected happened or may happen."
+    },
+    {
+      "name": "ERROR",
+      "type": "int",
+      "description": "Numeric level 40. Due to a more serious problem, the software has not been able to perform some function."
+    },
+    {
+      "name": "CRITICAL",
+      "type": "int",
+      "description": "Numeric level 50. A serious error indicating the program may be unable to continue running."
+    },
+    {
+      "name": "NOTSET",
+      "type": "int",
+      "description": "Numeric level 0. When set on a logger, the parent's level is used to determine effective level."
+    }
+  ],
+  "docs_url": "https://docs.python.org/2.7/library/logging.html"
+}

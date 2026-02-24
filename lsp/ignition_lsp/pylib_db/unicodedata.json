@@ -1,0 +1,253 @@
+{
+  "module": "unicodedata",
+  "description": "Access to the Unicode Character Database. Provides access to every character property defined in the Unicode Character Database.",
+  "functions": [
+    {
+      "name": "lookup",
+      "signature": "lookup(name)",
+      "params": [
+        {
+          "name": "name",
+          "type": "str",
+          "description": "The Unicode character name to look up (e.g. 'LATIN SMALL LETTER A')."
+        }
+      ],
+      "returns": {
+        "type": "unicode",
+        "description": "The character corresponding to the given name."
+      },
+      "description": "Look up a character by name. If a character with the given name is found, return the corresponding character. If not found, KeyError is raised.",
+      "deprecated": false
+    },
+    {
+      "name": "name",
+      "signature": "name(unichr[, default])",
+      "params": [
+        {
+          "name": "unichr",
+          "type": "unicode",
+          "description": "A single Unicode character."
+        },
+        {
+          "name": "default",
+          "type": "str",
+          "description": "Value to return if no name is defined. If not given and the name is not defined, ValueError is raised.",
+          "optional": true
+        }
+      ],
+      "returns": {
+        "type": "str",
+        "description": "The name assigned to the character as a string."
+      },
+      "description": "Returns the name assigned to the Unicode character unichr as a string. If no name is defined, default is returned, or ValueError is raised if no default is given.",
+      "deprecated": false
+    },
+    {
+      "name": "decimal",
+      "signature": "decimal(unichr[, default])",
+      "params": [
+        {
+          "name": "unichr",
+          "type": "unicode",
+          "description": "A single Unicode character."
+        },
+        {
+          "name": "default",
+          "type": "object",
+          "description": "Value to return if the character has no decimal value. If not given, ValueError is raised.",
+          "optional": true
+        }
+      ],
+      "returns": {
+        "type": "int",
+        "description": "The decimal value assigned to the character as an integer."
+      },
+      "description": "Returns the decimal value assigned to the Unicode character unichr as an integer. If no such value is defined, default is returned, or ValueError is raised if no default is given.",
+      "deprecated": false
+    },
+    {
+      "name": "digit",
+      "signature": "digit(unichr[, default])",
+      "params": [
+        {
+          "name": "unichr",
+          "type": "unicode",
+          "description": "A single Unicode character."
+        },
+        {
+          "name": "default",
+          "type": "object",
+          "description": "Value to return if the character has no digit value. If not given, ValueError is raised.",
+          "optional": true
+        }
+      ],
+      "returns": {
+        "type": "int",
+        "description": "The digit value assigned to the character as an integer."
+      },
+      "description": "Returns the digit value assigned to the Unicode character unichr as an integer. If no such value is defined, default is returned, or ValueError is raised if no default is given.",
+      "deprecated": false
+    },
+    {
+      "name": "numeric",
+      "signature": "numeric(unichr[, default])",
+      "params": [
+        {
+          "name": "unichr",
+          "type": "unicode",
+          "description": "A single Unicode character."
+        },
+        {
+          "name": "default",
+          "type": "object",
+          "description": "Value to return if the character has no numeric value. If not given, ValueError is raised.",
+          "optional": true
+        }
+      ],
+      "returns": {
+        "type": "float",
+        "description": "The numeric value assigned to the character as a float."
+      },
+      "description": "Returns the numeric value assigned to the Unicode character unichr as a float. If no such value is defined, default is returned, or ValueError is raised if no default is given.",
+      "deprecated": false
+    },
+    {
+      "name": "category",
+      "signature": "category(unichr)",
+      "params": [
+        {
+          "name": "unichr",
+          "type": "unicode",
+          "description": "A single Unicode character."
+        }
+      ],
+      "returns": {
+        "type": "str",
+        "description": "The general category assigned to the character as a string (e.g. 'Lu' for uppercase letter, 'Nd' for decimal digit)."
+      },
+      "description": "Returns the general category assigned to the Unicode character unichr as a string.",
+      "deprecated": false
+    },
+    {
+      "name": "bidirectional",
+      "signature": "bidirectional(unichr)",
+      "params": [
+        {
+          "name": "unichr",
+          "type": "unicode",
+          "description": "A single Unicode character."
+        }
+      ],
+      "returns": {
+        "type": "str",
+        "description": "The bidirectional category as string (e.g. 'L' for left-to-right, 'R' for right-to-left)."
+      },
+      "description": "Returns the bidirectional category assigned to the Unicode character unichr as a string. If no such value is defined, an empty string is returned.",
+      "deprecated": false
+    },
+    {
+      "name": "combining",
+      "signature": "combining(unichr)",
+      "params": [
+        {
+          "name": "unichr",
+          "type": "unicode",
+          "description": "A single Unicode character."
+        }
+      ],
+      "returns": {
+        "type": "int",
+        "description": "The canonical combining class assigned to the character as an integer."
+      },
+      "description": "Returns the canonical combining class assigned to the Unicode character unichr as an integer. Returns 0 if no combining class is defined.",
+      "deprecated": false
+    },
+    {
+      "name": "east_asian_width",
+      "signature": "east_asian_width(unichr)",
+      "params": [
+        {
+          "name": "unichr",
+          "type": "unicode",
+          "description": "A single Unicode character."
+        }
+      ],
+      "returns": {
+        "type": "str",
+        "description": "The east Asian width as a string (one of 'F', 'H', 'W', 'Na', 'A', 'N')."
+      },
+      "description": "Returns the east Asian width assigned to the Unicode character unichr as a string.",
+      "deprecated": false
+    },
+    {
+      "name": "mirrored",
+      "signature": "mirrored(unichr)",
+      "params": [
+        {
+          "name": "unichr",
+          "type": "unicode",
+          "description": "A single Unicode character."
+        }
+      ],
+      "returns": {
+        "type": "int",
+        "description": "1 if the character has been identified as a mirrored character in bidirectional text, 0 otherwise."
+      },
+      "description": "Returns the mirrored property assigned to the Unicode character unichr as an integer.",
+      "deprecated": false
+    },
+    {
+      "name": "decomposition",
+      "signature": "decomposition(unichr)",
+      "params": [
+        {
+          "name": "unichr",
+          "type": "unicode",
+          "description": "A single Unicode character."
+        }
+      ],
+      "returns": {
+        "type": "str",
+        "description": "The character decomposition mapping as a string, or an empty string if no decomposition exists."
+      },
+      "description": "Returns the character decomposition mapping assigned to the Unicode character unichr as a string. An empty string is returned if no such mapping is defined.",
+      "deprecated": false
+    },
+    {
+      "name": "normalize",
+      "signature": "normalize(form, unistr)",
+      "params": [
+        {
+          "name": "form",
+          "type": "str",
+          "description": "The normalization form. Must be one of 'NFC', 'NFKC', 'NFD', or 'NFKD'."
+        },
+        {
+          "name": "unistr",
+          "type": "unicode",
+          "description": "The Unicode string to normalize."
+        }
+      ],
+      "returns": {
+        "type": "unicode",
+        "description": "The normal form of the Unicode string."
+      },
+      "description": "Return the normal form 'form' for the Unicode string unistr. Valid values for form are 'NFC', 'NFKC', 'NFD', and 'NFKD'.",
+      "deprecated": false
+    }
+  ],
+  "classes": [],
+  "constants": [
+    {
+      "name": "unidata_version",
+      "type": "str",
+      "description": "The version of the Unicode database used in this module (e.g. '5.2.0')."
+    },
+    {
+      "name": "ucd_3_2_0",
+      "type": "object",
+      "description": "An object that has the same methods as the module-level functions, but uses Unicode database version 3.2 instead of the latest version. This is needed for IDNA (RFC 3490)."
+    }
+  ],
+  "docs_url": "https://docs.python.org/2.7/library/unicodedata.html"
+}

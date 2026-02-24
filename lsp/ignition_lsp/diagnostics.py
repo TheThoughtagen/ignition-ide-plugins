@@ -12,6 +12,8 @@ from typing import List, Union
 from lsprotocol.types import Diagnostic, DiagnosticSeverity, Position, Range
 from pygls.workspace import TextDocument
 
+from .uri_utils import is_expression_buffer, is_virtual_buffer
+
 logger = logging.getLogger(__name__)
 
 # ---------------------------------------------------------------------------
@@ -372,8 +374,8 @@ def get_diagnostics(document: TextDocument) -> List[Diagnostic]:
     content = document.source
 
     # Virtual buffers ([Ignition: prefix)
-    if "[Ignition:" in uri:
-        if "/Expression:" in uri or "/Expression]" in uri:
+    if is_virtual_buffer(uri):
+        if is_expression_buffer(uri):
             logger.debug(f"Running expression diagnostics on virtual buffer: {uri}")
             return _get_expression_diagnostics(content, uri)
         logger.debug(f"Running Jython diagnostics on virtual buffer: {uri}")

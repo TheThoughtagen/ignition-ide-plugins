@@ -67,6 +67,7 @@ class IgnitionLanguageServer(LanguageServer):
         self.diagnostics_enabled = True
         self.api_loader = None
         self.java_loader = None
+        self.pylib_loader = None
         self.project_index = None
         self.symbol_cache = None
         self._scan_in_progress = False
@@ -91,6 +92,16 @@ class IgnitionLanguageServer(LanguageServer):
         except Exception as e:
             logger.error(f"Failed to initialize Java loader: {e}", exc_info=True)
             self.java_loader = None
+
+    def initialize_pylib_loader(self):
+        """Initialize the Python stdlib loader with module definitions."""
+        try:
+            from ignition_lsp.pylib_loader import PylibLoader
+            self.pylib_loader = PylibLoader()
+            logger.info(f"Pylib loader initialized with {len(self.pylib_loader.modules)} modules")
+        except Exception as e:
+            logger.error(f"Failed to initialize pylib loader: {e}", exc_info=True)
+            self.pylib_loader = None
 
     def scan_project(self, root_path: str) -> None:
         """Scan an Ignition project directory and build the script index."""
@@ -199,6 +210,7 @@ server = IgnitionLanguageServer("ignition-lsp", "v0.1.0")
 # Initialize API loaders and symbol cache on server creation
 server.initialize_api_loader()
 server.initialize_java_loader()
+server.initialize_pylib_loader()
 
 from ignition_lsp.script_symbols import SymbolCache
 server.symbol_cache = SymbolCache()
@@ -312,7 +324,7 @@ def completion(ls: IgnitionLanguageServer, params: CompletionParams) -> Optional
         try:
             from ignition_lsp.completion import get_completions
             doc = ls.workspace.get_text_document(params.text_document.uri)
-            return get_completions(doc, params.position, ls.api_loader, ls.project_index, ls.java_loader, ls.symbol_cache)
+            return get_completions(doc, params.position, ls.api_loader, ls.project_index, ls.java_loader, ls.symbol_cache, ls.pylib_loader)
         except Exception as e:
             logger.error(f"Error getting completions: {e}", exc_info=True)
 
@@ -338,7 +350,7 @@ def hover(ls: IgnitionLanguageServer, params: HoverParams) -> Optional[Hover]:
         try:
             from ignition_lsp.hover import get_hover_info
             doc = ls.workspace.get_text_document(params.text_document.uri)
-            return get_hover_info(doc, params.position, ls.api_loader, ls.java_loader, ls.project_index, ls.symbol_cache)
+            return get_hover_info(doc, params.position, ls.api_loader, ls.java_loader, ls.project_index, ls.symbol_cache, ls.pylib_loader)
         except Exception as e:
             logger.error(f"Error getting hover info: {e}", exc_info=True)
 

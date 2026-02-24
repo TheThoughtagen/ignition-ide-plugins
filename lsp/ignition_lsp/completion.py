@@ -18,7 +18,10 @@ from pygls.workspace import TextDocument
 from .api_loader import IgnitionAPILoader
 from .java_loader import JavaAPILoader
 from .project_scanner import ProjectIndex
+from .pylib_loader import PylibLoader
+from .pylib_scope import PylibContext
 from .script_symbols import SymbolCache
+from .uri_utils import is_expression_buffer
 
 logger = logging.getLogger(__name__)
 
@@ -46,12 +49,11 @@ def get_completions(
     project_index: Optional[ProjectIndex] = None,
     java_loader: Optional[JavaAPILoader] = None,
     symbol_cache: Optional[SymbolCache] = None,
+    pylib_loader: Optional[PylibLoader] = None,
 ) -> CompletionList:
     """Generate completion items based on context."""
     # Expression completions for virtual expression buffers
-    if "[Ignition:" in document.uri and (
-        "/Expression:" in document.uri or "/Expression]" in document.uri
-    ):
+    if is_expression_buffer(document.uri):
         return _get_expression_completions(document, position)
 
     # JSON completions for Perspective views
@@ -71,6 +73,15 @@ def get_completions(
             java_items = _get_java_completions(java_ctx, java_loader)
             if java_items:
                 return CompletionList(is_incomplete=False, items=java_items)
+
+    # Python stdlib import / module member completions
+    if pylib_loader:
+        from .pylib_scope import detect_pylib_context
+        pylib_ctx = detect_pylib_context(document, position, pylib_loader)
+        if pylib_ctx:
+            pylib_items = _get_pylib_completions(pylib_ctx, pylib_loader)
+            if pylib_items:
+                return CompletionList(is_incomplete=False, items=pylib_items)
 
     context = get_completion_context(document, position)
     logger.info(f"Completion context: '{context}'")
@@ -683,4 +694,209 @@ def _get_java_constructor_completions(context) -> List[CompletionItem]:
                 sort_text=f"0{i}",
             )
         )
+    return items
+
+
+# ── Python Stdlib Completions ────────────────────────────────────────
+
+
+def _get_pylib_completions(
+    context: PylibContext, pylib_loader: PylibLoader,
+) -> List[CompletionItem]:
+    """Route Python stdlib completion by context type."""
+    from .pylib_scope import PylibContextType
+
+    if context.type == PylibContextType.IMPORT_MODULE:
+        return _get_pylib_import_module_completions(context, pylib_loader)
+    elif context.type == PylibContextType.FROM_MODULE:
+        return _get_pylib_from_module_completions(context)
+    elif context.type == PylibContextType.MODULE_MEMBER:
+        return _get_pylib_module_member_completions(context)
+    elif context.type == PylibContextType.CLASS_MEMBER:
+        return _get_pylib_class_member_completions(context)
+    return []
+
+
+def _get_pylib_import_module_completions(
+    context: PylibContext, pylib_loader: PylibLoader
+) -> List[CompletionItem]:
+    """Offer module names for 'import ' or 'from '."""
+    items = []
+    for mod_name in pylib_loader.get_all_module_names():
+        if mod_name == "__builtin__":
+            continue  # Don't suggest importing builtins
+        if context.partial and not mod_name.lower().startswith(context.partial.lower()):
+            continue
+        module = pylib_loader.get_module(mod_name)
+        items.append(
+            CompletionItem(
+                label=mod_name,
+                kind=CompletionItemKind.Module,
+                detail=module.description if module else "",
+                documentation=MarkupContent(
+                    kind=MarkupKind.Markdown,
+                    value=module.get_markdown_doc() if module else "",
+                ),
+            )
+        )
+    return items
+
+
+def _get_pylib_from_module_completions(context: PylibContext) -> List[CompletionItem]:
+    """Offer module members for 'from json import '."""
+    module = context.module
+    if not module:
+        return []
+
+    items = []
+
+    for func in module.functions:
+        if context.partial and not func.name.lower().startswith(context.partial.lower()):
+            continue
+        items.append(
+            CompletionItem(
+                label=func.name,
+                kind=CompletionItemKind.Function,
+                detail=func.signature,
+                documentation=MarkupContent(
+                    kind=MarkupKind.Markdown,
+                    value=func.description,
+                ),
+            )
+        )
+
+    for cls in module.classes:
+        if context.partial and not cls.name.lower().startswith(context.partial.lower()):
+            continue
+        items.append(
+            CompletionItem(
+                label=cls.name,
+                kind=CompletionItemKind.Class,
+                detail=f"class {cls.name}",
+                documentation=MarkupContent(
+                    kind=MarkupKind.Markdown,
+                    value=cls.description,
+                ),
+            )
+        )
+
+    for const in module.constants:
+        if context.partial and not const.name.lower().startswith(context.partial.lower()):
+            continue
+        items.append(
+            CompletionItem(
+                label=const.name,
+                kind=CompletionItemKind.Constant,
+                detail=f"{const.type}",
+                documentation=MarkupContent(
+                    kind=MarkupKind.Markdown,
+                    value=const.description,
+                ),
+            )
+        )
+
+    return items
+
+
+def _get_pylib_module_member_completions(context: PylibContext) -> List[CompletionItem]:
+    """Offer functions/classes/constants for 'json.'."""
+    module = context.module
+    if not module:
+        return []
+
+    items = []
+
+    for func in module.functions:
+        if context.partial and not func.name.lower().startswith(context.partial.lower()):
+            continue
+        items.append(
+            CompletionItem(
+                label=func.name,
+                kind=CompletionItemKind.Function,
+                detail=func.signature,
+                documentation=MarkupContent(
+                    kind=MarkupKind.Markdown,
+                    value=func.get_markdown_doc(module.name),
+                ),
+                insert_text=func.get_completion_snippet(),
+                insert_text_format=InsertTextFormat.Snippet,
+                deprecated=func.deprecated,
+            )
+        )
+
+    for cls in module.classes:
+        if context.partial and not cls.name.lower().startswith(context.partial.lower()):
+            continue
+        items.append(
+            CompletionItem(
+                label=cls.name,
+                kind=CompletionItemKind.Class,
+                detail=f"class {cls.name}",
+                documentation=MarkupContent(
+                    kind=MarkupKind.Markdown,
+                    value=cls.get_markdown_doc(module.name),
+                ),
+            )
+        )
+
+    for const in module.constants:
+        if context.partial and not const.name.lower().startswith(context.partial.lower()):
+            continue
+        items.append(
+            CompletionItem(
+                label=const.name,
+                kind=CompletionItemKind.Constant,
+                detail=f"{const.type}",
+                documentation=MarkupContent(
+                    kind=MarkupKind.Markdown,
+                    value=const.description,
+                ),
+            )
+        )
+
+    return items
+
+
+def _get_pylib_class_member_completions(context: PylibContext) -> List[CompletionItem]:
+    """Offer methods/fields for 'json.JSONEncoder.' or imported class member access."""
+    cls = context.py_class
+    if not cls:
+        return []
+
+    items = []
+
+    for method in cls.methods:
+        if context.partial and not method.name.lower().startswith(context.partial.lower()):
+            continue
+        module_name = context.module.name if context.module else ""
+        items.append(
+            CompletionItem(
+                label=method.name,
+                kind=CompletionItemKind.Method,
+                detail=method.signature,
+                documentation=MarkupContent(
+                    kind=MarkupKind.Markdown,
+                    value=method.get_markdown_doc(f"{module_name}.{cls.name}" if module_name else cls.name),
+                ),
+                insert_text=method.get_completion_snippet(),
+                insert_text_format=InsertTextFormat.Snippet,
+                deprecated=method.deprecated,
+            )
+        )
+
+    for field in cls.fields:
+        if context.partial and not field.name.lower().startswith(context.partial.lower()):
+            continue
+        items.append(
+            CompletionItem(
+                label=field.name,
+                kind=CompletionItemKind.Field,
+                detail=field.type,
+                documentation=MarkupContent(
+                    kind=MarkupKind.Markdown,
+                    value=field.description,
+                ),
+            )
+        )
+
     return items

@@ -1,0 +1,202 @@
+{
+  "module": "functools",
+  "description": "Higher-order functions and operations on callable objects.",
+  "functions": [
+    {
+      "name": "partial",
+      "signature": "partial(func, *args, **kwargs)",
+      "params": [
+        {
+          "name": "func",
+          "type": "callable",
+          "description": "The function to partially apply"
+        },
+        {
+          "name": "*args",
+          "type": "any",
+          "description": "Positional arguments to freeze into the partial"
+        },
+        {
+          "name": "**kwargs",
+          "type": "any",
+          "description": "Keyword arguments to freeze into the partial"
+        }
+      ],
+      "returns": {
+        "type": "partial",
+        "description": "A partial object that behaves like func called with the frozen arguments"
+      },
+      "description": "Returns a new partial object which, when called, behaves like func called with the positional arguments args and keyword arguments kwargs. Additional arguments supplied to the call are appended.",
+      "deprecated": false
+    },
+    {
+      "name": "reduce",
+      "signature": "reduce(function, iterable[, initializer])",
+      "params": [
+        {
+          "name": "function",
+          "type": "callable",
+          "description": "A two-argument function to apply cumulatively"
+        },
+        {
+          "name": "iterable",
+          "type": "iterable",
+          "description": "The iterable to reduce"
+        },
+        {
+          "name": "initializer",
+          "type": "any",
+          "description": "Optional initial value placed before the items of the iterable in the reduction"
+        }
+      ],
+      "returns": {
+        "type": "any",
+        "description": "The single result of cumulatively applying function to the items"
+      },
+      "description": "Apply function of two arguments cumulatively to the items of iterable, from left to right, so as to reduce the iterable to a single value. Equivalent to the built-in reduce() in Python 2.7.",
+      "deprecated": false
+    },
+    {
+      "name": "wraps",
+      "signature": "wraps(wrapped[, assigned][, updated])",
+      "params": [
+        {
+          "name": "wrapped",
+          "type": "callable",
+          "description": "The original function being wrapped"
+        },
+        {
+          "name": "assigned",
+          "type": "tuple",
+          "description": "Tuple of attribute names to assign from wrapped to wrapper. Defaults to WRAPPER_ASSIGNMENTS."
+        },
+        {
+          "name": "updated",
+          "type": "tuple",
+          "description": "Tuple of attribute names to update from wrapped to wrapper. Defaults to WRAPPER_UPDATES."
+        }
+      ],
+      "returns": {
+        "type": "callable",
+        "description": "A decorator that applies update_wrapper to the decorated function"
+      },
+      "description": "A decorator factory that invokes update_wrapper() on the decorated function. Use this to preserve the original function's metadata (__name__, __doc__, etc.) when writing wrapper functions.",
+      "deprecated": false
+    },
+    {
+      "name": "update_wrapper",
+      "signature": "update_wrapper(wrapper, wrapped[, assigned][, updated])",
+      "params": [
+        {
+          "name": "wrapper",
+          "type": "callable",
+          "description": "The wrapper function to update"
+        },
+        {
+          "name": "wrapped",
+          "type": "callable",
+          "description": "The original function being wrapped"
+        },
+        {
+          "name": "assigned",
+          "type": "tuple",
+          "description": "Tuple of attribute names to assign directly. Defaults to WRAPPER_ASSIGNMENTS (__module__, __name__, __doc__)."
+        },
+        {
+          "name": "updated",
+          "type": "tuple",
+          "description": "Tuple of attribute names to update. Defaults to WRAPPER_UPDATES (__dict__)."
+        }
+      ],
+      "returns": {
+        "type": "callable",
+        "description": "The wrapper function with updated attributes"
+      },
+      "description": "Updates a wrapper function to look like the wrapped function by copying attributes such as __name__, __module__, __doc__, and __dict__.",
+      "deprecated": false
+    },
+    {
+      "name": "total_ordering",
+      "signature": "total_ordering(cls)",
+      "params": [
+        {
+          "name": "cls",
+          "type": "class",
+          "description": "A class that defines __eq__ and one of __lt__, __le__, __gt__, or __ge__"
+        }
+      ],
+      "returns": {
+        "type": "class",
+        "description": "The class with all rich comparison methods filled in"
+      },
+      "description": "Class decorator that fills in missing rich comparison methods (__lt__, __le__, __gt__, __ge__) given a class that defines __eq__ and one other. Avoids boilerplate of writing all comparison methods.",
+      "deprecated": false
+    },
+    {
+      "name": "cmp_to_key",
+      "signature": "cmp_to_key(func)",
+      "params": [
+        {
+          "name": "func",
+          "type": "callable",
+          "description": "An old-style comparison function that accepts two arguments and returns negative, zero, or positive"
+        }
+      ],
+      "returns": {
+        "type": "callable",
+        "description": "A key function suitable for use with sorted(), min(), max(), etc."
+      },
+      "description": "Transforms an old-style comparison function into a key function for use with tools that accept key functions (such as sorted(), min(), max()). Useful for converting Python 2 cmp-style comparisons.",
+      "deprecated": false
+    }
+  ],
+  "classes": [
+    {
+      "name": "partial",
+      "description": "A partial object returned by functools.partial(). When called, it behaves like the original function called with the frozen positional and keyword arguments, plus any additional arguments supplied at call time.",
+      "constructors": [
+        {
+          "signature": "partial(func, *args, **kwargs)",
+          "params": [
+            {
+              "name": "func",
+              "type": "callable",
+              "description": "The original callable to partially apply"
+            },
+            {
+              "name": "*args",
+              "type": "any",
+              "description": "Positional arguments to freeze"
+            },
+            {
+              "name": "**kwargs",
+              "type": "any",
+              "description": "Keyword arguments to freeze"
+            }
+          ],
+          "description": "Create a new partial object with the given function and frozen arguments."
+        }
+      ],
+      "methods": [],
+      "fields": [
+        {
+          "name": "func",
+          "type": "callable",
+          "description": "The original callable that will be invoked with frozen and additional arguments"
+        },
+        {
+          "name": "args",
+          "type": "tuple",
+          "description": "The frozen positional arguments prepended to calls to the partial object"
+        },
+        {
+          "name": "keywords",
+          "type": "dict",
+          "description": "The frozen keyword arguments supplied to calls to the partial object"
+        }
+      ]
+    }
+  ],
+  "constants": [],
+  "docs_url": "https://docs.python.org/2.7/library/functools.html"
+}

@@ -1,0 +1,331 @@
+{
+  "module": "urlparse",
+  "description": "Parse URLs into components and reassemble them. Supports relative URL resolution and query string parsing.",
+  "functions": [
+    {
+      "name": "urlparse",
+      "signature": "urlparse(urlstring, scheme='', allow_fragments=True)",
+      "params": [
+        {
+          "name": "urlstring",
+          "type": "str",
+          "description": "URL string to parse"
+        },
+        {
+          "name": "scheme",
+          "type": "str",
+          "description": "Default scheme to use if the URL has none"
+        },
+        {
+          "name": "allow_fragments",
+          "type": "bool",
+          "description": "If False, fragment identifiers are not recognized and are parsed as part of the preceding component"
+        }
+      ],
+      "returns": {
+        "type": "ParseResult",
+        "description": "A 6-tuple named tuple: (scheme, netloc, path, params, query, fragment)"
+      },
+      "description": "Parse a URL into six components. The URL is split into scheme, network location, path, parameters, query, and fragment identifier.",
+      "deprecated": false
+    },
+    {
+      "name": "urlunparse",
+      "signature": "urlunparse(parts)",
+      "params": [
+        {
+          "name": "parts",
+          "type": "tuple",
+          "description": "A 6-tuple of (scheme, netloc, path, params, query, fragment) as returned by urlparse"
+        }
+      ],
+      "returns": {
+        "type": "str",
+        "description": "A URL string constructed from the components"
+      },
+      "description": "Construct a URL from a tuple of components as returned by urlparse(). This may result in a slightly different but equivalent URL if the original had unnecessary delimiters.",
+      "deprecated": false
+    },
+    {
+      "name": "urlsplit",
+      "signature": "urlsplit(urlstring, scheme='', allow_fragments=True)",
+      "params": [
+        {
+          "name": "urlstring",
+          "type": "str",
+          "description": "URL string to parse"
+        },
+        {
+          "name": "scheme",
+          "type": "str",
+          "description": "Default scheme to use if the URL has none"
+        },
+        {
+          "name": "allow_fragments",
+          "type": "bool",
+          "description": "If False, fragment identifiers are not recognized"
+        }
+      ],
+      "returns": {
+        "type": "SplitResult",
+        "description": "A 5-tuple named tuple: (scheme, netloc, path, query, fragment)"
+      },
+      "description": "Parse a URL into five components. Similar to urlparse() but does not split the params from the path. Useful for URL schemes that do not use params.",
+      "deprecated": false
+    },
+    {
+      "name": "urlunsplit",
+      "signature": "urlunsplit(parts)",
+      "params": [
+        {
+          "name": "parts",
+          "type": "tuple",
+          "description": "A 5-tuple of (scheme, netloc, path, query, fragment) as returned by urlsplit"
+        }
+      ],
+      "returns": {
+        "type": "str",
+        "description": "A URL string constructed from the components"
+      },
+      "description": "Construct a URL from a tuple of components as returned by urlsplit(). This may result in a slightly different but equivalent URL.",
+      "deprecated": false
+    },
+    {
+      "name": "urljoin",
+      "signature": "urljoin(base, url, allow_fragments=True)",
+      "params": [
+        {
+          "name": "base",
+          "type": "str",
+          "description": "Base URL to resolve against"
+        },
+        {
+          "name": "url",
+          "type": "str",
+          "description": "Relative or absolute URL to join with the base"
+        },
+        {
+          "name": "allow_fragments",
+          "type": "bool",
+          "description": "If False, fragment identifiers are not recognized"
+        }
+      ],
+      "returns": {
+        "type": "str",
+        "description": "The resolved absolute URL"
+      },
+      "description": "Construct a full (absolute) URL by combining a base URL with a relative URL. Uses RFC 2396 semantics. If url is an absolute URL, the base is ignored.",
+      "deprecated": false
+    },
+    {
+      "name": "urldefrag",
+      "signature": "urldefrag(url)",
+      "params": [
+        {
+          "name": "url",
+          "type": "str",
+          "description": "URL string that may contain a fragment identifier"
+        }
+      ],
+      "returns": {
+        "type": "tuple",
+        "description": "A tuple (defragmented_url, fragment). If the URL has no fragment, fragment is the empty string."
+      },
+      "description": "Remove the fragment identifier from a URL. Returns a tuple of the URL without the fragment and the fragment itself.",
+      "deprecated": false
+    },
+    {
+      "name": "parse_qs",
+      "signature": "parse_qs(qs, keep_blank_values=False, strict_parsing=False)",
+      "params": [
+        {
+          "name": "qs",
+          "type": "str",
+          "description": "Query string to parse (e.g. 'key1=val1&key2=val2')"
+        },
+        {
+          "name": "keep_blank_values",
+          "type": "bool",
+          "description": "If True, include keys with blank values in the result"
+        },
+        {
+          "name": "strict_parsing",
+          "type": "bool",
+          "description": "If True, raise ValueError on parsing errors instead of silently ignoring them"
+        }
+      ],
+      "returns": {
+        "type": "dict",
+        "description": "Dictionary mapping parameter names to lists of values"
+      },
+      "description": "Parse a query string and return a dictionary. Each key maps to a list of values. Data is returned as strings. Percent-encoded sequences are decoded.",
+      "deprecated": false
+    },
+    {
+      "name": "parse_qsl",
+      "signature": "parse_qsl(qs, keep_blank_values=False, strict_parsing=False)",
+      "params": [
+        {
+          "name": "qs",
+          "type": "str",
+          "description": "Query string to parse (e.g. 'key1=val1&key2=val2')"
+        },
+        {
+          "name": "keep_blank_values",
+          "type": "bool",
+          "description": "If True, include keys with blank values in the result"
+        },
+        {
+          "name": "strict_parsing",
+          "type": "bool",
+          "description": "If True, raise ValueError on parsing errors instead of silently ignoring them"
+        }
+      ],
+      "returns": {
+        "type": "list",
+        "description": "List of (name, value) pairs as strings"
+      },
+      "description": "Parse a query string and return a list of (name, value) pairs. Useful when parameter order matters or when duplicate keys should be preserved in order.",
+      "deprecated": false
+    }
+  ],
+  "classes": [
+    {
+      "name": "ParseResult",
+      "description": "Named tuple result of urlparse(). A 6-tuple with additional properties for accessing URL components. Supports indexing and attribute access.",
+      "constructors": [],
+      "methods": [
+        {
+          "name": "geturl",
+          "signature": "geturl()",
+          "params": [],
+          "returns": {
+            "type": "str",
+            "description": "The reconstructed URL string"
+          },
+          "description": "Return the re-combined version of the original URL as a string.",
+          "deprecated": false
+        }
+      ],
+      "fields": [
+        {
+          "name": "scheme",
+          "type": "str",
+          "description": "URL scheme specifier (e.g. 'http', 'https', 'ftp')"
+        },
+        {
+          "name": "netloc",
+          "type": "str",
+          "description": "Network location part (e.g. 'user:pass@host:port')"
+        },
+        {
+          "name": "path",
+          "type": "str",
+          "description": "Hierarchical path (e.g. '/index.html')"
+        },
+        {
+          "name": "params",
+          "type": "str",
+          "description": "Parameters for last path element"
+        },
+        {
+          "name": "query",
+          "type": "str",
+          "description": "Query component (e.g. 'key=value&key2=value2')"
+        },
+        {
+          "name": "fragment",
+          "type": "str",
+          "description": "Fragment identifier (e.g. 'section1')"
+        },
+        {
+          "name": "hostname",
+          "type": "str",
+          "description": "Hostname from netloc, lowercased. None if not present."
+        },
+        {
+          "name": "port",
+          "type": "int",
+          "description": "Port number from netloc as integer. None if not present."
+        },
+        {
+          "name": "username",
+          "type": "str",
+          "description": "Username from netloc. None if not present."
+        },
+        {
+          "name": "password",
+          "type": "str",
+          "description": "Password from netloc. None if not present."
+        }
+      ]
+    },
+    {
+      "name": "SplitResult",
+      "description": "Named tuple result of urlsplit(). A 5-tuple similar to ParseResult but without the params component. Parameters are not split from the path.",
+      "constructors": [],
+      "methods": [
+        {
+          "name": "geturl",
+          "signature": "geturl()",
+          "params": [],
+          "returns": {
+            "type": "str",
+            "description": "The reconstructed URL string"
+          },
+          "description": "Return the re-combined version of the original URL as a string.",
+          "deprecated": false
+        }
+      ],
+      "fields": [
+        {
+          "name": "scheme",
+          "type": "str",
+          "description": "URL scheme specifier (e.g. 'http', 'https', 'ftp')"
+        },
+        {
+          "name": "netloc",
+          "type": "str",
+          "description": "Network location part (e.g. 'user:pass@host:port')"
+        },
+        {
+          "name": "path",
+          "type": "str",
+          "description": "Hierarchical path (e.g. '/index.html')"
+        },
+        {
+          "name": "query",
+          "type": "str",
+          "description": "Query component (e.g. 'key=value&key2=value2')"
+        },
+        {
+          "name": "fragment",
+          "type": "str",
+          "description": "Fragment identifier (e.g. 'section1')"
+        },
+        {
+          "name": "hostname",
+          "type": "str",
+          "description": "Hostname from netloc, lowercased. None if not present."
+        },
+        {
+          "name": "port",
+          "type": "int",
+          "description": "Port number from netloc as integer. None if not present."
+        },
+        {
+          "name": "username",
+          "type": "str",
+          "description": "Username from netloc. None if not present."
+        },
+        {
+          "name": "password",
+          "type": "str",
+          "description": "Password from netloc. None if not present."
+        }
+      ]
+    }
+  ],
+  "constants": [],
+  "docs_url": "https://docs.python.org/2.7/library/urlparse.html"
+}

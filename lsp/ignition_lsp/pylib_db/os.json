@@ -1,0 +1,447 @@
+{
+  "module": "os",
+  "description": "Miscellaneous operating system interfaces. Provides a portable way of using operating system dependent functionality such as reading or writing to the file system, starting processes, and working with environment variables.",
+  "functions": [
+    {
+      "name": "getcwd",
+      "signature": "getcwd()",
+      "params": [],
+      "returns": {
+        "type": "str",
+        "description": "A string representing the current working directory"
+      },
+      "description": "Return a string representing the current working directory.",
+      "deprecated": false
+    },
+    {
+      "name": "listdir",
+      "signature": "listdir(path)",
+      "params": [
+        {
+          "name": "path",
+          "type": "str",
+          "description": "Path to the directory to list"
+        }
+      ],
+      "returns": {
+        "type": "list",
+        "description": "List of names of entries in the directory (strings), excluding '.' and '..'"
+      },
+      "description": "Return a list containing the names of the entries in the directory given by path. The list is in arbitrary order and does not include the special entries '.' and '..'.",
+      "deprecated": false
+    },
+    {
+      "name": "mkdir",
+      "signature": "mkdir(path[, mode])",
+      "params": [
+        {
+          "name": "path",
+          "type": "str",
+          "description": "Path of the directory to create"
+        },
+        {
+          "name": "mode",
+          "type": "int",
+          "description": "Numeric mode for the directory permissions (default 0777). On some systems, mode is ignored."
+        }
+      ],
+      "returns": {
+        "type": "None",
+        "description": "Void"
+      },
+      "description": "Create a directory named path with numeric mode mode. Raises OSError if the directory already exists.",
+      "deprecated": false
+    },
+    {
+      "name": "makedirs",
+      "signature": "makedirs(path[, mode])",
+      "params": [
+        {
+          "name": "path",
+          "type": "str",
+          "description": "Path of the directory to create, including any intermediate directories"
+        },
+        {
+          "name": "mode",
+          "type": "int",
+          "description": "Numeric mode for the directory permissions (default 0777)"
+        }
+      ],
+      "returns": {
+        "type": "None",
+        "description": "Void"
+      },
+      "description": "Recursive directory creation function. Like mkdir(), but makes all intermediate-level directories needed to contain the leaf directory.",
+      "deprecated": false
+    },
+    {
+      "name": "remove",
+      "signature": "remove(path)",
+      "params": [
+        {
+          "name": "path",
+          "type": "str",
+          "description": "Path to the file to remove"
+        }
+      ],
+      "returns": {
+        "type": "None",
+        "description": "Void"
+      },
+      "description": "Remove (delete) the file at path. If path is a directory, OSError is raised. Use rmdir() to remove directories.",
+      "deprecated": false
+    },
+    {
+      "name": "removedirs",
+      "signature": "removedirs(path)",
+      "params": [
+        {
+          "name": "path",
+          "type": "str",
+          "description": "Path of directory tree to remove"
+        }
+      ],
+      "returns": {
+        "type": "None",
+        "description": "Void"
+      },
+      "description": "Remove directories recursively. Works like rmdir() except that, if the leaf directory is successfully removed, directories corresponding to rightmost path segments will be pruned away until either the whole path is consumed or an error is raised.",
+      "deprecated": false
+    },
+    {
+      "name": "rename",
+      "signature": "rename(src, dst)",
+      "params": [
+        {
+          "name": "src",
+          "type": "str",
+          "description": "Current path of the file or directory"
+        },
+        {
+          "name": "dst",
+          "type": "str",
+          "description": "New path of the file or directory"
+        }
+      ],
+      "returns": {
+        "type": "None",
+        "description": "Void"
+      },
+      "description": "Rename the file or directory src to dst. If dst is a directory, OSError will be raised. On Unix, if dst exists and is a file, it will be replaced silently if the user has permission.",
+      "deprecated": false
+    },
+    {
+      "name": "rmdir",
+      "signature": "rmdir(path)",
+      "params": [
+        {
+          "name": "path",
+          "type": "str",
+          "description": "Path of the directory to remove"
+        }
+      ],
+      "returns": {
+        "type": "None",
+        "description": "Void"
+      },
+      "description": "Remove (delete) the directory path. Only works when the directory is empty, otherwise OSError is raised.",
+      "deprecated": false
+    },
+    {
+      "name": "stat",
+      "signature": "stat(path)",
+      "params": [
+        {
+          "name": "path",
+          "type": "str",
+          "description": "Path to the file or directory"
+        }
+      ],
+      "returns": {
+        "type": "os.stat_result",
+        "description": "A stat_result object with attributes st_mode, st_ino, st_dev, st_nlink, st_uid, st_gid, st_size, st_atime, st_mtime, st_ctime"
+      },
+      "description": "Perform a stat system call on the given path. Return a stat_result object with information about the file.",
+      "deprecated": false
+    },
+    {
+      "name": "walk",
+      "signature": "walk(top, topdown=True, onerror=None, followlinks=False)",
+      "params": [
+        {
+          "name": "top",
+          "type": "str",
+          "description": "Root directory to walk"
+        },
+        {
+          "name": "topdown",
+          "type": "bool",
+          "description": "If True (default), the triple for a directory is generated before the triples for any of its subdirectories. If False, bottom-up."
+        },
+        {
+          "name": "onerror",
+          "type": "callable or None",
+          "description": "A function called with one argument, an OSError instance, for each error. By default, errors are ignored."
+        },
+        {
+          "name": "followlinks",
+          "type": "bool",
+          "description": "If True, follow symbolic links. Default is False."
+        }
+      ],
+      "returns": {
+        "type": "generator",
+        "description": "Generator yielding 3-tuples (dirpath, dirnames, filenames) for each directory in the tree rooted at top"
+      },
+      "description": "Generate the file names in a directory tree by walking the tree either top-down or bottom-up. For each directory in the tree, yields a 3-tuple (dirpath, dirnames, filenames).",
+      "deprecated": false
+    },
+    {
+      "name": "getenv",
+      "signature": "getenv(varname[, value])",
+      "params": [
+        {
+          "name": "varname",
+          "type": "str",
+          "description": "The environment variable name"
+        },
+        {
+          "name": "value",
+          "type": "str",
+          "description": "Default value to return if the variable is not set (default None)"
+        }
+      ],
+      "returns": {
+        "type": "str or None",
+        "description": "The value of the environment variable, or the default value if not set"
+      },
+      "description": "Return the value of the environment variable varname if it exists, or value if it doesn't. value defaults to None.",
+      "deprecated": false
+    },
+    {
+      "name": "putenv",
+      "signature": "putenv(varname, value)",
+      "params": [
+        {
+          "name": "varname",
+          "type": "str",
+          "description": "The environment variable name"
+        },
+        {
+          "name": "value",
+          "type": "str",
+          "description": "The value to set"
+        }
+      ],
+      "returns": {
+        "type": "None",
+        "description": "Void"
+      },
+      "description": "Set the environment variable named varname to the string value. Such changes to the environment affect subprocesses started with os.system(), popen(), or fork() and execv(). Note: on some platforms, os.environ is not updated.",
+      "deprecated": false
+    },
+    {
+      "name": "system",
+      "signature": "system(command)",
+      "params": [
+        {
+          "name": "command",
+          "type": "str",
+          "description": "The command string to execute in a subshell"
+        }
+      ],
+      "returns": {
+        "type": "int",
+        "description": "The exit status of the process (platform dependent)"
+      },
+      "description": "Execute the command (a string) in a subshell. On Unix, the return value is the exit status of the process encoded in the format specified for wait().",
+      "deprecated": false
+    },
+    {
+      "name": "popen",
+      "signature": "popen(command[, mode[, bufsize]])",
+      "params": [
+        {
+          "name": "command",
+          "type": "str",
+          "description": "The command string to execute"
+        },
+        {
+          "name": "mode",
+          "type": "str",
+          "description": "Either 'r' (default) to read stdout, or 'w' to write to stdin of the command"
+        },
+        {
+          "name": "bufsize",
+          "type": "int",
+          "description": "Buffer size argument for the resulting file object (same meaning as in open())"
+        }
+      ],
+      "returns": {
+        "type": "file",
+        "description": "An open file object connected to the pipe"
+      },
+      "description": "Open a pipe to or from command. The return value is an open file object connected to the pipe, which can be read or written depending on whether mode is 'r' (default) or 'w'.",
+      "deprecated": false
+    },
+    {
+      "name": "chmod",
+      "signature": "chmod(path, mode)",
+      "params": [
+        {
+          "name": "path",
+          "type": "str",
+          "description": "Path to the file or directory"
+        },
+        {
+          "name": "mode",
+          "type": "int",
+          "description": "Numeric mode (e.g., 0755)"
+        }
+      ],
+      "returns": {
+        "type": "None",
+        "description": "Void"
+      },
+      "description": "Change the mode of path to the numeric mode.",
+      "deprecated": false
+    },
+    {
+      "name": "chown",
+      "signature": "chown(path, uid, gid)",
+      "params": [
+        {
+          "name": "path",
+          "type": "str",
+          "description": "Path to the file or directory"
+        },
+        {
+          "name": "uid",
+          "type": "int",
+          "description": "Numeric user ID. Set to -1 to leave unchanged."
+        },
+        {
+          "name": "gid",
+          "type": "int",
+          "description": "Numeric group ID. Set to -1 to leave unchanged."
+        }
+      ],
+      "returns": {
+        "type": "None",
+        "description": "Void"
+      },
+      "description": "Change the owner and group id of path to the numeric uid and gid. Available on Unix only.",
+      "deprecated": false
+    },
+    {
+      "name": "getpid",
+      "signature": "getpid()",
+      "params": [],
+      "returns": {
+        "type": "int",
+        "description": "The current process ID"
+      },
+      "description": "Return the current process ID.",
+      "deprecated": false
+    },
+    {
+      "name": "getppid",
+      "signature": "getppid()",
+      "params": [],
+      "returns": {
+        "type": "int",
+        "description": "The parent process ID"
+      },
+      "description": "Return the parent's process ID. On Unix, when the parent process has exited, the id returned is the one of the init process (1).",
+      "deprecated": false
+    },
+    {
+      "name": "kill",
+      "signature": "kill(pid, sig)",
+      "params": [
+        {
+          "name": "pid",
+          "type": "int",
+          "description": "Process ID to send the signal to"
+        },
+        {
+          "name": "sig",
+          "type": "int",
+          "description": "Signal number to send (e.g., signal.SIGTERM, signal.SIGKILL)"
+        }
+      ],
+      "returns": {
+        "type": "None",
+        "description": "Void"
+      },
+      "description": "Send signal sig to the process pid. Constants for the specific signals available on the host platform are defined in the signal module.",
+      "deprecated": false
+    },
+    {
+      "name": "urandom",
+      "signature": "urandom(n)",
+      "params": [
+        {
+          "name": "n",
+          "type": "int",
+          "description": "Number of random bytes to return"
+        }
+      ],
+      "returns": {
+        "type": "str",
+        "description": "A string of n random bytes suitable for cryptographic use"
+      },
+      "description": "Return a string of n random bytes suitable for cryptographic use. This function returns random bytes from an OS-specific randomness source.",
+      "deprecated": false
+    }
+  ],
+  "classes": [],
+  "constants": [
+    {
+      "name": "sep",
+      "type": "str",
+      "description": "The character used by the operating system to separate pathname components. This is '/' for POSIX and '\\\\' for Windows."
+    },
+    {
+      "name": "linesep",
+      "type": "str",
+      "description": "The string used to separate lines on the current platform. This is '\\n' on POSIX and '\\r\\n' on Windows."
+    },
+    {
+      "name": "curdir",
+      "type": "str",
+      "description": "The constant string used by the operating system to refer to the current directory. This is '.' for POSIX and Windows."
+    },
+    {
+      "name": "pardir",
+      "type": "str",
+      "description": "The constant string used by the operating system to refer to the parent directory. This is '..' for POSIX and Windows."
+    },
+    {
+      "name": "devnull",
+      "type": "str",
+      "description": "The file path of the null device. '/dev/null' for POSIX, 'nul' for Windows."
+    },
+    {
+      "name": "name",
+      "type": "str",
+      "description": "The name of the operating system dependent module imported: 'posix', 'nt', 'os2', 'ce', 'java', 'riscos'."
+    },
+    {
+      "name": "extsep",
+      "type": "str",
+      "description": "The character which separates the base filename from the extension. This is '.' on most platforms."
+    },
+    {
+      "name": "environ",
+      "type": "dict",
+      "description": "A mapping object representing the string environment. Modifying this mapping will update the environment for the current process and any child processes."
+    },
+    {
+      "name": "path",
+      "type": "module",
+      "description": "The os.path submodule providing common pathname manipulations. Contains functions like os.path.join(), os.path.exists(), os.path.basename(), os.path.dirname(), os.path.splitext(), os.path.isfile(), os.path.isdir(), os.path.abspath(), os.path.getsize()."
+    }
+  ],
+  "docs_url": "https://docs.python.org/2.7/library/os.html"
+}

@@ -1,0 +1,442 @@
+{
+  "module": "os.path",
+  "description": "Common pathname manipulations for POSIX and Windows paths.",
+  "functions": [
+    {
+      "name": "join",
+      "signature": "join(path, *paths)",
+      "params": [
+        {
+          "name": "path",
+          "type": "str",
+          "description": "Initial path component."
+        },
+        {
+          "name": "*paths",
+          "type": "str",
+          "description": "Additional path components to join. If a component is absolute, all previous components are discarded."
+        }
+      ],
+      "returns": {
+        "type": "str",
+        "description": "Concatenation of path components with the directory separator."
+      },
+      "description": "Join one or more path components, inserting the OS separator as needed. If a component is an absolute path, all previous components are discarded.",
+      "deprecated": false
+    },
+    {
+      "name": "split",
+      "signature": "split(path)",
+      "params": [
+        {
+          "name": "path",
+          "type": "str",
+          "description": "Path to split."
+        }
+      ],
+      "returns": {
+        "type": "tuple",
+        "description": "A pair (head, tail) where tail is the last pathname component and head is everything before it."
+      },
+      "description": "Split a pathname into (head, tail) where tail is the last component. Equivalent to (dirname(path), basename(path)).",
+      "deprecated": false
+    },
+    {
+      "name": "splitext",
+      "signature": "splitext(path)",
+      "params": [
+        {
+          "name": "path",
+          "type": "str",
+          "description": "Path to split."
+        }
+      ],
+      "returns": {
+        "type": "tuple",
+        "description": "A pair (root, ext) where ext begins with a period and contains at most one period."
+      },
+      "description": "Split a pathname into a pair (root, ext) such that root + ext == path. The extension includes the leading period.",
+      "deprecated": false
+    },
+    {
+      "name": "basename",
+      "signature": "basename(path)",
+      "params": [
+        {
+          "name": "path",
+          "type": "str",
+          "description": "Path to extract basename from."
+        }
+      ],
+      "returns": {
+        "type": "str",
+        "description": "The final component of the path."
+      },
+      "description": "Return the final component of a pathname. Equivalent to split(path)[1].",
+      "deprecated": false
+    },
+    {
+      "name": "dirname",
+      "signature": "dirname(path)",
+      "params": [
+        {
+          "name": "path",
+          "type": "str",
+          "description": "Path to extract directory from."
+        }
+      ],
+      "returns": {
+        "type": "str",
+        "description": "The directory component of the path."
+      },
+      "description": "Return the directory component of a pathname. Equivalent to split(path)[0].",
+      "deprecated": false
+    },
+    {
+      "name": "exists",
+      "signature": "exists(path)",
+      "params": [
+        {
+          "name": "path",
+          "type": "str",
+          "description": "Path to check."
+        }
+      ],
+      "returns": {
+        "type": "bool",
+        "description": "True if path exists, False otherwise."
+      },
+      "description": "Return True if path refers to an existing path or file descriptor. Returns False for broken symbolic links.",
+      "deprecated": false
+    },
+    {
+      "name": "isfile",
+      "signature": "isfile(path)",
+      "params": [
+        {
+          "name": "path",
+          "type": "str",
+          "description": "Path to check."
+        }
+      ],
+      "returns": {
+        "type": "bool",
+        "description": "True if path is an existing regular file."
+      },
+      "description": "Return True if path is an existing regular file. Follows symbolic links.",
+      "deprecated": false
+    },
+    {
+      "name": "isdir",
+      "signature": "isdir(path)",
+      "params": [
+        {
+          "name": "path",
+          "type": "str",
+          "description": "Path to check."
+        }
+      ],
+      "returns": {
+        "type": "bool",
+        "description": "True if path is an existing directory."
+      },
+      "description": "Return True if path is an existing directory. Follows symbolic links.",
+      "deprecated": false
+    },
+    {
+      "name": "isabs",
+      "signature": "isabs(path)",
+      "params": [
+        {
+          "name": "path",
+          "type": "str",
+          "description": "Path to check."
+        }
+      ],
+      "returns": {
+        "type": "bool",
+        "description": "True if path is an absolute pathname."
+      },
+      "description": "Return True if path is an absolute pathname. On Unix, that means it begins with a slash; on Windows, it begins with a drive letter and backslash.",
+      "deprecated": false
+    },
+    {
+      "name": "islink",
+      "signature": "islink(path)",
+      "params": [
+        {
+          "name": "path",
+          "type": "str",
+          "description": "Path to check."
+        }
+      ],
+      "returns": {
+        "type": "bool",
+        "description": "True if path is a symbolic link."
+      },
+      "description": "Return True if path refers to a directory entry that is a symbolic link. Always False on platforms that do not support symbolic links.",
+      "deprecated": false
+    },
+    {
+      "name": "getsize",
+      "signature": "getsize(path)",
+      "params": [
+        {
+          "name": "path",
+          "type": "str",
+          "description": "Path to the file."
+        }
+      ],
+      "returns": {
+        "type": "int",
+        "description": "Size in bytes."
+      },
+      "description": "Return the size, in bytes, of path. Raises os.error if the file does not exist or is inaccessible.",
+      "deprecated": false
+    },
+    {
+      "name": "getmtime",
+      "signature": "getmtime(path)",
+      "params": [
+        {
+          "name": "path",
+          "type": "str",
+          "description": "Path to the file."
+        }
+      ],
+      "returns": {
+        "type": "float",
+        "description": "Time of last modification as seconds since the epoch."
+      },
+      "description": "Return the time of last modification of path. The return value is a number giving the number of seconds since the epoch.",
+      "deprecated": false
+    },
+    {
+      "name": "getatime",
+      "signature": "getatime(path)",
+      "params": [
+        {
+          "name": "path",
+          "type": "str",
+          "description": "Path to the file."
+        }
+      ],
+      "returns": {
+        "type": "float",
+        "description": "Time of last access as seconds since the epoch."
+      },
+      "description": "Return the time of last access of path. The return value is a number giving the number of seconds since the epoch.",
+      "deprecated": false
+    },
+    {
+      "name": "getctime",
+      "signature": "getctime(path)",
+      "params": [
+        {
+          "name": "path",
+          "type": "str",
+          "description": "Path to the file."
+        }
+      ],
+      "returns": {
+        "type": "float",
+        "description": "Time of creation (Windows) or last metadata change (Unix) as seconds since the epoch."
+      },
+      "description": "Return the system's ctime, which on Unix is the time of the last metadata change, and on Windows is the creation time of path.",
+      "deprecated": false
+    },
+    {
+      "name": "abspath",
+      "signature": "abspath(path)",
+      "params": [
+        {
+          "name": "path",
+          "type": "str",
+          "description": "Path to make absolute."
+        }
+      ],
+      "returns": {
+        "type": "str",
+        "description": "Absolute version of the path."
+      },
+      "description": "Return a normalized absolutized version of the pathname path. Equivalent to normpath(join(os.getcwd(), path)).",
+      "deprecated": false
+    },
+    {
+      "name": "realpath",
+      "signature": "realpath(path)",
+      "params": [
+        {
+          "name": "path",
+          "type": "str",
+          "description": "Path to resolve."
+        }
+      ],
+      "returns": {
+        "type": "str",
+        "description": "Canonical path with symbolic links resolved."
+      },
+      "description": "Return the canonical path of the specified filename, eliminating any symbolic links encountered in the path.",
+      "deprecated": false
+    },
+    {
+      "name": "normpath",
+      "signature": "normpath(path)",
+      "params": [
+        {
+          "name": "path",
+          "type": "str",
+          "description": "Path to normalize."
+        }
+      ],
+      "returns": {
+        "type": "str",
+        "description": "Normalized path."
+      },
+      "description": "Normalize a pathname by collapsing redundant separators and up-level references (A//B, A/./B, A/foo/../B all become A/B).",
+      "deprecated": false
+    },
+    {
+      "name": "normcase",
+      "signature": "normcase(path)",
+      "params": [
+        {
+          "name": "path",
+          "type": "str",
+          "description": "Path to normalize."
+        }
+      ],
+      "returns": {
+        "type": "str",
+        "description": "Case-normalized path."
+      },
+      "description": "Normalize the case of a pathname. On Windows, convert all characters to lowercase and forward slashes to backslashes. On Unix, return the path unchanged.",
+      "deprecated": false
+    },
+    {
+      "name": "expanduser",
+      "signature": "expanduser(path)",
+      "params": [
+        {
+          "name": "path",
+          "type": "str",
+          "description": "Path containing ~ to expand."
+        }
+      ],
+      "returns": {
+        "type": "str",
+        "description": "Path with ~ replaced by the user's home directory."
+      },
+      "description": "Expand ~ and ~user constructs in the path. If the expansion fails or the path does not begin with ~, the path is returned unchanged.",
+      "deprecated": false
+    },
+    {
+      "name": "expandvars",
+      "signature": "expandvars(path)",
+      "params": [
+        {
+          "name": "path",
+          "type": "str",
+          "description": "Path containing environment variables to expand."
+        }
+      ],
+      "returns": {
+        "type": "str",
+        "description": "Path with environment variables expanded."
+      },
+      "description": "Expand shell variables of the form $name and ${name} in the path. Undefined variables are left unchanged.",
+      "deprecated": false
+    },
+    {
+      "name": "commonprefix",
+      "signature": "commonprefix(list)",
+      "params": [
+        {
+          "name": "list",
+          "type": "list",
+          "description": "List of pathnames."
+        }
+      ],
+      "returns": {
+        "type": "str",
+        "description": "Longest common leading component (character by character, not path-aware)."
+      },
+      "description": "Return the longest path prefix (taken character by character) that is a prefix of all paths in list. Note: this operates character-by-character and may return an invalid path.",
+      "deprecated": false
+    },
+    {
+      "name": "relpath",
+      "signature": "relpath(path, start=os.curdir)",
+      "params": [
+        {
+          "name": "path",
+          "type": "str",
+          "description": "Target path."
+        },
+        {
+          "name": "start",
+          "type": "str",
+          "description": "Starting directory for computing the relative path. Defaults to os.curdir."
+        }
+      ],
+      "returns": {
+        "type": "str",
+        "description": "A relative filepath to path from the start directory."
+      },
+      "description": "Return a relative filepath to path either from the current directory or from an optional start directory.",
+      "deprecated": false
+    },
+    {
+      "name": "samefile",
+      "signature": "samefile(path1, path2)",
+      "params": [
+        {
+          "name": "path1",
+          "type": "str",
+          "description": "First path."
+        },
+        {
+          "name": "path2",
+          "type": "str",
+          "description": "Second path."
+        }
+      ],
+      "returns": {
+        "type": "bool",
+        "description": "True if both pathnames refer to the same file or directory."
+      },
+      "description": "Return True if both pathname arguments refer to the same file or directory (as indicated by device number and inode number). Raises an exception if stat() fails on either path. Unix only.",
+      "deprecated": false
+    },
+    {
+      "name": "walk",
+      "signature": "walk(path, visit, arg)",
+      "params": [
+        {
+          "name": "path",
+          "type": "str",
+          "description": "Root directory to walk."
+        },
+        {
+          "name": "visit",
+          "type": "callable",
+          "description": "Function called with (arg, dirname, names) for each directory."
+        },
+        {
+          "name": "arg",
+          "type": "object",
+          "description": "Argument passed to the visit function."
+        }
+      ],
+      "returns": {
+        "type": "None",
+        "description": "None."
+      },
+      "description": "Directory tree walk with callback function. Deprecated since Python 2.6; use os.walk() instead.",
+      "deprecated": true
+    }
+  ],
+  "classes": [],
+  "constants": [],
+  "docs_url": "https://docs.python.org/2.7/library/os.path.html"
+}

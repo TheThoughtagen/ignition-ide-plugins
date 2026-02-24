@@ -1,0 +1,428 @@
+{
+  "module": "warnings",
+  "description": "Issue warning messages and control their disposition.",
+  "functions": [
+    {
+      "name": "warn",
+      "signature": "warn(message[, category[, stacklevel]])",
+      "params": [
+        {
+          "name": "message",
+          "type": "str|Warning",
+          "description": "The warning message string or a Warning instance."
+        },
+        {
+          "name": "category",
+          "type": "type",
+          "description": "The warning category class. Must be a subclass of Warning. Defaults to UserWarning."
+        },
+        {
+          "name": "stacklevel",
+          "type": "int",
+          "description": "Number of stack frames to go up for the source of the warning. Defaults to 1 (direct caller)."
+        }
+      ],
+      "returns": {
+        "type": "None",
+        "description": "No return value."
+      },
+      "description": "Issue a warning, or maybe ignore it or raise an exception. The category argument defaults to UserWarning.",
+      "deprecated": false
+    },
+    {
+      "name": "warn_explicit",
+      "signature": "warn_explicit(message, category, filename, lineno[, module[, registry[, module_globals]]])",
+      "params": [
+        {
+          "name": "message",
+          "type": "str|Warning",
+          "description": "The warning message string or Warning instance."
+        },
+        {
+          "name": "category",
+          "type": "type",
+          "description": "The warning category class."
+        },
+        {
+          "name": "filename",
+          "type": "str",
+          "description": "The file name where the warning is issued."
+        },
+        {
+          "name": "lineno",
+          "type": "int",
+          "description": "The line number where the warning is issued."
+        },
+        {
+          "name": "module",
+          "type": "str",
+          "description": "The module name. Defaults to filename with .py stripped."
+        },
+        {
+          "name": "registry",
+          "type": "dict",
+          "description": "An object representing already-delivered warnings for the module."
+        },
+        {
+          "name": "module_globals",
+          "type": "dict",
+          "description": "The global namespace in effect for the code generating the warning."
+        }
+      ],
+      "returns": {
+        "type": "None",
+        "description": "No return value."
+      },
+      "description": "Low-level interface to the warnings machinery. Issue a warning with explicit source location information.",
+      "deprecated": false
+    },
+    {
+      "name": "simplefilter",
+      "signature": "simplefilter(action[, category[, lineno[, append]]])",
+      "params": [
+        {
+          "name": "action",
+          "type": "str",
+          "description": "One of 'error', 'ignore', 'always', 'default', 'module', or 'once'."
+        },
+        {
+          "name": "category",
+          "type": "type",
+          "description": "A subclass of Warning. Defaults to Warning (matches all)."
+        },
+        {
+          "name": "lineno",
+          "type": "int",
+          "description": "Line number to match, or 0 to match all. Defaults to 0."
+        },
+        {
+          "name": "append",
+          "type": "bool",
+          "description": "If true, add the filter at the end; otherwise insert at the beginning."
+        }
+      ],
+      "returns": {
+        "type": "None",
+        "description": "No return value."
+      },
+      "description": "Insert a simple entry into the list of warnings filters. Matches all modules, unlike filterwarnings().",
+      "deprecated": false
+    },
+    {
+      "name": "filterwarnings",
+      "signature": "filterwarnings(action[, message[, category[, module[, lineno[, append]]]]])",
+      "params": [
+        {
+          "name": "action",
+          "type": "str",
+          "description": "One of 'error', 'ignore', 'always', 'default', 'module', or 'once'."
+        },
+        {
+          "name": "message",
+          "type": "str",
+          "description": "A regex pattern to match the warning message. Defaults to '' (match all)."
+        },
+        {
+          "name": "category",
+          "type": "type",
+          "description": "A subclass of Warning to match. Defaults to Warning."
+        },
+        {
+          "name": "module",
+          "type": "str",
+          "description": "A regex pattern to match the module name. Defaults to '' (match all)."
+        },
+        {
+          "name": "lineno",
+          "type": "int",
+          "description": "Line number to match, or 0 to match all. Defaults to 0."
+        },
+        {
+          "name": "append",
+          "type": "bool",
+          "description": "If true, add the filter at the end; otherwise insert at the beginning."
+        }
+      ],
+      "returns": {
+        "type": "None",
+        "description": "No return value."
+      },
+      "description": "Insert an entry into the list of warnings filters, controlling which warnings are displayed.",
+      "deprecated": false
+    },
+    {
+      "name": "resetwarnings",
+      "signature": "resetwarnings()",
+      "params": [],
+      "returns": {
+        "type": "None",
+        "description": "No return value."
+      },
+      "description": "Reset the warning filters to an empty list. This discards the effect of all previous calls to filterwarnings().",
+      "deprecated": false
+    },
+    {
+      "name": "showwarning",
+      "signature": "showwarning(message, category, filename, lineno[, file[, line]])",
+      "params": [
+        {
+          "name": "message",
+          "type": "str|Warning",
+          "description": "The warning message or Warning instance."
+        },
+        {
+          "name": "category",
+          "type": "type",
+          "description": "The warning category class."
+        },
+        {
+          "name": "filename",
+          "type": "str",
+          "description": "The source filename."
+        },
+        {
+          "name": "lineno",
+          "type": "int",
+          "description": "The source line number."
+        },
+        {
+          "name": "file",
+          "type": "file",
+          "description": "The file to write to. Defaults to sys.stderr."
+        },
+        {
+          "name": "line",
+          "type": "str",
+          "description": "A line of source code to display. If None, the line is looked up from filename and lineno."
+        }
+      ],
+      "returns": {
+        "type": "None",
+        "description": "No return value."
+      },
+      "description": "Write a warning to a file. The default implementation formats the message and writes it. Can be replaced with a custom function.",
+      "deprecated": false
+    },
+    {
+      "name": "formatwarning",
+      "signature": "formatwarning(message, category, filename, lineno[, line])",
+      "params": [
+        {
+          "name": "message",
+          "type": "str|Warning",
+          "description": "The warning message or Warning instance."
+        },
+        {
+          "name": "category",
+          "type": "type",
+          "description": "The warning category class."
+        },
+        {
+          "name": "filename",
+          "type": "str",
+          "description": "The source filename."
+        },
+        {
+          "name": "lineno",
+          "type": "int",
+          "description": "The source line number."
+        },
+        {
+          "name": "line",
+          "type": "str",
+          "description": "A line of source code. If None, the line is looked up."
+        }
+      ],
+      "returns": {
+        "type": "str",
+        "description": "The formatted warning string."
+      },
+      "description": "Format a warning the standard way. Returns a formatted string.",
+      "deprecated": false
+    }
+  ],
+  "classes": [
+    {
+      "name": "Warning",
+      "description": "Base class for all warning categories. Subclass of Exception.",
+      "constructors": [
+        {
+          "signature": "Warning([message])",
+          "params": [
+            {
+              "name": "message",
+              "type": "str",
+              "description": "The warning message."
+            }
+          ],
+          "description": "Create a Warning instance."
+        }
+      ],
+      "methods": []
+    },
+    {
+      "name": "UserWarning",
+      "description": "Default category for warn(). Warnings generated by user code.",
+      "constructors": [
+        {
+          "signature": "UserWarning([message])",
+          "params": [
+            {
+              "name": "message",
+              "type": "str",
+              "description": "The warning message."
+            }
+          ],
+          "description": "Create a UserWarning instance."
+        }
+      ],
+      "methods": []
+    },
+    {
+      "name": "DeprecationWarning",
+      "description": "Warnings about deprecated features. Ignored by default.",
+      "constructors": [
+        {
+          "signature": "DeprecationWarning([message])",
+          "params": [
+            {
+              "name": "message",
+              "type": "str",
+              "description": "The warning message."
+            }
+          ],
+          "description": "Create a DeprecationWarning instance."
+        }
+      ],
+      "methods": []
+    },
+    {
+      "name": "SyntaxWarning",
+      "description": "Warnings about dubious syntax.",
+      "constructors": [
+        {
+          "signature": "SyntaxWarning([message])",
+          "params": [
+            {
+              "name": "message",
+              "type": "str",
+              "description": "The warning message."
+            }
+          ],
+          "description": "Create a SyntaxWarning instance."
+        }
+      ],
+      "methods": []
+    },
+    {
+      "name": "RuntimeWarning",
+      "description": "Warnings about dubious runtime behavior.",
+      "constructors": [
+        {
+          "signature": "RuntimeWarning([message])",
+          "params": [
+            {
+              "name": "message",
+              "type": "str",
+              "description": "The warning message."
+            }
+          ],
+          "description": "Create a RuntimeWarning instance."
+        }
+      ],
+      "methods": []
+    },
+    {
+      "name": "FutureWarning",
+      "description": "Warnings about constructs that will change semantically in the future.",
+      "constructors": [
+        {
+          "signature": "FutureWarning([message])",
+          "params": [
+            {
+              "name": "message",
+              "type": "str",
+              "description": "The warning message."
+            }
+          ],
+          "description": "Create a FutureWarning instance."
+        }
+      ],
+      "methods": []
+    },
+    {
+      "name": "PendingDeprecationWarning",
+      "description": "Warnings about features which will be deprecated in the future. Ignored by default.",
+      "constructors": [
+        {
+          "signature": "PendingDeprecationWarning([message])",
+          "params": [
+            {
+              "name": "message",
+              "type": "str",
+              "description": "The warning message."
+            }
+          ],
+          "description": "Create a PendingDeprecationWarning instance."
+        }
+      ],
+      "methods": []
+    },
+    {
+      "name": "ImportWarning",
+      "description": "Warnings about probable mistakes in module imports. Ignored by default.",
+      "constructors": [
+        {
+          "signature": "ImportWarning([message])",
+          "params": [
+            {
+              "name": "message",
+              "type": "str",
+              "description": "The warning message."
+            }
+          ],
+          "description": "Create an ImportWarning instance."
+        }
+      ],
+      "methods": []
+    },
+    {
+      "name": "UnicodeWarning",
+      "description": "Warnings about Unicode-related issues.",
+      "constructors": [
+        {
+          "signature": "UnicodeWarning([message])",
+          "params": [
+            {
+              "name": "message",
+              "type": "str",
+              "description": "The warning message."
+            }
+          ],
+          "description": "Create a UnicodeWarning instance."
+        }
+      ],
+      "methods": []
+    },
+    {
+      "name": "BytesWarning",
+      "description": "Warnings about bytes and bytearray related issues.",
+      "constructors": [
+        {
+          "signature": "BytesWarning([message])",
+          "params": [
+            {
+              "name": "message",
+              "type": "str",
+              "description": "The warning message."
+            }
+          ],
+          "description": "Create a BytesWarning instance."
+        }
+      ],
+      "methods": []
+    }
+  ],
+  "constants": [],
+  "docs_url": "https://docs.python.org/2.7/library/warnings.html"
+}

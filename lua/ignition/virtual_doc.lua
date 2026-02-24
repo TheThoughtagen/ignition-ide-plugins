@@ -33,16 +33,17 @@ function M.create_virtual_doc(source_bufnr, script_info)
   -- Create a scratch buffer
   local virtual_bufnr = vim.api.nvim_create_buf(false, true)
 
-  -- Set buffer options
+  -- Set buffer options (filetype is set AFTER metadata so the FileType
+  -- autocmd can access virtual_doc metadata when it fires synchronously)
   local is_expression = script_info.key == 'expression'
   vim.api.nvim_buf_set_option(virtual_bufnr, 'buftype', 'acwrite')
-  vim.api.nvim_buf_set_option(virtual_bufnr, 'filetype', is_expression and 'ignition_expr' or 'python')
   vim.api.nvim_buf_set_option(virtual_bufnr, 'swapfile', false)
 
   -- Set the buffer name
   vim.api.nvim_buf_set_name(virtual_bufnr, virtual_name)
 
-  -- Store metadata
+  -- Store metadata BEFORE setting filetype so the FileType autocmd
+  -- in lsp.lua can resolve root_dir from meta.source_file
   M.virtual_docs[virtual_bufnr] = {
     source_bufnr = source_bufnr,
     source_file = source_file,
@@ -70,22 +71,9 @@ function M.create_virtual_doc(source_bufnr, script_info)
     desc = 'Clean up virtual document metadata',
   })
 
-  -- Start LSP for this virtual buffer
-  -- Virtual buffers have filetype='python' but may not trigger FileType autocmd
-  -- during creation, so we manually attach the LSP client.
-  -- We need to find the project root from the source file since virtual buffers
-  -- don't have real file paths (they're named like [Ignition:file.json:script:L123])
-  vim.schedule(function()
-    -- Find the Ignition project root from the source file
-    local root_dir = vim.fs.root(source_file, 'project.json')
-
-    if root_dir then
-      local lsp_module = require('ignition.lsp')
-      if lsp_module and lsp_module.start_lsp_for_buffer then
-        lsp_module.start_lsp_for_buffer(virtual_bufnr, root_dir)
-      end
-    end
-  end)
+  -- Set filetype last — this fires the FileType autocmd which handles
+  -- LSP attachment via lsp.lua (no separate vim.schedule needed)
+  vim.api.nvim_buf_set_option(virtual_bufnr, 'filetype', is_expression and 'ignition_expr' or 'python')
 
   return virtual_bufnr
 end

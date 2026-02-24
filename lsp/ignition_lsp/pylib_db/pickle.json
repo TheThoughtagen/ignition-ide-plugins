@@ -1,0 +1,183 @@
+{
+  "module": "pickle",
+  "description": "Python object serialization. Converts Python objects to a byte stream (pickling) and back (unpickling). The pickle module implements a fundamental algorithm for serializing and de-serializing Python object structures.",
+  "functions": [
+    {
+      "name": "dump",
+      "signature": "dump(obj, file, protocol=None)",
+      "params": [
+        {
+          "name": "obj",
+          "type": "any",
+          "description": "The Python object to serialize"
+        },
+        {
+          "name": "file",
+          "type": "file",
+          "description": "An open file object (or any object with a write() method accepting a string argument). Must be opened in binary mode."
+        },
+        {
+          "name": "protocol",
+          "type": "int",
+          "description": "The pickle protocol version (0, 1, or 2). Default is 0 (ASCII). Protocol 2 is the most efficient for Python 2."
+        }
+      ],
+      "returns": {
+        "type": "None",
+        "description": "No return value. The serialized representation is written to the file."
+      },
+      "description": "Write a pickled representation of obj to the open file object file. Equivalent to Pickler(file, protocol).dump(obj).",
+      "deprecated": false
+    },
+    {
+      "name": "dumps",
+      "signature": "dumps(obj, protocol=None)",
+      "params": [
+        {
+          "name": "obj",
+          "type": "any",
+          "description": "The Python object to serialize"
+        },
+        {
+          "name": "protocol",
+          "type": "int",
+          "description": "The pickle protocol version (0, 1, or 2). Default is 0 (ASCII)."
+        }
+      ],
+      "returns": {
+        "type": "str",
+        "description": "The pickled representation of the object as a string"
+      },
+      "description": "Return the pickled representation of the object as a string, instead of writing it to a file.",
+      "deprecated": false
+    },
+    {
+      "name": "load",
+      "signature": "load(file)",
+      "params": [
+        {
+          "name": "file",
+          "type": "file",
+          "description": "An open file object (or any object with read() and readline() methods). Must be opened in binary mode."
+        }
+      ],
+      "returns": {
+        "type": "any",
+        "description": "The reconstituted Python object"
+      },
+      "description": "Read a pickled object from the open file object file and return the reconstituted object. Equivalent to Unpickler(file).load(). WARNING: pickle is not secure against erroneous or maliciously constructed data.",
+      "deprecated": false
+    },
+    {
+      "name": "loads",
+      "signature": "loads(string)",
+      "params": [
+        {
+          "name": "string",
+          "type": "str",
+          "description": "The pickled string to deserialize"
+        }
+      ],
+      "returns": {
+        "type": "any",
+        "description": "The reconstituted Python object"
+      },
+      "description": "Read a pickled object from a string and return the reconstituted object. WARNING: pickle is not secure against erroneous or maliciously constructed data.",
+      "deprecated": false
+    }
+  ],
+  "classes": [
+    {
+      "name": "Pickler",
+      "description": "Serializes Python objects to a file. Takes a file-like object for writing the pickled data stream.",
+      "constructors": [
+        {
+          "signature": "Pickler(file, protocol=None)",
+          "params": [
+            {
+              "name": "file",
+              "type": "file",
+              "description": "An open file object with a write() method that accepts a string argument"
+            },
+            {
+              "name": "protocol",
+              "type": "int",
+              "description": "The pickle protocol version (0, 1, or 2). Default is 0 (ASCII)."
+            }
+          ],
+          "description": "Create a Pickler that writes to the given file object."
+        }
+      ],
+      "methods": [
+        {
+          "name": "dump",
+          "signature": "dump(obj)",
+          "params": [
+            {
+              "name": "obj",
+              "type": "any",
+              "description": "The Python object to serialize"
+            }
+          ],
+          "returns": {
+            "type": "None",
+            "description": "No return value"
+          },
+          "description": "Write a pickled representation of obj to the open file object given in the constructor.",
+          "deprecated": false
+        },
+        {
+          "name": "clear_memo",
+          "signature": "clear_memo()",
+          "params": [],
+          "returns": {
+            "type": "None",
+            "description": "No return value"
+          },
+          "description": "Clears the pickler's memo, a data structure that remembers which objects have already been pickled. Useful when reusing a Pickler to pickle multiple objects.",
+          "deprecated": false
+        }
+      ],
+      "fields": []
+    },
+    {
+      "name": "Unpickler",
+      "description": "Deserializes Python objects from a file. Takes a file-like object for reading the pickled data stream.",
+      "constructors": [
+        {
+          "signature": "Unpickler(file)",
+          "params": [
+            {
+              "name": "file",
+              "type": "file",
+              "description": "An open file object with read() and readline() methods"
+            }
+          ],
+          "description": "Create an Unpickler that reads from the given file object."
+        }
+      ],
+      "methods": [
+        {
+          "name": "load",
+          "signature": "load()",
+          "params": [],
+          "returns": {
+            "type": "any",
+            "description": "The reconstituted Python object"
+          },
+          "description": "Read a pickled object representation from the open file object given in the constructor and return the reconstituted object.",
+          "deprecated": false
+        }
+      ],
+      "fields": []
+    }
+  ],
+  "constants": [
+    {
+      "name": "HIGHEST_PROTOCOL",
+      "type": "int",
+      "description": "The highest protocol version available (2 in Python 2.7). Pass this to Pickler or dump() to use the most efficient protocol."
+    }
+  ],
+  "docs_url": "https://docs.python.org/2.7/library/pickle.html"
+}

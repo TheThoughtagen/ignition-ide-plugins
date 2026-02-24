@@ -10,7 +10,9 @@ from pygls.workspace import TextDocument
 from .api_loader import IgnitionAPILoader
 from .java_loader import JavaAPILoader
 from .project_scanner import ProjectIndex
+from .pylib_loader import PylibLoader
 from .script_symbols import SymbolCache
+from .uri_utils import is_expression_buffer
 
 logger = logging.getLogger(__name__)
 
@@ -41,6 +43,7 @@ def get_hover_info(
     java_loader: Optional[JavaAPILoader] = None,
     project_index: Optional[ProjectIndex] = None,
     symbol_cache: Optional[SymbolCache] = None,
+    pylib_loader: Optional[PylibLoader] = None,
 ) -> Optional[Hover]:
     """Get hover information for the word at position."""
     word = get_word_at_position(document, position)
@@ -50,9 +53,7 @@ def get_hover_info(
         return None
 
     # Expression function hover for virtual expression buffers
-    if "[Ignition:" in document.uri and (
-        "/Expression:" in document.uri or "/Expression]" in document.uri
-    ):
+    if is_expression_buffer(document.uri):
         return _get_expression_hover(word)
 
     # Try Java class/method hover first
@@ -60,6 +61,12 @@ def get_hover_info(
         java_hover = _get_java_hover(document, position, word, java_loader)
         if java_hover:
             return java_hover
+
+    # Try Python stdlib hover
+    if pylib_loader is not None:
+        pylib_hover = _get_pylib_hover(word, document, pylib_loader)
+        if pylib_hover:
+            return pylib_hover
 
     # Try project symbol hover (functions/classes in project .py files)
     if project_index is not None and symbol_cache is not None:
@@ -288,6 +295,139 @@ def _get_java_hover(
                 md += f"{len(classes)} classes: {', '.join(f'`{n}`' for n in class_names)}"
                 return Hover(
                     contents=MarkupContent(kind=MarkupKind.Markdown, value=md)
+                )
+
+    return None
+
+
+def _get_pylib_hover(
+    word: str,
+    document: TextDocument,
+    pylib_loader: PylibLoader,
+) -> Optional[Hover]:
+    """Get hover information for Python stdlib modules, functions, and classes.
+
+    Handles:
+        - Hovering on an imported module name -> module documentation
+        - Hovering on module.function -> function documentation
+        - Hovering on module.Class -> class documentation
+        - Hovering on module.Class.method -> method documentation
+        - Hovering on a builtin function name -> builtin documentation
+    """
+    from .pylib_scope import scan_pylib_imports
+
+    imported = scan_pylib_imports(document, pylib_loader)
+
+    # Check for dotted names like "json.loads" or "json.JSONEncoder.encode"
+    if "." in word:
+        parts = word.split(".")
+        first = parts[0]
+
+        if first in imported:
+            info = imported[first]
+            if info.member_name is None:
+                # Module-level import: "json.loads" or "json.JSONEncoder.encode"
+                module = info.module
+                if len(parts) == 2:
+                    member_name = parts[1]
+                    # Try function
+                    for func in module.functions:
+                        if func.name == member_name:
+                            return Hover(
+                                contents=MarkupContent(
+                                    kind=MarkupKind.Markdown,
+                                    value=func.get_markdown_doc(module.name),
+                                )
+                            )
+                    # Try class
+                    for cls in module.classes:
+                        if cls.name == member_name:
+                            return Hover(
+                                contents=MarkupContent(
+                                    kind=MarkupKind.Markdown,
+                                    value=cls.get_markdown_doc(module.name),
+                                )
+                            )
+                    # Try constant
+                    for const in module.constants:
+                        if const.name == member_name:
+                            md = f"**{module.name}.{const.name}**\n\n`{const.type}` - {const.description}"
+                            return Hover(
+                                contents=MarkupContent(
+                                    kind=MarkupKind.Markdown, value=md
+                                )
+                            )
+                elif len(parts) == 3:
+                    # "json.JSONEncoder.encode"
+                    class_name = parts[1]
+                    method_name = parts[2]
+                    for cls in module.classes:
+                        if cls.name == class_name:
+                            md = cls.get_method_markdown(method_name, module.name)
+                            if md:
+                                return Hover(
+                                    contents=MarkupContent(
+                                        kind=MarkupKind.Markdown, value=md
+                                    )
+                                )
+                            # Try field
+                            md = cls.get_field_markdown(method_name, module.name)
+                            if md:
+                                return Hover(
+                                    contents=MarkupContent(
+                                        kind=MarkupKind.Markdown, value=md
+                                    )
+                                )
+
+    # Check if word is an imported module name
+    if word in imported:
+        info = imported[word]
+        if info.member_name is None:
+            # Module import
+            return Hover(
+                contents=MarkupContent(
+                    kind=MarkupKind.Markdown,
+                    value=info.module.get_markdown_doc(),
+                )
+            )
+        else:
+            # "from json import loads" -> hovering on "loads"
+            module = info.module
+            for func in module.functions:
+                if func.name == info.member_name:
+                    return Hover(
+                        contents=MarkupContent(
+                            kind=MarkupKind.Markdown,
+                            value=func.get_markdown_doc(module.name),
+                        )
+                    )
+            for cls in module.classes:
+                if cls.name == info.member_name:
+                    return Hover(
+                        contents=MarkupContent(
+                            kind=MarkupKind.Markdown,
+                            value=cls.get_markdown_doc(module.name),
+                        )
+                    )
+
+    # Check builtins (always in scope)
+    if "." not in word and pylib_loader.builtins:
+        builtins = pylib_loader.builtins
+        for func in builtins.functions:
+            if func.name == word:
+                return Hover(
+                    contents=MarkupContent(
+                        kind=MarkupKind.Markdown,
+                        value=func.get_markdown_doc("__builtin__"),
+                    )
+                )
+        for cls in builtins.classes:
+            if cls.name == word:
+                return Hover(
+                    contents=MarkupContent(
+                        kind=MarkupKind.Markdown,
+                        value=cls.get_markdown_doc("__builtin__"),
+                    )
                 )
 
     return None

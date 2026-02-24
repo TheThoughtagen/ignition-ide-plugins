@@ -1,0 +1,793 @@
+{
+  "module": "calendar",
+  "description": "Functions and classes for working with calendars, including generating text and HTML calendars for months or years.",
+  "functions": [
+    {
+      "name": "calendar",
+      "signature": "calendar(year, w=2, l=1, c=6)",
+      "params": [
+        {
+          "name": "year",
+          "type": "int",
+          "description": "The year to generate a calendar for"
+        },
+        {
+          "name": "w",
+          "type": "int",
+          "description": "Width of date columns. Default is 2."
+        },
+        {
+          "name": "l",
+          "type": "int",
+          "description": "Number of lines per week. Default is 1."
+        },
+        {
+          "name": "c",
+          "type": "int",
+          "description": "Number of spaces between month columns. Default is 6."
+        }
+      ],
+      "returns": {
+        "type": "str",
+        "description": "A multi-line string containing the formatted calendar for the entire year"
+      },
+      "description": "Returns a multi-line string with a calendar for the entire year, formatted across three columns. Uses the first weekday as set by setfirstweekday().",
+      "deprecated": false
+    },
+    {
+      "name": "month",
+      "signature": "month(theyear, themonth, w=0, l=0)",
+      "params": [
+        {
+          "name": "theyear",
+          "type": "int",
+          "description": "The year"
+        },
+        {
+          "name": "themonth",
+          "type": "int",
+          "description": "The month (1-12)"
+        },
+        {
+          "name": "w",
+          "type": "int",
+          "description": "Width of date columns. Default is 0 (auto)."
+        },
+        {
+          "name": "l",
+          "type": "int",
+          "description": "Number of lines per week. Default is 0 (auto)."
+        }
+      ],
+      "returns": {
+        "type": "str",
+        "description": "A multi-line string containing the formatted month calendar"
+      },
+      "description": "Returns a multi-line string with a calendar for the given month of the given year.",
+      "deprecated": false
+    },
+    {
+      "name": "monthcalendar",
+      "signature": "monthcalendar(year, month)",
+      "params": [
+        {
+          "name": "year",
+          "type": "int",
+          "description": "The year"
+        },
+        {
+          "name": "month",
+          "type": "int",
+          "description": "The month (1-12)"
+        }
+      ],
+      "returns": {
+        "type": "list",
+        "description": "A list of week lists. Each week list contains 7 ints (day numbers, 0 for days outside the month)."
+      },
+      "description": "Returns a matrix (list of lists) representing a month's calendar. Each row represents a week; days outside the month are set to 0.",
+      "deprecated": false
+    },
+    {
+      "name": "monthrange",
+      "signature": "monthrange(year, month)",
+      "params": [
+        {
+          "name": "year",
+          "type": "int",
+          "description": "The year"
+        },
+        {
+          "name": "month",
+          "type": "int",
+          "description": "The month (1-12)"
+        }
+      ],
+      "returns": {
+        "type": "tuple",
+        "description": "A tuple (weekday_of_first_day, number_of_days_in_month). Weekday is 0=Monday through 6=Sunday."
+      },
+      "description": "Returns the weekday of the first day of the month (0=Monday) and the number of days in the month for the specified year and month.",
+      "deprecated": false
+    },
+    {
+      "name": "weekday",
+      "signature": "weekday(year, month, day)",
+      "params": [
+        {
+          "name": "year",
+          "type": "int",
+          "description": "The year"
+        },
+        {
+          "name": "month",
+          "type": "int",
+          "description": "The month (1-12)"
+        },
+        {
+          "name": "day",
+          "type": "int",
+          "description": "The day (1-31)"
+        }
+      ],
+      "returns": {
+        "type": "int",
+        "description": "The day of the week (0=Monday through 6=Sunday)"
+      },
+      "description": "Returns the day of the week for the given date. 0 is Monday and 6 is Sunday.",
+      "deprecated": false
+    },
+    {
+      "name": "isleap",
+      "signature": "isleap(year)",
+      "params": [
+        {
+          "name": "year",
+          "type": "int",
+          "description": "The year to check"
+        }
+      ],
+      "returns": {
+        "type": "bool",
+        "description": "True if the year is a leap year, False otherwise"
+      },
+      "description": "Returns True if the given year is a leap year, according to the proleptic Gregorian calendar.",
+      "deprecated": false
+    },
+    {
+      "name": "leapdays",
+      "signature": "leapdays(y1, y2)",
+      "params": [
+        {
+          "name": "y1",
+          "type": "int",
+          "description": "Start year (inclusive)"
+        },
+        {
+          "name": "y2",
+          "type": "int",
+          "description": "End year (exclusive)"
+        }
+      ],
+      "returns": {
+        "type": "int",
+        "description": "The number of leap years in the range"
+      },
+      "description": "Returns the number of leap years in the range [y1, y2), useful for computing the number of days between two year-based dates.",
+      "deprecated": false
+    },
+    {
+      "name": "setfirstweekday",
+      "signature": "setfirstweekday(weekday)",
+      "params": [
+        {
+          "name": "weekday",
+          "type": "int",
+          "description": "The day to set as the first day of the week (0=Monday through 6=Sunday). Use the constants MONDAY, TUESDAY, etc."
+        }
+      ],
+      "returns": {
+        "type": "None",
+        "description": "No return value"
+      },
+      "description": "Sets the first day of the week (0=Monday, 6=Sunday) for all calendar-generation functions. The default is Monday.",
+      "deprecated": false
+    },
+    {
+      "name": "firstweekday",
+      "signature": "firstweekday()",
+      "params": [],
+      "returns": {
+        "type": "int",
+        "description": "The current setting for the first weekday (0=Monday through 6=Sunday)"
+      },
+      "description": "Returns the current setting for the weekday that starts each week.",
+      "deprecated": false
+    },
+    {
+      "name": "timegm",
+      "signature": "timegm(tuple)",
+      "params": [
+        {
+          "name": "tuple",
+          "type": "struct_time",
+          "description": "A time tuple in UTC (as returned by time.gmtime())"
+        }
+      ],
+      "returns": {
+        "type": "int",
+        "description": "Seconds since the epoch (Unix timestamp)"
+      },
+      "description": "An unrelated but handy function that takes a time tuple in UTC and returns the corresponding Unix timestamp. This is the inverse of time.gmtime().",
+      "deprecated": false
+    },
+    {
+      "name": "prmonth",
+      "signature": "prmonth(theyear, themonth, w=0, l=0)",
+      "params": [
+        {
+          "name": "theyear",
+          "type": "int",
+          "description": "The year"
+        },
+        {
+          "name": "themonth",
+          "type": "int",
+          "description": "The month (1-12)"
+        },
+        {
+          "name": "w",
+          "type": "int",
+          "description": "Width of date columns. Default is 0 (auto)."
+        },
+        {
+          "name": "l",
+          "type": "int",
+          "description": "Number of lines per week. Default is 0 (auto)."
+        }
+      ],
+      "returns": {
+        "type": "None",
+        "description": "No return value; prints to stdout"
+      },
+      "description": "Prints the calendar for a month. Like calendar.month() but prints the result to stdout instead of returning a string.",
+      "deprecated": false
+    },
+    {
+      "name": "prcal",
+      "signature": "prcal(year, w=2, l=1, c=6)",
+      "params": [
+        {
+          "name": "year",
+          "type": "int",
+          "description": "The year"
+        },
+        {
+          "name": "w",
+          "type": "int",
+          "description": "Width of date columns. Default is 2."
+        },
+        {
+          "name": "l",
+          "type": "int",
+          "description": "Number of lines per week. Default is 1."
+        },
+        {
+          "name": "c",
+          "type": "int",
+          "description": "Number of spaces between month columns. Default is 6."
+        }
+      ],
+      "returns": {
+        "type": "None",
+        "description": "No return value; prints to stdout"
+      },
+      "description": "Prints the calendar for an entire year. Like calendar.calendar() but prints the result to stdout instead of returning a string.",
+      "deprecated": false
+    }
+  ],
+  "classes": [
+    {
+      "name": "Calendar",
+      "description": "Base class for calendar generation. Provides iterator and matrix methods for building calendars. Subclassed by TextCalendar and HTMLCalendar.",
+      "constructors": [
+        {
+          "signature": "Calendar([firstweekday])",
+          "params": [
+            {
+              "name": "firstweekday",
+              "type": "int",
+              "description": "The first day of the week (0=Monday, 6=Sunday). Default is 0."
+            }
+          ],
+          "description": "Creates a Calendar object with the given first weekday."
+        }
+      ],
+      "methods": [
+        {
+          "name": "iterweekdays",
+          "signature": "iterweekdays()",
+          "params": [],
+          "returns": {
+            "type": "iterator",
+            "description": "An iterator over weekday numbers for one week, starting with firstweekday"
+          },
+          "description": "Returns an iterator for the week day numbers used in one week. The first value from the iterator will be the same as the firstweekday property.",
+          "deprecated": false
+        },
+        {
+          "name": "itermonthdates",
+          "signature": "itermonthdates(year, month)",
+          "params": [
+            {
+              "name": "year",
+              "type": "int",
+              "description": "The year"
+            },
+            {
+              "name": "month",
+              "type": "int",
+              "description": "The month (1-12)"
+            }
+          ],
+          "returns": {
+            "type": "iterator",
+            "description": "An iterator of datetime.date objects for all days in the month, plus fill days to complete weeks"
+          },
+          "description": "Returns an iterator for the month, yielding datetime.date objects for all days and fill days before and after the month needed to complete full weeks.",
+          "deprecated": false
+        },
+        {
+          "name": "itermonthdays",
+          "signature": "itermonthdays(year, month)",
+          "params": [
+            {
+              "name": "year",
+              "type": "int",
+              "description": "The year"
+            },
+            {
+              "name": "month",
+              "type": "int",
+              "description": "The month (1-12)"
+            }
+          ],
+          "returns": {
+            "type": "iterator",
+            "description": "An iterator of day numbers (1-31) for the month, with 0 for fill days"
+          },
+          "description": "Returns an iterator for the month, similar to itermonthdates(), but yields day numbers instead of datetime.date objects. Days outside the month are represented by 0.",
+          "deprecated": false
+        },
+        {
+          "name": "itermonthdays2",
+          "signature": "itermonthdays2(year, month)",
+          "params": [
+            {
+              "name": "year",
+              "type": "int",
+              "description": "The year"
+            },
+            {
+              "name": "month",
+              "type": "int",
+              "description": "The month (1-12)"
+            }
+          ],
+          "returns": {
+            "type": "iterator",
+            "description": "An iterator of (day_number, weekday_number) tuples"
+          },
+          "description": "Returns an iterator for the month, yielding tuples of (day_number, weekday_number). Days outside the month have day_number 0.",
+          "deprecated": false
+        },
+        {
+          "name": "monthdatescalendar",
+          "signature": "monthdatescalendar(year, month)",
+          "params": [
+            {
+              "name": "year",
+              "type": "int",
+              "description": "The year"
+            },
+            {
+              "name": "month",
+              "type": "int",
+              "description": "The month (1-12)"
+            }
+          ],
+          "returns": {
+            "type": "list",
+            "description": "A list of weeks; each week is a list of 7 datetime.date objects"
+          },
+          "description": "Returns a list of the weeks in the month as lists of 7 datetime.date objects.",
+          "deprecated": false
+        },
+        {
+          "name": "monthdays2calendar",
+          "signature": "monthdays2calendar(year, month)",
+          "params": [
+            {
+              "name": "year",
+              "type": "int",
+              "description": "The year"
+            },
+            {
+              "name": "month",
+              "type": "int",
+              "description": "The month (1-12)"
+            }
+          ],
+          "returns": {
+            "type": "list",
+            "description": "A list of weeks; each week is a list of 7 (day_number, weekday_number) tuples"
+          },
+          "description": "Returns a list of the weeks in the month as lists of 7 (day_number, weekday_number) tuples. Days outside the month have day_number 0.",
+          "deprecated": false
+        },
+        {
+          "name": "monthdayscalendar",
+          "signature": "monthdayscalendar(year, month)",
+          "params": [
+            {
+              "name": "year",
+              "type": "int",
+              "description": "The year"
+            },
+            {
+              "name": "month",
+              "type": "int",
+              "description": "The month (1-12)"
+            }
+          ],
+          "returns": {
+            "type": "list",
+            "description": "A list of weeks; each week is a list of 7 day numbers (0 for fill days)"
+          },
+          "description": "Returns a list of the weeks in the month as lists of 7 day numbers. Days outside the month are represented by 0.",
+          "deprecated": false
+        },
+        {
+          "name": "yeardatescalendar",
+          "signature": "yeardatescalendar(year, width=3)",
+          "params": [
+            {
+              "name": "year",
+              "type": "int",
+              "description": "The year"
+            },
+            {
+              "name": "width",
+              "type": "int",
+              "description": "Number of months per row. Default is 3."
+            }
+          ],
+          "returns": {
+            "type": "list",
+            "description": "A list of month rows; each row contains width months; each month is a list of weeks; each week is a list of 7 datetime.date objects"
+          },
+          "description": "Returns the data for the entire year as a list of month rows. Each row contains up to width months (default 3). Each month contains weeks as lists of datetime.date objects.",
+          "deprecated": false
+        }
+      ],
+      "fields": []
+    },
+    {
+      "name": "TextCalendar",
+      "description": "Subclass of Calendar that generates plain-text calendars. Can format single months or full years as strings or print them to stdout.",
+      "constructors": [
+        {
+          "signature": "TextCalendar([firstweekday])",
+          "params": [
+            {
+              "name": "firstweekday",
+              "type": "int",
+              "description": "The first day of the week (0=Monday, 6=Sunday). Default is 0."
+            }
+          ],
+          "description": "Creates a TextCalendar with the given first weekday."
+        }
+      ],
+      "methods": [
+        {
+          "name": "formatmonth",
+          "signature": "formatmonth(theyear, themonth, w=0, l=0)",
+          "params": [
+            {
+              "name": "theyear",
+              "type": "int",
+              "description": "The year"
+            },
+            {
+              "name": "themonth",
+              "type": "int",
+              "description": "The month (1-12)"
+            },
+            {
+              "name": "w",
+              "type": "int",
+              "description": "Width of date columns"
+            },
+            {
+              "name": "l",
+              "type": "int",
+              "description": "Number of lines per week"
+            }
+          ],
+          "returns": {
+            "type": "str",
+            "description": "A multi-line string with the formatted month calendar"
+          },
+          "description": "Returns a month's calendar as a multi-line string.",
+          "deprecated": false
+        },
+        {
+          "name": "formatyear",
+          "signature": "formatyear(theyear, w=2, l=1, c=6, m=3)",
+          "params": [
+            {
+              "name": "theyear",
+              "type": "int",
+              "description": "The year"
+            },
+            {
+              "name": "w",
+              "type": "int",
+              "description": "Width of date columns. Default is 2."
+            },
+            {
+              "name": "l",
+              "type": "int",
+              "description": "Lines per week. Default is 1."
+            },
+            {
+              "name": "c",
+              "type": "int",
+              "description": "Spacing between month columns. Default is 6."
+            },
+            {
+              "name": "m",
+              "type": "int",
+              "description": "Number of months per row. Default is 3."
+            }
+          ],
+          "returns": {
+            "type": "str",
+            "description": "A multi-line string with the formatted year calendar"
+          },
+          "description": "Returns a full year's calendar as a multi-line string with m months per row.",
+          "deprecated": false
+        },
+        {
+          "name": "prmonth",
+          "signature": "prmonth(theyear, themonth, w=0, l=0)",
+          "params": [
+            {
+              "name": "theyear",
+              "type": "int",
+              "description": "The year"
+            },
+            {
+              "name": "themonth",
+              "type": "int",
+              "description": "The month (1-12)"
+            },
+            {
+              "name": "w",
+              "type": "int",
+              "description": "Width of date columns"
+            },
+            {
+              "name": "l",
+              "type": "int",
+              "description": "Number of lines per week"
+            }
+          ],
+          "returns": {
+            "type": "None",
+            "description": "No return value; prints to stdout"
+          },
+          "description": "Prints a month's calendar to stdout.",
+          "deprecated": false
+        },
+        {
+          "name": "pryear",
+          "signature": "pryear(theyear, w=2, l=1, c=6, m=3)",
+          "params": [
+            {
+              "name": "theyear",
+              "type": "int",
+              "description": "The year"
+            },
+            {
+              "name": "w",
+              "type": "int",
+              "description": "Width of date columns"
+            },
+            {
+              "name": "l",
+              "type": "int",
+              "description": "Lines per week"
+            },
+            {
+              "name": "c",
+              "type": "int",
+              "description": "Spacing between month columns"
+            },
+            {
+              "name": "m",
+              "type": "int",
+              "description": "Months per row"
+            }
+          ],
+          "returns": {
+            "type": "None",
+            "description": "No return value; prints to stdout"
+          },
+          "description": "Prints a full year's calendar to stdout.",
+          "deprecated": false
+        }
+      ],
+      "fields": []
+    },
+    {
+      "name": "HTMLCalendar",
+      "description": "Subclass of Calendar that generates HTML-formatted calendars. Can output individual months, full years, or complete HTML pages.",
+      "constructors": [
+        {
+          "signature": "HTMLCalendar([firstweekday])",
+          "params": [
+            {
+              "name": "firstweekday",
+              "type": "int",
+              "description": "The first day of the week (0=Monday, 6=Sunday). Default is 0."
+            }
+          ],
+          "description": "Creates an HTMLCalendar with the given first weekday."
+        }
+      ],
+      "methods": [
+        {
+          "name": "formatmonth",
+          "signature": "formatmonth(theyear, themonth, withyear=True)",
+          "params": [
+            {
+              "name": "theyear",
+              "type": "int",
+              "description": "The year"
+            },
+            {
+              "name": "themonth",
+              "type": "int",
+              "description": "The month (1-12)"
+            },
+            {
+              "name": "withyear",
+              "type": "bool",
+              "description": "If True, the year is included in the header. Default is True."
+            }
+          ],
+          "returns": {
+            "type": "str",
+            "description": "An HTML table string representing the month calendar"
+          },
+          "description": "Returns a month's calendar as an HTML table.",
+          "deprecated": false
+        },
+        {
+          "name": "formatyear",
+          "signature": "formatyear(theyear, width=3)",
+          "params": [
+            {
+              "name": "theyear",
+              "type": "int",
+              "description": "The year"
+            },
+            {
+              "name": "width",
+              "type": "int",
+              "description": "Number of months per row. Default is 3."
+            }
+          ],
+          "returns": {
+            "type": "str",
+            "description": "An HTML table string representing the full year calendar"
+          },
+          "description": "Returns a full year's calendar as an HTML table.",
+          "deprecated": false
+        },
+        {
+          "name": "formatyearpage",
+          "signature": "formatyearpage(theyear, width=3, css='calendar.css', encoding=None)",
+          "params": [
+            {
+              "name": "theyear",
+              "type": "int",
+              "description": "The year"
+            },
+            {
+              "name": "width",
+              "type": "int",
+              "description": "Number of months per row. Default is 3."
+            },
+            {
+              "name": "css",
+              "type": "str",
+              "description": "Filename for the CSS stylesheet. Default is 'calendar.css'. None disables the link."
+            },
+            {
+              "name": "encoding",
+              "type": "str",
+              "description": "Character encoding for the HTML output. Default is system default."
+            }
+          ],
+          "returns": {
+            "type": "str",
+            "description": "A complete HTML page string with the year calendar"
+          },
+          "description": "Returns a full year's calendar as a complete HTML page, including DOCTYPE, head, and CSS link.",
+          "deprecated": false
+        }
+      ],
+      "fields": []
+    }
+  ],
+  "constants": [
+    {
+      "name": "MONDAY",
+      "type": "int",
+      "description": "Constant for Monday (value 0). Use with setfirstweekday()."
+    },
+    {
+      "name": "TUESDAY",
+      "type": "int",
+      "description": "Constant for Tuesday (value 1). Use with setfirstweekday()."
+    },
+    {
+      "name": "WEDNESDAY",
+      "type": "int",
+      "description": "Constant for Wednesday (value 2). Use with setfirstweekday()."
+    },
+    {
+      "name": "THURSDAY",
+      "type": "int",
+      "description": "Constant for Thursday (value 3). Use with setfirstweekday()."
+    },
+    {
+      "name": "FRIDAY",
+      "type": "int",
+      "description": "Constant for Friday (value 4). Use with setfirstweekday()."
+    },
+    {
+      "name": "SATURDAY",
+      "type": "int",
+      "description": "Constant for Saturday (value 5). Use with setfirstweekday()."
+    },
+    {
+      "name": "SUNDAY",
+      "type": "int",
+      "description": "Constant for Sunday (value 6). Use with setfirstweekday()."
+    },
+    {
+      "name": "day_name",
+      "type": "list",
+      "description": "A list of weekday names in the current locale, e.g. ['Monday', 'Tuesday', ..., 'Sunday']."
+    },
+    {
+      "name": "day_abbr",
+      "type": "list",
+      "description": "A list of abbreviated weekday names in the current locale, e.g. ['Mon', 'Tue', ..., 'Sun']."
+    },
+    {
+      "name": "month_name",
+      "type": "list",
+      "description": "A list of month names in the current locale. month_name[0] is an empty string. month_name[1] is 'January', etc."
+    },
+    {
+      "name": "month_abbr",
+      "type": "list",
+      "description": "A list of abbreviated month names in the current locale. month_abbr[0] is an empty string. month_abbr[1] is 'Jan', etc."
+    }
+  ],
+  "docs_url": "https://docs.python.org/2.7/library/calendar.html"
+}

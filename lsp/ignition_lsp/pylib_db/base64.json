@@ -1,0 +1,238 @@
+{
+  "module": "base64",
+  "description": "RFC 3548 compliant Base16, Base32, and Base64 data encodings. Provides functions for encoding binary data to printable ASCII characters and decoding such encodings back to binary data.",
+  "functions": [
+    {
+      "name": "b64encode",
+      "signature": "b64encode(s, altchars=None)",
+      "params": [
+        {
+          "name": "s",
+          "type": "str",
+          "description": "The string to encode"
+        },
+        {
+          "name": "altchars",
+          "type": "str",
+          "description": "A two-character string specifying alternative characters for '+' and '/' in the standard Base64 alphabet. Default is None (use standard alphabet)."
+        }
+      ],
+      "returns": {
+        "type": "str",
+        "description": "The Base64 encoded string"
+      },
+      "description": "Encode a string using Base64. The encoded string is returned. Optional altchars must be a string of length 2 which specifies an alternative alphabet for the + and / characters.",
+      "deprecated": false
+    },
+    {
+      "name": "b64decode",
+      "signature": "b64decode(s, altchars=None)",
+      "params": [
+        {
+          "name": "s",
+          "type": "str",
+          "description": "The Base64 encoded string to decode"
+        },
+        {
+          "name": "altchars",
+          "type": "str",
+          "description": "A two-character string specifying alternative characters for '+' and '/' in the standard Base64 alphabet. Default is None."
+        }
+      ],
+      "returns": {
+        "type": "str",
+        "description": "The decoded string"
+      },
+      "description": "Decode a Base64 encoded string. The decoded string is returned. A TypeError is raised if s has incorrect padding. Characters not in the Base64 alphabet are discarded.",
+      "deprecated": false
+    },
+    {
+      "name": "standard_b64encode",
+      "signature": "standard_b64encode(s)",
+      "params": [
+        {
+          "name": "s",
+          "type": "str",
+          "description": "The string to encode"
+        }
+      ],
+      "returns": {
+        "type": "str",
+        "description": "The Base64 encoded string using the standard alphabet"
+      },
+      "description": "Encode a string using the standard Base64 alphabet (no altchars). Equivalent to b64encode(s).",
+      "deprecated": false
+    },
+    {
+      "name": "standard_b64decode",
+      "signature": "standard_b64decode(s)",
+      "params": [
+        {
+          "name": "s",
+          "type": "str",
+          "description": "The Base64 encoded string to decode"
+        }
+      ],
+      "returns": {
+        "type": "str",
+        "description": "The decoded string"
+      },
+      "description": "Decode a string encoded with the standard Base64 alphabet. Equivalent to b64decode(s).",
+      "deprecated": false
+    },
+    {
+      "name": "urlsafe_b64encode",
+      "signature": "urlsafe_b64encode(s)",
+      "params": [
+        {
+          "name": "s",
+          "type": "str",
+          "description": "The string to encode"
+        }
+      ],
+      "returns": {
+        "type": "str",
+        "description": "The URL-safe Base64 encoded string"
+      },
+      "description": "Encode a string using a URL-safe alphabet, which substitutes - instead of + and _ instead of / in the standard Base64 alphabet.",
+      "deprecated": false
+    },
+    {
+      "name": "urlsafe_b64decode",
+      "signature": "urlsafe_b64decode(s)",
+      "params": [
+        {
+          "name": "s",
+          "type": "str",
+          "description": "The URL-safe Base64 encoded string to decode"
+        }
+      ],
+      "returns": {
+        "type": "str",
+        "description": "The decoded string"
+      },
+      "description": "Decode a string encoded with the URL-safe Base64 alphabet, which substitutes - instead of + and _ instead of / in the standard Base64 alphabet.",
+      "deprecated": false
+    },
+    {
+      "name": "b32encode",
+      "signature": "b32encode(s)",
+      "params": [
+        {
+          "name": "s",
+          "type": "str",
+          "description": "The string to encode"
+        }
+      ],
+      "returns": {
+        "type": "str",
+        "description": "The Base32 encoded string"
+      },
+      "description": "Encode a string using Base32. The encoded string is returned.",
+      "deprecated": false
+    },
+    {
+      "name": "b32decode",
+      "signature": "b32decode(s, casefold=False, map01=None)",
+      "params": [
+        {
+          "name": "s",
+          "type": "str",
+          "description": "The Base32 encoded string to decode"
+        },
+        {
+          "name": "casefold",
+          "type": "bool",
+          "description": "If True, accept both uppercase and lowercase Base32 alphabets. Default is False."
+        },
+        {
+          "name": "map01",
+          "type": "str",
+          "description": "If not None, specifies which letter 0 (zero) and 1 (one) should be mapped to. Default is None."
+        }
+      ],
+      "returns": {
+        "type": "str",
+        "description": "The decoded string"
+      },
+      "description": "Decode a Base32 encoded string. The decoded string is returned. A TypeError is raised if s has incorrect padding.",
+      "deprecated": false
+    },
+    {
+      "name": "b16encode",
+      "signature": "b16encode(s)",
+      "params": [
+        {
+          "name": "s",
+          "type": "str",
+          "description": "The string to encode"
+        }
+      ],
+      "returns": {
+        "type": "str",
+        "description": "The Base16 (hex) encoded string in uppercase"
+      },
+      "description": "Encode a string using Base16 (hexadecimal). The encoded string is returned in uppercase.",
+      "deprecated": false
+    },
+    {
+      "name": "b16decode",
+      "signature": "b16decode(s, casefold=False)",
+      "params": [
+        {
+          "name": "s",
+          "type": "str",
+          "description": "The Base16 encoded string to decode"
+        },
+        {
+          "name": "casefold",
+          "type": "bool",
+          "description": "If True, accept lowercase hex characters as well. Default is False."
+        }
+      ],
+      "returns": {
+        "type": "str",
+        "description": "The decoded string"
+      },
+      "description": "Decode a Base16 (hexadecimal) encoded string. The decoded string is returned. A TypeError is raised if s is incorrectly padded or contains non-hex characters.",
+      "deprecated": false
+    },
+    {
+      "name": "encodestring",
+      "signature": "encodestring(s)",
+      "params": [
+        {
+          "name": "s",
+          "type": "str",
+          "description": "The string to encode"
+        }
+      ],
+      "returns": {
+        "type": "str",
+        "description": "The Base64 encoded string with newlines inserted every 76 characters"
+      },
+      "description": "Encode a string using Base64, with newlines inserted after every 76 characters of output. Returns the encoded string. This is a legacy interface; prefer b64encode for new code.",
+      "deprecated": true
+    },
+    {
+      "name": "decodestring",
+      "signature": "decodestring(s)",
+      "params": [
+        {
+          "name": "s",
+          "type": "str",
+          "description": "The Base64 encoded string to decode"
+        }
+      ],
+      "returns": {
+        "type": "str",
+        "description": "The decoded string"
+      },
+      "description": "Decode a Base64 encoded string. Returns the decoded string. This is a legacy interface; prefer b64decode for new code.",
+      "deprecated": true
+    }
+  ],
+  "classes": [],
+  "constants": [],
+  "docs_url": "https://docs.python.org/2.7/library/base64.html"
+}

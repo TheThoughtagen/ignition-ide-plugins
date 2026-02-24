@@ -1,0 +1,902 @@
+{
+  "module": "socket",
+  "description": "Low-level networking interface. Provides access to the BSD socket interface.",
+  "functions": [
+    {
+      "name": "socket",
+      "signature": "socket([family[, type[, proto]]])",
+      "params": [
+        {
+          "name": "family",
+          "type": "int",
+          "description": "Address family. Common values: AF_INET (IPv4, default), AF_INET6 (IPv6), AF_UNIX (Unix domain)."
+        },
+        {
+          "name": "type",
+          "type": "int",
+          "description": "Socket type. Common values: SOCK_STREAM (TCP, default), SOCK_DGRAM (UDP), SOCK_RAW."
+        },
+        {
+          "name": "proto",
+          "type": "int",
+          "description": "Protocol number. Usually 0, meaning the default protocol for the address family and type."
+        }
+      ],
+      "returns": {
+        "type": "socket",
+        "description": "A new socket object."
+      },
+      "description": "Create a new socket using the given address family, socket type, and protocol number.",
+      "deprecated": false
+    },
+    {
+      "name": "create_connection",
+      "signature": "create_connection(address[, timeout[, source_address]])",
+      "params": [
+        {
+          "name": "address",
+          "type": "tuple",
+          "description": "A (host, port) tuple for the remote address to connect to."
+        },
+        {
+          "name": "timeout",
+          "type": "float",
+          "description": "Timeout in seconds for the connection attempt. None means use the global default."
+        },
+        {
+          "name": "source_address",
+          "type": "tuple",
+          "description": "A (host, port) tuple to bind to as the source address before connecting."
+        }
+      ],
+      "returns": {
+        "type": "socket",
+        "description": "A connected socket object."
+      },
+      "description": "Convenience function that creates a TCP connection to a remote address and returns the socket object. Tries all addresses returned by getaddrinfo().",
+      "deprecated": false
+    },
+    {
+      "name": "getaddrinfo",
+      "signature": "getaddrinfo(host, port[, family[, socktype[, proto[, flags]]]])",
+      "params": [
+        {
+          "name": "host",
+          "type": "str",
+          "description": "The host name or IP address. None means any."
+        },
+        {
+          "name": "port",
+          "type": "int|str",
+          "description": "The port number or service name. None means any."
+        },
+        {
+          "name": "family",
+          "type": "int",
+          "description": "Address family filter. 0 means any."
+        },
+        {
+          "name": "socktype",
+          "type": "int",
+          "description": "Socket type filter. 0 means any."
+        },
+        {
+          "name": "proto",
+          "type": "int",
+          "description": "Protocol filter. 0 means any."
+        },
+        {
+          "name": "flags",
+          "type": "int",
+          "description": "Flags to pass to the underlying getaddrinfo() C function."
+        }
+      ],
+      "returns": {
+        "type": "list",
+        "description": "A list of 5-tuples (family, socktype, proto, canonname, sockaddr)."
+      },
+      "description": "Translate the host/port argument into a sequence of 5-tuples containing all the necessary arguments for creating a socket connected to that service.",
+      "deprecated": false
+    },
+    {
+      "name": "gethostbyname",
+      "signature": "gethostbyname(hostname)",
+      "params": [
+        {
+          "name": "hostname",
+          "type": "str",
+          "description": "The host name to resolve."
+        }
+      ],
+      "returns": {
+        "type": "str",
+        "description": "The IPv4 address as a string in dotted notation (e.g. '93.184.216.34')."
+      },
+      "description": "Translate a host name to IPv4 address format. The IPv4 address is returned as a string.",
+      "deprecated": false
+    },
+    {
+      "name": "gethostbyaddr",
+      "signature": "gethostbyaddr(ip_address)",
+      "params": [
+        {
+          "name": "ip_address",
+          "type": "str",
+          "description": "An IPv4 or IPv6 address string."
+        }
+      ],
+      "returns": {
+        "type": "tuple",
+        "description": "A triple (hostname, aliaslist, ipaddrlist) where hostname is the primary host name, aliaslist is a list of alternative host names, and ipaddrlist is a list of IPv4/v6 addresses."
+      },
+      "description": "Return a triple (hostname, aliaslist, ipaddrlist) for the given IP address. Supports both IPv4 and IPv6.",
+      "deprecated": false
+    },
+    {
+      "name": "gethostname",
+      "signature": "gethostname()",
+      "params": [],
+      "returns": {
+        "type": "str",
+        "description": "The hostname of the machine where the Python interpreter is currently executing."
+      },
+      "description": "Return a string containing the hostname of the machine where the Python interpreter is currently executing.",
+      "deprecated": false
+    },
+    {
+      "name": "getfqdn",
+      "signature": "getfqdn([name])",
+      "params": [
+        {
+          "name": "name",
+          "type": "str",
+          "description": "The name to look up. If empty or omitted, the local host is used."
+        }
+      ],
+      "returns": {
+        "type": "str",
+        "description": "The fully qualified domain name."
+      },
+      "description": "Return a fully qualified domain name for name. If the name is empty or omitted, it is interpreted as the local host.",
+      "deprecated": false
+    },
+    {
+      "name": "getservbyname",
+      "signature": "getservbyname(servicename[, protocolname])",
+      "params": [
+        {
+          "name": "servicename",
+          "type": "str",
+          "description": "The service name (e.g. 'http', 'ftp')."
+        },
+        {
+          "name": "protocolname",
+          "type": "str",
+          "description": "The protocol name (e.g. 'tcp', 'udp'). If omitted, any protocol will match."
+        }
+      ],
+      "returns": {
+        "type": "int",
+        "description": "The port number for the service."
+      },
+      "description": "Translate an Internet service name and protocol name to a port number.",
+      "deprecated": false
+    },
+    {
+      "name": "getservbyport",
+      "signature": "getservbyport(port[, protocolname])",
+      "params": [
+        {
+          "name": "port",
+          "type": "int",
+          "description": "The port number."
+        },
+        {
+          "name": "protocolname",
+          "type": "str",
+          "description": "The protocol name (e.g. 'tcp', 'udp'). If omitted, any protocol will match."
+        }
+      ],
+      "returns": {
+        "type": "str",
+        "description": "The service name for the port."
+      },
+      "description": "Translate an Internet port number and protocol name to a service name.",
+      "deprecated": false
+    },
+    {
+      "name": "getprotobyname",
+      "signature": "getprotobyname(protocolname)",
+      "params": [
+        {
+          "name": "protocolname",
+          "type": "str",
+          "description": "The protocol name (e.g. 'tcp', 'udp', 'icmp')."
+        }
+      ],
+      "returns": {
+        "type": "int",
+        "description": "The protocol number."
+      },
+      "description": "Translate an Internet protocol name to a constant suitable for passing as the third argument to socket().",
+      "deprecated": false
+    },
+    {
+      "name": "setdefaulttimeout",
+      "signature": "setdefaulttimeout(timeout)",
+      "params": [
+        {
+          "name": "timeout",
+          "type": "float",
+          "description": "The default timeout in seconds. None means no timeout (blocking mode)."
+        }
+      ],
+      "returns": {
+        "type": "None",
+        "description": "No return value."
+      },
+      "description": "Set the default timeout in seconds for new socket objects. A value of None indicates that new socket objects have no timeout.",
+      "deprecated": false
+    },
+    {
+      "name": "getdefaulttimeout",
+      "signature": "getdefaulttimeout()",
+      "params": [],
+      "returns": {
+        "type": "float",
+        "description": "The default socket timeout in seconds, or None."
+      },
+      "description": "Return the default timeout in seconds for new socket objects. None means new socket objects have no timeout.",
+      "deprecated": false
+    },
+    {
+      "name": "inet_aton",
+      "signature": "inet_aton(ip_string)",
+      "params": [
+        {
+          "name": "ip_string",
+          "type": "str",
+          "description": "An IPv4 address in dotted-quad string format (e.g. '192.168.1.1')."
+        }
+      ],
+      "returns": {
+        "type": "str",
+        "description": "The IPv4 address as a 32-bit packed binary string (4 bytes)."
+      },
+      "description": "Convert an IPv4 address from dotted-quad string format to 32-bit packed binary format.",
+      "deprecated": false
+    },
+    {
+      "name": "inet_ntoa",
+      "signature": "inet_ntoa(packed_ip)",
+      "params": [
+        {
+          "name": "packed_ip",
+          "type": "str",
+          "description": "A 32-bit packed binary IPv4 address (4 bytes)."
+        }
+      ],
+      "returns": {
+        "type": "str",
+        "description": "The IPv4 address in dotted-quad string format."
+      },
+      "description": "Convert a 32-bit packed IPv4 address to dotted-quad string format.",
+      "deprecated": false
+    },
+    {
+      "name": "inet_pton",
+      "signature": "inet_pton(address_family, ip_string)",
+      "params": [
+        {
+          "name": "address_family",
+          "type": "int",
+          "description": "AF_INET or AF_INET6."
+        },
+        {
+          "name": "ip_string",
+          "type": "str",
+          "description": "The IP address string."
+        }
+      ],
+      "returns": {
+        "type": "str",
+        "description": "The packed binary address."
+      },
+      "description": "Convert an IP address from its family-specific string format to packed binary format. Supports both IPv4 and IPv6.",
+      "deprecated": false
+    },
+    {
+      "name": "inet_ntop",
+      "signature": "inet_ntop(address_family, packed_ip)",
+      "params": [
+        {
+          "name": "address_family",
+          "type": "int",
+          "description": "AF_INET or AF_INET6."
+        },
+        {
+          "name": "packed_ip",
+          "type": "str",
+          "description": "The packed binary address."
+        }
+      ],
+      "returns": {
+        "type": "str",
+        "description": "The IP address string."
+      },
+      "description": "Convert a packed binary IP address to its string form. Supports both IPv4 and IPv6.",
+      "deprecated": false
+    },
+    {
+      "name": "htons",
+      "signature": "htons(x)",
+      "params": [
+        {
+          "name": "x",
+          "type": "int",
+          "description": "A 16-bit positive integer in host byte order."
+        }
+      ],
+      "returns": {
+        "type": "int",
+        "description": "The value in network byte order (big-endian)."
+      },
+      "description": "Convert a 16-bit positive integer from host to network byte order.",
+      "deprecated": false
+    },
+    {
+      "name": "htonl",
+      "signature": "htonl(x)",
+      "params": [
+        {
+          "name": "x",
+          "type": "int",
+          "description": "A 32-bit positive integer in host byte order."
+        }
+      ],
+      "returns": {
+        "type": "int",
+        "description": "The value in network byte order (big-endian)."
+      },
+      "description": "Convert a 32-bit positive integer from host to network byte order.",
+      "deprecated": false
+    },
+    {
+      "name": "ntohs",
+      "signature": "ntohs(x)",
+      "params": [
+        {
+          "name": "x",
+          "type": "int",
+          "description": "A 16-bit positive integer in network byte order."
+        }
+      ],
+      "returns": {
+        "type": "int",
+        "description": "The value in host byte order."
+      },
+      "description": "Convert a 16-bit positive integer from network to host byte order.",
+      "deprecated": false
+    },
+    {
+      "name": "ntohl",
+      "signature": "ntohl(x)",
+      "params": [
+        {
+          "name": "x",
+          "type": "int",
+          "description": "A 32-bit positive integer in network byte order."
+        }
+      ],
+      "returns": {
+        "type": "int",
+        "description": "The value in host byte order."
+      },
+      "description": "Convert a 32-bit positive integer from network to host byte order.",
+      "deprecated": false
+    }
+  ],
+  "classes": [
+    {
+      "name": "socket",
+      "description": "A socket object representing a network endpoint for communication. Created via socket.socket() constructor.",
+      "constructors": [
+        {
+          "signature": "socket([family[, type[, proto]]])",
+          "params": [
+            {
+              "name": "family",
+              "type": "int",
+              "description": "Address family. Defaults to AF_INET."
+            },
+            {
+              "name": "type",
+              "type": "int",
+              "description": "Socket type. Defaults to SOCK_STREAM."
+            },
+            {
+              "name": "proto",
+              "type": "int",
+              "description": "Protocol number. Defaults to 0."
+            }
+          ],
+          "description": "Create a new socket."
+        }
+      ],
+      "methods": [
+        {
+          "name": "accept",
+          "signature": "accept()",
+          "params": [],
+          "returns": {
+            "type": "tuple",
+            "description": "A pair (conn, address) where conn is a new socket object usable to send and receive data on the connection, and address is the address bound to the socket on the other end."
+          },
+          "description": "Accept a connection. The socket must be bound to an address and listening for connections. The return value is a pair (conn, address).",
+          "deprecated": false
+        },
+        {
+          "name": "bind",
+          "signature": "bind(address)",
+          "params": [
+            {
+              "name": "address",
+              "type": "tuple",
+              "description": "The address to bind to. For AF_INET, a (host, port) pair. For AF_INET6, a (host, port, flowinfo, scopeid) tuple."
+            }
+          ],
+          "returns": {
+            "type": "None",
+            "description": "No return value."
+          },
+          "description": "Bind the socket to address. The socket must not already be bound.",
+          "deprecated": false
+        },
+        {
+          "name": "close",
+          "signature": "close()",
+          "params": [],
+          "returns": {
+            "type": "None",
+            "description": "No return value."
+          },
+          "description": "Close the socket. All future operations on the socket object will fail. The remote end will receive no more data.",
+          "deprecated": false
+        },
+        {
+          "name": "connect",
+          "signature": "connect(address)",
+          "params": [
+            {
+              "name": "address",
+              "type": "tuple",
+              "description": "The remote address. For AF_INET, a (host, port) pair."
+            }
+          ],
+          "returns": {
+            "type": "None",
+            "description": "No return value."
+          },
+          "description": "Connect to a remote socket at address. Raises socket.error if the connection fails.",
+          "deprecated": false
+        },
+        {
+          "name": "connect_ex",
+          "signature": "connect_ex(address)",
+          "params": [
+            {
+              "name": "address",
+              "type": "tuple",
+              "description": "The remote address. For AF_INET, a (host, port) pair."
+            }
+          ],
+          "returns": {
+            "type": "int",
+            "description": "0 on success, or the value of errno on failure."
+          },
+          "description": "Like connect(), but return an error indicator instead of raising an exception. Returns 0 if the operation succeeded.",
+          "deprecated": false
+        },
+        {
+          "name": "fileno",
+          "signature": "fileno()",
+          "params": [],
+          "returns": {
+            "type": "int",
+            "description": "The file descriptor of the socket."
+          },
+          "description": "Return the socket's file descriptor (a small integer). Useful for select.select().",
+          "deprecated": false
+        },
+        {
+          "name": "getpeername",
+          "signature": "getpeername()",
+          "params": [],
+          "returns": {
+            "type": "tuple",
+            "description": "The remote address to which the socket is connected. For AF_INET, a (host, port) pair."
+          },
+          "description": "Return the remote address to which the socket is connected.",
+          "deprecated": false
+        },
+        {
+          "name": "getsockname",
+          "signature": "getsockname()",
+          "params": [],
+          "returns": {
+            "type": "tuple",
+            "description": "The socket's own address. For AF_INET, a (host, port) pair."
+          },
+          "description": "Return the socket's own address.",
+          "deprecated": false
+        },
+        {
+          "name": "getsockopt",
+          "signature": "getsockopt(level, optname[, buflen])",
+          "params": [
+            {
+              "name": "level",
+              "type": "int",
+              "description": "The option level (e.g. SOL_SOCKET)."
+            },
+            {
+              "name": "optname",
+              "type": "int",
+              "description": "The option name (e.g. SO_REUSEADDR)."
+            },
+            {
+              "name": "buflen",
+              "type": "int",
+              "description": "If present, the maximum length of the buffer to receive the option value. If absent, an integer option is assumed."
+            }
+          ],
+          "returns": {
+            "type": "int|str",
+            "description": "The socket option value. An integer if buflen is absent, a buffer string otherwise."
+          },
+          "description": "Return the value of the given socket option.",
+          "deprecated": false
+        },
+        {
+          "name": "setsockopt",
+          "signature": "setsockopt(level, optname, value)",
+          "params": [
+            {
+              "name": "level",
+              "type": "int",
+              "description": "The option level (e.g. SOL_SOCKET)."
+            },
+            {
+              "name": "optname",
+              "type": "int",
+              "description": "The option name (e.g. SO_REUSEADDR)."
+            },
+            {
+              "name": "value",
+              "type": "int|str",
+              "description": "The option value. An integer or a buffer (packed struct)."
+            }
+          ],
+          "returns": {
+            "type": "None",
+            "description": "No return value."
+          },
+          "description": "Set the value of the given socket option.",
+          "deprecated": false
+        },
+        {
+          "name": "listen",
+          "signature": "listen(backlog)",
+          "params": [
+            {
+              "name": "backlog",
+              "type": "int",
+              "description": "The maximum number of queued connections. Should be at least 0; most systems silently limit it to at least 1."
+            }
+          ],
+          "returns": {
+            "type": "None",
+            "description": "No return value."
+          },
+          "description": "Enable a server to accept connections. The backlog argument specifies the maximum number of queued connections.",
+          "deprecated": false
+        },
+        {
+          "name": "makefile",
+          "signature": "makefile([mode[, bufsize]])",
+          "params": [
+            {
+              "name": "mode",
+              "type": "str",
+              "description": "File mode ('r', 'w', 'rw', 'rb', 'wb', etc.). Defaults to 'r'."
+            },
+            {
+              "name": "bufsize",
+              "type": "int",
+              "description": "Buffer size. 0 means unbuffered, 1 means line-buffered, negative means system default."
+            }
+          ],
+          "returns": {
+            "type": "file",
+            "description": "A file object associated with the socket."
+          },
+          "description": "Return a file object associated with the socket. The file object references a dup()ped version of the socket file descriptor.",
+          "deprecated": false
+        },
+        {
+          "name": "recv",
+          "signature": "recv(bufsize[, flags])",
+          "params": [
+            {
+              "name": "bufsize",
+              "type": "int",
+              "description": "The maximum amount of data to receive at once."
+            },
+            {
+              "name": "flags",
+              "type": "int",
+              "description": "Optional flags (e.g. MSG_PEEK, MSG_WAITALL). Defaults to 0."
+            }
+          ],
+          "returns": {
+            "type": "str",
+            "description": "The received data as a string. Empty string indicates the connection has been closed."
+          },
+          "description": "Receive data from the socket. The return value is a string representing the data received.",
+          "deprecated": false
+        },
+        {
+          "name": "recvfrom",
+          "signature": "recvfrom(bufsize[, flags])",
+          "params": [
+            {
+              "name": "bufsize",
+              "type": "int",
+              "description": "The maximum amount of data to receive at once."
+            },
+            {
+              "name": "flags",
+              "type": "int",
+              "description": "Optional flags. Defaults to 0."
+            }
+          ],
+          "returns": {
+            "type": "tuple",
+            "description": "A pair (data, address) where data is a string and address is the sender's address."
+          },
+          "description": "Receive data from the socket. The return value is a pair (data, address) where data is the received data and address is the address of the socket sending the data.",
+          "deprecated": false
+        },
+        {
+          "name": "send",
+          "signature": "send(data[, flags])",
+          "params": [
+            {
+              "name": "data",
+              "type": "str",
+              "description": "The data to send."
+            },
+            {
+              "name": "flags",
+              "type": "int",
+              "description": "Optional flags. Defaults to 0."
+            }
+          ],
+          "returns": {
+            "type": "int",
+            "description": "The number of bytes sent. May be less than len(data)."
+          },
+          "description": "Send data to the socket. The socket must be connected. Returns the number of bytes sent, which may be less than the length of the data.",
+          "deprecated": false
+        },
+        {
+          "name": "sendall",
+          "signature": "sendall(data[, flags])",
+          "params": [
+            {
+              "name": "data",
+              "type": "str",
+              "description": "The data to send."
+            },
+            {
+              "name": "flags",
+              "type": "int",
+              "description": "Optional flags. Defaults to 0."
+            }
+          ],
+          "returns": {
+            "type": "None",
+            "description": "No return value."
+          },
+          "description": "Send data to the socket. Unlike send(), this method continues to send data until either all data has been sent or an error occurs.",
+          "deprecated": false
+        },
+        {
+          "name": "sendto",
+          "signature": "sendto(data[, flags], address)",
+          "params": [
+            {
+              "name": "data",
+              "type": "str",
+              "description": "The data to send."
+            },
+            {
+              "name": "flags",
+              "type": "int",
+              "description": "Optional flags."
+            },
+            {
+              "name": "address",
+              "type": "tuple",
+              "description": "The destination address."
+            }
+          ],
+          "returns": {
+            "type": "int",
+            "description": "The number of bytes sent."
+          },
+          "description": "Send data to the socket. The socket should not be connected to a remote socket, since the destination socket is specified by address.",
+          "deprecated": false
+        },
+        {
+          "name": "setblocking",
+          "signature": "setblocking(flag)",
+          "params": [
+            {
+              "name": "flag",
+              "type": "bool",
+              "description": "If False, the socket is set to non-blocking mode. If True, set to blocking mode."
+            }
+          ],
+          "returns": {
+            "type": "None",
+            "description": "No return value."
+          },
+          "description": "Set blocking or non-blocking mode of the socket. Equivalent to settimeout(None) for blocking and settimeout(0.0) for non-blocking.",
+          "deprecated": false
+        },
+        {
+          "name": "settimeout",
+          "signature": "settimeout(value)",
+          "params": [
+            {
+              "name": "value",
+              "type": "float",
+              "description": "Timeout in seconds. None means blocking mode. 0.0 means non-blocking mode."
+            }
+          ],
+          "returns": {
+            "type": "None",
+            "description": "No return value."
+          },
+          "description": "Set a timeout on blocking socket operations. A value of None puts the socket in blocking mode, 0.0 puts it in non-blocking mode.",
+          "deprecated": false
+        },
+        {
+          "name": "gettimeout",
+          "signature": "gettimeout()",
+          "params": [],
+          "returns": {
+            "type": "float",
+            "description": "The timeout in seconds, or None if no timeout is set."
+          },
+          "description": "Return the timeout in seconds associated with socket operations, or None if no timeout is set.",
+          "deprecated": false
+        },
+        {
+          "name": "shutdown",
+          "signature": "shutdown(how)",
+          "params": [
+            {
+              "name": "how",
+              "type": "int",
+              "description": "SHUT_RD (no more reads), SHUT_WR (no more writes), or SHUT_RDWR (no more reads or writes)."
+            }
+          ],
+          "returns": {
+            "type": "None",
+            "description": "No return value."
+          },
+          "description": "Shut down one or both halves of the connection.",
+          "deprecated": false
+        }
+      ]
+    },
+    {
+      "name": "error",
+      "description": "Exception raised for socket-related errors. Subclass of IOError.",
+      "constructors": [],
+      "methods": [],
+      "fields": []
+    },
+    {
+      "name": "timeout",
+      "description": "Exception raised when a socket operation times out. Subclass of socket.error.",
+      "constructors": [],
+      "methods": [],
+      "fields": []
+    },
+    {
+      "name": "herror",
+      "description": "Exception raised for address-related errors (host not found, etc.). Subclass of socket.error.",
+      "constructors": [],
+      "methods": [],
+      "fields": []
+    },
+    {
+      "name": "gaierror",
+      "description": "Exception raised for getaddrinfo() and getnameinfo() related errors. Subclass of socket.error.",
+      "constructors": [],
+      "methods": [],
+      "fields": []
+    }
+  ],
+  "constants": [
+    {
+      "name": "AF_INET",
+      "type": "int",
+      "description": "Address family for IPv4 addresses. The most common address family."
+    },
+    {
+      "name": "AF_INET6",
+      "type": "int",
+      "description": "Address family for IPv6 addresses."
+    },
+    {
+      "name": "AF_UNIX",
+      "type": "int",
+      "description": "Address family for Unix domain sockets. Used for local inter-process communication."
+    },
+    {
+      "name": "SOCK_STREAM",
+      "type": "int",
+      "description": "Socket type for TCP (reliable, connection-oriented byte streams)."
+    },
+    {
+      "name": "SOCK_DGRAM",
+      "type": "int",
+      "description": "Socket type for UDP (unreliable, connectionless datagrams)."
+    },
+    {
+      "name": "SOCK_RAW",
+      "type": "int",
+      "description": "Socket type for raw sockets. Allows access to the underlying transport protocol."
+    },
+    {
+      "name": "SOL_SOCKET",
+      "type": "int",
+      "description": "Socket option level for socket-level options."
+    },
+    {
+      "name": "SO_REUSEADDR",
+      "type": "int",
+      "description": "Socket option to allow reuse of local addresses."
+    },
+    {
+      "name": "SO_KEEPALIVE",
+      "type": "int",
+      "description": "Socket option to enable sending of keep-alive messages on connection-oriented sockets."
+    },
+    {
+      "name": "SHUT_RD",
+      "type": "int",
+      "description": "Constant for shutdown(): further receives are disallowed."
+    },
+    {
+      "name": "SHUT_WR",
+      "type": "int",
+      "description": "Constant for shutdown(): further sends are disallowed."
+    },
+    {
+      "name": "SHUT_RDWR",
+      "type": "int",
+      "description": "Constant for shutdown(): further sends and receives are disallowed."
+    },
+    {
+      "name": "has_ipv6",
+      "type": "bool",
+      "description": "True if the platform supports IPv6."
+    }
+  ],
+  "docs_url": "https://docs.python.org/2.7/library/socket.html"
+}

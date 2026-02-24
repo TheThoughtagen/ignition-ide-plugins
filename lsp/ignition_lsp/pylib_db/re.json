@@ -1,0 +1,683 @@
+{
+  "module": "re",
+  "description": "Regular expression matching operations. Provides Perl-style regular expression patterns for searching, matching, and manipulating strings.",
+  "functions": [
+    {
+      "name": "compile",
+      "signature": "compile(pattern, flags=0)",
+      "params": [
+        {
+          "name": "pattern",
+          "type": "str",
+          "description": "Regular expression pattern string"
+        },
+        {
+          "name": "flags",
+          "type": "int",
+          "description": "Combination of re flags (e.g., re.IGNORECASE | re.MULTILINE)"
+        }
+      ],
+      "returns": {
+        "type": "RegexObject",
+        "description": "Compiled regular expression object that can be used for matching"
+      },
+      "description": "Compile a regular expression pattern into a RegexObject. Using compiled patterns is more efficient when the expression will be used several times.",
+      "deprecated": false
+    },
+    {
+      "name": "search",
+      "signature": "search(pattern, string, flags=0)",
+      "params": [
+        {
+          "name": "pattern",
+          "type": "str",
+          "description": "Regular expression pattern string"
+        },
+        {
+          "name": "string",
+          "type": "str",
+          "description": "String to search for a match"
+        },
+        {
+          "name": "flags",
+          "type": "int",
+          "description": "Combination of re flags"
+        }
+      ],
+      "returns": {
+        "type": "MatchObject or None",
+        "description": "A MatchObject if the pattern matches anywhere in the string, or None if no match is found"
+      },
+      "description": "Scan through string looking for a location where the regular expression pattern produces a match. Returns None if no position in the string matches.",
+      "deprecated": false
+    },
+    {
+      "name": "match",
+      "signature": "match(pattern, string, flags=0)",
+      "params": [
+        {
+          "name": "pattern",
+          "type": "str",
+          "description": "Regular expression pattern string"
+        },
+        {
+          "name": "string",
+          "type": "str",
+          "description": "String to match at the beginning"
+        },
+        {
+          "name": "flags",
+          "type": "int",
+          "description": "Combination of re flags"
+        }
+      ],
+      "returns": {
+        "type": "MatchObject or None",
+        "description": "A MatchObject if zero or more characters at the beginning of string match, or None"
+      },
+      "description": "Try to apply the pattern at the start of the string. Returns None if the string does not match the pattern. Note: this only matches at the beginning; use search() to match anywhere.",
+      "deprecated": false
+    },
+    {
+      "name": "findall",
+      "signature": "findall(pattern, string, flags=0)",
+      "params": [
+        {
+          "name": "pattern",
+          "type": "str",
+          "description": "Regular expression pattern string"
+        },
+        {
+          "name": "string",
+          "type": "str",
+          "description": "String to search for all matches"
+        },
+        {
+          "name": "flags",
+          "type": "int",
+          "description": "Combination of re flags"
+        }
+      ],
+      "returns": {
+        "type": "list",
+        "description": "List of all non-overlapping matches as strings. If the pattern has groups, returns a list of tuples of groups."
+      },
+      "description": "Return all non-overlapping matches of pattern in string, as a list of strings. If groups are present, returns a list of tuples containing all groups.",
+      "deprecated": false
+    },
+    {
+      "name": "finditer",
+      "signature": "finditer(pattern, string, flags=0)",
+      "params": [
+        {
+          "name": "pattern",
+          "type": "str",
+          "description": "Regular expression pattern string"
+        },
+        {
+          "name": "string",
+          "type": "str",
+          "description": "String to search for all matches"
+        },
+        {
+          "name": "flags",
+          "type": "int",
+          "description": "Combination of re flags"
+        }
+      ],
+      "returns": {
+        "type": "iterator",
+        "description": "Iterator yielding MatchObject instances for each non-overlapping match"
+      },
+      "description": "Return an iterator yielding MatchObject instances for all non-overlapping matches of pattern in string. The string is scanned left-to-right and matches are returned in the order found.",
+      "deprecated": false
+    },
+    {
+      "name": "sub",
+      "signature": "sub(pattern, repl, string, count=0, flags=0)",
+      "params": [
+        {
+          "name": "pattern",
+          "type": "str",
+          "description": "Regular expression pattern string"
+        },
+        {
+          "name": "repl",
+          "type": "str or callable",
+          "description": "Replacement string or a function that takes a MatchObject and returns the replacement string. Backreferences like \\1 or \\g<name> are supported in strings."
+        },
+        {
+          "name": "string",
+          "type": "str",
+          "description": "The source string"
+        },
+        {
+          "name": "count",
+          "type": "int",
+          "description": "Maximum number of replacements. 0 (default) means replace all occurrences."
+        },
+        {
+          "name": "flags",
+          "type": "int",
+          "description": "Combination of re flags"
+        }
+      ],
+      "returns": {
+        "type": "str",
+        "description": "String with all (or count) occurrences of pattern replaced by repl"
+      },
+      "description": "Return the string obtained by replacing the leftmost non-overlapping occurrences of pattern in string by the replacement repl.",
+      "deprecated": false
+    },
+    {
+      "name": "subn",
+      "signature": "subn(pattern, repl, string, count=0, flags=0)",
+      "params": [
+        {
+          "name": "pattern",
+          "type": "str",
+          "description": "Regular expression pattern string"
+        },
+        {
+          "name": "repl",
+          "type": "str or callable",
+          "description": "Replacement string or function"
+        },
+        {
+          "name": "string",
+          "type": "str",
+          "description": "The source string"
+        },
+        {
+          "name": "count",
+          "type": "int",
+          "description": "Maximum number of replacements (0 means all)"
+        },
+        {
+          "name": "flags",
+          "type": "int",
+          "description": "Combination of re flags"
+        }
+      ],
+      "returns": {
+        "type": "tuple",
+        "description": "A 2-tuple (new_string, number_of_substitutions_made)"
+      },
+      "description": "Perform the same operation as sub(), but return a tuple (new_string, number_of_substitutions_made).",
+      "deprecated": false
+    },
+    {
+      "name": "split",
+      "signature": "split(pattern, string, maxsplit=0, flags=0)",
+      "params": [
+        {
+          "name": "pattern",
+          "type": "str",
+          "description": "Regular expression pattern string"
+        },
+        {
+          "name": "string",
+          "type": "str",
+          "description": "The source string to split"
+        },
+        {
+          "name": "maxsplit",
+          "type": "int",
+          "description": "Maximum number of splits. 0 (default) means no limit."
+        },
+        {
+          "name": "flags",
+          "type": "int",
+          "description": "Combination of re flags"
+        }
+      ],
+      "returns": {
+        "type": "list",
+        "description": "List of strings split by pattern occurrences. If the pattern has capturing groups, their text is also included."
+      },
+      "description": "Split string by the occurrences of pattern. If capturing parentheses are used in pattern, the text of all groups are also returned as part of the resulting list.",
+      "deprecated": false
+    },
+    {
+      "name": "escape",
+      "signature": "escape(string)",
+      "params": [
+        {
+          "name": "string",
+          "type": "str",
+          "description": "String to escape"
+        }
+      ],
+      "returns": {
+        "type": "str",
+        "description": "String with all non-alphanumeric characters backslash-escaped"
+      },
+      "description": "Return string with all non-alphanumerics backslashed. Useful to match an arbitrary literal string that may have regex metacharacters in it.",
+      "deprecated": false
+    }
+  ],
+  "classes": [
+    {
+      "name": "MatchObject",
+      "description": "Match objects are returned by search() and match() when a match is found. They contain information about the match and provide methods for accessing captured groups.",
+      "methods": [
+        {
+          "name": "group",
+          "signature": "group([group1, ...])",
+          "params": [
+            {
+              "name": "group1",
+              "type": "int or str",
+              "description": "Group index (0 is entire match) or group name. Multiple arguments return a tuple."
+            }
+          ],
+          "returns": {
+            "type": "str or tuple",
+            "description": "The matched substring for the given group(s). Returns None for groups that did not participate in the match."
+          },
+          "description": "Returns one or more subgroups of the match. group(0) returns the entire match. group(1) returns the first parenthesized subgroup.",
+          "deprecated": false
+        },
+        {
+          "name": "groups",
+          "signature": "groups(default=None)",
+          "params": [
+            {
+              "name": "default",
+              "type": "object",
+              "description": "Value to use for groups that did not participate in the match (default None)"
+            }
+          ],
+          "returns": {
+            "type": "tuple",
+            "description": "Tuple containing all subgroups of the match"
+          },
+          "description": "Return a tuple containing all subgroups of the match, from 1 up to however many groups are in the pattern.",
+          "deprecated": false
+        },
+        {
+          "name": "groupdict",
+          "signature": "groupdict(default=None)",
+          "params": [
+            {
+              "name": "default",
+              "type": "object",
+              "description": "Value to use for groups that did not participate in the match"
+            }
+          ],
+          "returns": {
+            "type": "dict",
+            "description": "Dictionary mapping group names to matched strings"
+          },
+          "description": "Return a dictionary containing all named subgroups of the match, keyed by the subgroup name.",
+          "deprecated": false
+        },
+        {
+          "name": "start",
+          "signature": "start([group])",
+          "params": [
+            {
+              "name": "group",
+              "type": "int",
+              "description": "Group index (default 0, the whole match)"
+            }
+          ],
+          "returns": {
+            "type": "int",
+            "description": "Start position of the match, or -1 if the group did not participate"
+          },
+          "description": "Return the index of the start of the substring matched by group.",
+          "deprecated": false
+        },
+        {
+          "name": "end",
+          "signature": "end([group])",
+          "params": [
+            {
+              "name": "group",
+              "type": "int",
+              "description": "Group index (default 0, the whole match)"
+            }
+          ],
+          "returns": {
+            "type": "int",
+            "description": "End position of the match, or -1 if the group did not participate"
+          },
+          "description": "Return the index of the end of the substring matched by group.",
+          "deprecated": false
+        },
+        {
+          "name": "span",
+          "signature": "span([group])",
+          "params": [
+            {
+              "name": "group",
+              "type": "int",
+              "description": "Group index (default 0, the whole match)"
+            }
+          ],
+          "returns": {
+            "type": "tuple",
+            "description": "A 2-tuple (start, end) for the given group"
+          },
+          "description": "Return a tuple (m.start(group), m.end(group)) for the given group.",
+          "deprecated": false
+        },
+        {
+          "name": "expand",
+          "signature": "expand(template)",
+          "params": [
+            {
+              "name": "template",
+              "type": "str",
+              "description": "Template string with backreferences (e.g., \\1, \\g<name>)"
+            }
+          ],
+          "returns": {
+            "type": "str",
+            "description": "String obtained by substituting backreferences in the template"
+          },
+          "description": "Return the string obtained by doing backslash substitution on the template string, as done by the sub() method.",
+          "deprecated": false
+        }
+      ],
+      "fields": [
+        {
+          "name": "string",
+          "type": "str",
+          "description": "The string passed to match() or search()"
+        },
+        {
+          "name": "re",
+          "type": "RegexObject",
+          "description": "The regular expression object whose match() or search() produced this MatchObject"
+        },
+        {
+          "name": "pos",
+          "type": "int",
+          "description": "The value of pos passed to search() or match()"
+        },
+        {
+          "name": "endpos",
+          "type": "int",
+          "description": "The value of endpos passed to search() or match()"
+        },
+        {
+          "name": "lastindex",
+          "type": "int or None",
+          "description": "The integer index of the last matched capturing group, or None"
+        },
+        {
+          "name": "lastgroup",
+          "type": "str or None",
+          "description": "The name of the last matched capturing group, or None"
+        }
+      ]
+    },
+    {
+      "name": "RegexObject",
+      "description": "Compiled regular expression object returned by re.compile(). Supports the same methods as the module-level functions but pre-compiled for efficiency.",
+      "methods": [
+        {
+          "name": "search",
+          "signature": "search(string[, pos[, endpos]])",
+          "params": [
+            {
+              "name": "string",
+              "type": "str",
+              "description": "String to search for a match"
+            },
+            {
+              "name": "pos",
+              "type": "int",
+              "description": "Index in the string where the search starts (default 0)"
+            },
+            {
+              "name": "endpos",
+              "type": "int",
+              "description": "Index in the string beyond which the RE engine will not go"
+            }
+          ],
+          "returns": {
+            "type": "MatchObject or None",
+            "description": "A MatchObject if the pattern matches, or None"
+          },
+          "description": "Scan through string looking for a location where the regular expression produces a match.",
+          "deprecated": false
+        },
+        {
+          "name": "match",
+          "signature": "match(string[, pos[, endpos]])",
+          "params": [
+            {
+              "name": "string",
+              "type": "str",
+              "description": "String to match at the beginning"
+            },
+            {
+              "name": "pos",
+              "type": "int",
+              "description": "Index in the string where the match must start (default 0)"
+            },
+            {
+              "name": "endpos",
+              "type": "int",
+              "description": "Index in the string beyond which the RE engine will not go"
+            }
+          ],
+          "returns": {
+            "type": "MatchObject or None",
+            "description": "A MatchObject if the pattern matches at pos, or None"
+          },
+          "description": "Try to apply the pattern at the start of the string. If pos is given, matching starts at that index.",
+          "deprecated": false
+        },
+        {
+          "name": "findall",
+          "signature": "findall(string[, pos[, endpos]])",
+          "params": [
+            {
+              "name": "string",
+              "type": "str",
+              "description": "String to search for all matches"
+            },
+            {
+              "name": "pos",
+              "type": "int",
+              "description": "Index where the search starts"
+            },
+            {
+              "name": "endpos",
+              "type": "int",
+              "description": "Index beyond which the RE engine will not go"
+            }
+          ],
+          "returns": {
+            "type": "list",
+            "description": "List of all non-overlapping matches"
+          },
+          "description": "Return all non-overlapping matches of pattern in string, as a list of strings or tuples.",
+          "deprecated": false
+        },
+        {
+          "name": "finditer",
+          "signature": "finditer(string[, pos[, endpos]])",
+          "params": [
+            {
+              "name": "string",
+              "type": "str",
+              "description": "String to search for all matches"
+            },
+            {
+              "name": "pos",
+              "type": "int",
+              "description": "Index where the search starts"
+            },
+            {
+              "name": "endpos",
+              "type": "int",
+              "description": "Index beyond which the RE engine will not go"
+            }
+          ],
+          "returns": {
+            "type": "iterator",
+            "description": "Iterator yielding MatchObject instances"
+          },
+          "description": "Return an iterator yielding MatchObject instances for all non-overlapping matches.",
+          "deprecated": false
+        },
+        {
+          "name": "sub",
+          "signature": "sub(repl, string, count=0)",
+          "params": [
+            {
+              "name": "repl",
+              "type": "str or callable",
+              "description": "Replacement string or function"
+            },
+            {
+              "name": "string",
+              "type": "str",
+              "description": "The source string"
+            },
+            {
+              "name": "count",
+              "type": "int",
+              "description": "Maximum number of replacements (0 means all)"
+            }
+          ],
+          "returns": {
+            "type": "str",
+            "description": "String with matches replaced"
+          },
+          "description": "Return the string obtained by replacing the leftmost non-overlapping occurrences of the pattern.",
+          "deprecated": false
+        },
+        {
+          "name": "subn",
+          "signature": "subn(repl, string, count=0)",
+          "params": [
+            {
+              "name": "repl",
+              "type": "str or callable",
+              "description": "Replacement string or function"
+            },
+            {
+              "name": "string",
+              "type": "str",
+              "description": "The source string"
+            },
+            {
+              "name": "count",
+              "type": "int",
+              "description": "Maximum number of replacements (0 means all)"
+            }
+          ],
+          "returns": {
+            "type": "tuple",
+            "description": "A 2-tuple (new_string, number_of_substitutions_made)"
+          },
+          "description": "Perform the same operation as sub(), but return a tuple (new_string, number_of_subs_made).",
+          "deprecated": false
+        },
+        {
+          "name": "split",
+          "signature": "split(string, maxsplit=0)",
+          "params": [
+            {
+              "name": "string",
+              "type": "str",
+              "description": "The source string to split"
+            },
+            {
+              "name": "maxsplit",
+              "type": "int",
+              "description": "Maximum number of splits (0 means no limit)"
+            }
+          ],
+          "returns": {
+            "type": "list",
+            "description": "List of strings split by pattern occurrences"
+          },
+          "description": "Split string by the occurrences of the pattern.",
+          "deprecated": false
+        }
+      ],
+      "fields": [
+        {
+          "name": "flags",
+          "type": "int",
+          "description": "The regex matching flags"
+        },
+        {
+          "name": "groups",
+          "type": "int",
+          "description": "The number of capturing groups in the pattern"
+        },
+        {
+          "name": "groupindex",
+          "type": "dict",
+          "description": "Dictionary mapping group names to group numbers"
+        },
+        {
+          "name": "pattern",
+          "type": "str",
+          "description": "The pattern string from which the RE object was compiled"
+        }
+      ]
+    }
+  ],
+  "constants": [
+    {
+      "name": "IGNORECASE",
+      "type": "int",
+      "description": "Perform case-insensitive matching. Expressions like [A-Z] will match lowercase letters too."
+    },
+    {
+      "name": "I",
+      "type": "int",
+      "description": "Alias for IGNORECASE."
+    },
+    {
+      "name": "MULTILINE",
+      "type": "int",
+      "description": "Make ^ match at the beginning of each line (after each newline) and $ match at the end of each line (before each newline)."
+    },
+    {
+      "name": "M",
+      "type": "int",
+      "description": "Alias for MULTILINE."
+    },
+    {
+      "name": "DOTALL",
+      "type": "int",
+      "description": "Make the '.' special character match any character including a newline. Without this flag, '.' matches anything except a newline."
+    },
+    {
+      "name": "S",
+      "type": "int",
+      "description": "Alias for DOTALL."
+    },
+    {
+      "name": "VERBOSE",
+      "type": "int",
+      "description": "Allow verbose regular expressions with comments and whitespace for readability. Whitespace within the pattern is ignored except when in a character class or preceded by an unescaped backslash."
+    },
+    {
+      "name": "X",
+      "type": "int",
+      "description": "Alias for VERBOSE."
+    },
+    {
+      "name": "UNICODE",
+      "type": "int",
+      "description": "Make \\w, \\W, \\b, \\B, \\d, \\D, \\s, and \\S dependent on the Unicode character properties database."
+    },
+    {
+      "name": "U",
+      "type": "int",
+      "description": "Alias for UNICODE."
+    }
+  ],
+  "docs_url": "https://docs.python.org/2.7/library/re.html"
+}

@@ -1,0 +1,225 @@
+{
+  "module": "bisect",
+  "description": "Array bisection algorithm. Provides functions to maintain a list in sorted order without having to sort the list after each insertion.",
+  "functions": [
+    {
+      "name": "bisect",
+      "signature": "bisect(a, x, lo=0, hi=len(a))",
+      "params": [
+        {
+          "name": "a",
+          "type": "list",
+          "description": "A sorted list to bisect."
+        },
+        {
+          "name": "x",
+          "type": "object",
+          "description": "The value to locate an insertion point for."
+        },
+        {
+          "name": "lo",
+          "type": "int",
+          "description": "Lower bound of the subset of the list to consider.",
+          "optional": true,
+          "default": "0"
+        },
+        {
+          "name": "hi",
+          "type": "int",
+          "description": "Upper bound of the subset of the list to consider.",
+          "optional": true,
+          "default": "len(a)"
+        }
+      ],
+      "returns": {
+        "type": "int",
+        "description": "An insertion point which comes after (to the right of) any existing entries of x in a."
+      },
+      "description": "Alias for bisect_right(). Locate the proper insertion point for x in a to maintain sorted order. The return value is suitable for use as the first parameter to list.insert().",
+      "deprecated": false
+    },
+    {
+      "name": "bisect_left",
+      "signature": "bisect_left(a, x, lo=0, hi=len(a))",
+      "params": [
+        {
+          "name": "a",
+          "type": "list",
+          "description": "A sorted list to bisect."
+        },
+        {
+          "name": "x",
+          "type": "object",
+          "description": "The value to locate an insertion point for."
+        },
+        {
+          "name": "lo",
+          "type": "int",
+          "description": "Lower bound of the subset of the list to consider.",
+          "optional": true,
+          "default": "0"
+        },
+        {
+          "name": "hi",
+          "type": "int",
+          "description": "Upper bound of the subset of the list to consider.",
+          "optional": true,
+          "default": "len(a)"
+        }
+      ],
+      "returns": {
+        "type": "int",
+        "description": "An insertion point which comes before (to the left of) any existing entries of x in a."
+      },
+      "description": "Locate the leftmost insertion point for x in a to maintain sorted order. The returned insertion point i partitions the array a into two halves so that all(val < x for val in a[lo:i]) for the left side and all(val >= x for val in a[i:hi]) for the right side.",
+      "deprecated": false
+    },
+    {
+      "name": "bisect_right",
+      "signature": "bisect_right(a, x, lo=0, hi=len(a))",
+      "params": [
+        {
+          "name": "a",
+          "type": "list",
+          "description": "A sorted list to bisect."
+        },
+        {
+          "name": "x",
+          "type": "object",
+          "description": "The value to locate an insertion point for."
+        },
+        {
+          "name": "lo",
+          "type": "int",
+          "description": "Lower bound of the subset of the list to consider.",
+          "optional": true,
+          "default": "0"
+        },
+        {
+          "name": "hi",
+          "type": "int",
+          "description": "Upper bound of the subset of the list to consider.",
+          "optional": true,
+          "default": "len(a)"
+        }
+      ],
+      "returns": {
+        "type": "int",
+        "description": "An insertion point which comes after (to the right of) any existing entries of x in a."
+      },
+      "description": "Locate the rightmost insertion point for x in a to maintain sorted order. The returned insertion point i partitions the array a into two halves so that all(val <= x for val in a[lo:i]) for the left side and all(val > x for val in a[i:hi]) for the right side.",
+      "deprecated": false
+    },
+    {
+      "name": "insort",
+      "signature": "insort(a, x, lo=0, hi=len(a))",
+      "params": [
+        {
+          "name": "a",
+          "type": "list",
+          "description": "A sorted list to insert into."
+        },
+        {
+          "name": "x",
+          "type": "object",
+          "description": "The value to insert."
+        },
+        {
+          "name": "lo",
+          "type": "int",
+          "description": "Lower bound of the subset of the list to consider.",
+          "optional": true,
+          "default": "0"
+        },
+        {
+          "name": "hi",
+          "type": "int",
+          "description": "Upper bound of the subset of the list to consider.",
+          "optional": true,
+          "default": "len(a)"
+        }
+      ],
+      "returns": {
+        "type": "None",
+        "description": "Modifies a in place."
+      },
+      "description": "Alias for insort_right(). Insert x in a in sorted order. This is equivalent to a.insert(bisect.bisect_right(a, x, lo, hi), x).",
+      "deprecated": false
+    },
+    {
+      "name": "insort_left",
+      "signature": "insort_left(a, x, lo=0, hi=len(a))",
+      "params": [
+        {
+          "name": "a",
+          "type": "list",
+          "description": "A sorted list to insert into."
+        },
+        {
+          "name": "x",
+          "type": "object",
+          "description": "The value to insert."
+        },
+        {
+          "name": "lo",
+          "type": "int",
+          "description": "Lower bound of the subset of the list to consider.",
+          "optional": true,
+          "default": "0"
+        },
+        {
+          "name": "hi",
+          "type": "int",
+          "description": "Upper bound of the subset of the list to consider.",
+          "optional": true,
+          "default": "len(a)"
+        }
+      ],
+      "returns": {
+        "type": "None",
+        "description": "Modifies a in place."
+      },
+      "description": "Insert x in a in sorted order. If x is already present in a, the insertion point will be before (to the left of) any existing entries. This is equivalent to a.insert(bisect.bisect_left(a, x, lo, hi), x).",
+      "deprecated": false
+    },
+    {
+      "name": "insort_right",
+      "signature": "insort_right(a, x, lo=0, hi=len(a))",
+      "params": [
+        {
+          "name": "a",
+          "type": "list",
+          "description": "A sorted list to insert into."
+        },
+        {
+          "name": "x",
+          "type": "object",
+          "description": "The value to insert."
+        },
+        {
+          "name": "lo",
+          "type": "int",
+          "description": "Lower bound of the subset of the list to consider.",
+          "optional": true,
+          "default": "0"
+        },
+        {
+          "name": "hi",
+          "type": "int",
+          "description": "Upper bound of the subset of the list to consider.",
+          "optional": true,
+          "default": "len(a)"
+        }
+      ],
+      "returns": {
+        "type": "None",
+        "description": "Modifies a in place."
+      },
+      "description": "Insert x in a in sorted order. If x is already present in a, the insertion point will be after (to the right of) any existing entries. This is equivalent to a.insert(bisect.bisect_right(a, x, lo, hi), x).",
+      "deprecated": false
+    }
+  ],
+  "classes": [],
+  "constants": [],
+  "docs_url": "https://docs.python.org/2.7/library/bisect.html"
+}

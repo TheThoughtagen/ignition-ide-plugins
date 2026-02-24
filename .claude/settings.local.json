@@ -115,7 +115,11 @@
       "Bash(/Users/pmannion/whiskeyhouse/ignition-nvim/lsp/venv/bin/python:*)",
       "Bash(venv/bin/ruff check ignition_lsp/expression_functions.py)",
       "Bash(venv/bin/ruff check:*)",
-      "Bash(luacheck:*)"
+      "Bash(luacheck:*)",
+      "Bash(for f in ignition_lsp/pylib_db/*.json)",
+      "Bash(do python3 -c \"import json; json.load\\(open\\(''$f''\\)\\)\")",
+      "Bash(venv/bin/mypy:*)",
+      "Bash(git:*)"
     ],
     "deny": [],
     "ask": []

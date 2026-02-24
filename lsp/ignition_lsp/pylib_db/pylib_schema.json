@@ -1,0 +1,151 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Python Standard Library Module Definition",
+  "description": "Schema for Python 2.7 stdlib module definitions used in Ignition Jython scripts",
+  "type": "object",
+  "required": ["module", "description"],
+  "properties": {
+    "module": {
+      "type": "string",
+      "description": "The module name (e.g., 'json', 're', 'datetime')"
+    },
+    "description": {
+      "type": "string",
+      "description": "Brief module description"
+    },
+    "functions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "signature", "description"],
+        "properties": {
+          "name": {"type": "string"},
+          "signature": {"type": "string"},
+          "params": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["name", "type", "description"],
+              "properties": {
+                "name": {"type": "string"},
+                "type": {"type": "string"},
+                "description": {"type": "string"},
+                "optional": {"type": "boolean", "default": false},
+                "default": {"type": "string"}
+              }
+            }
+          },
+          "returns": {
+            "type": "object",
+            "properties": {
+              "type": {"type": "string"},
+              "description": {"type": "string"}
+            }
+          },
+          "description": {"type": "string"},
+          "deprecated": {"type": "boolean", "default": false}
+        }
+      }
+    },
+    "classes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "description"],
+        "properties": {
+          "name": {"type": "string"},
+          "description": {"type": "string"},
+          "constructors": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["signature", "description"],
+              "properties": {
+                "signature": {"type": "string"},
+                "params": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "required": ["name", "type", "description"],
+                    "properties": {
+                      "name": {"type": "string"},
+                      "type": {"type": "string"},
+                      "description": {"type": "string"},
+                      "optional": {"type": "boolean", "default": false},
+                      "default": {"type": "string"}
+                    }
+                  }
+                },
+                "description": {"type": "string"}
+              }
+            }
+          },
+          "methods": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["name", "signature", "description"],
+              "properties": {
+                "name": {"type": "string"},
+                "signature": {"type": "string"},
+                "params": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "required": ["name", "type", "description"],
+                    "properties": {
+                      "name": {"type": "string"},
+                      "type": {"type": "string"},
+                      "description": {"type": "string"},
+                      "optional": {"type": "boolean", "default": false},
+                      "default": {"type": "string"}
+                    }
+                  }
+                },
+                "returns": {
+                  "type": "object",
+                  "properties": {
+                    "type": {"type": "string"},
+                    "description": {"type": "string"}
+                  }
+                },
+                "description": {"type": "string"},
+                "static": {"type": "boolean", "default": false},
+                "deprecated": {"type": "boolean", "default": false}
+              }
+            }
+          },
+          "fields": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["name", "type", "description"],
+              "properties": {
+                "name": {"type": "string"},
+                "type": {"type": "string"},
+                "description": {"type": "string"}
+              }
+            }
+          }
+        }
+      }
+    },
+    "constants": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "type", "description"],
+        "properties": {
+          "name": {"type": "string"},
+          "type": {"type": "string"},
+          "description": {"type": "string"}
+        }
+      }
+    },
+    "docs_url": {
+      "type": "string",
+      "format": "uri",
+      "description": "Link to official Python 2.7 documentation"
+    }
+  }
+}

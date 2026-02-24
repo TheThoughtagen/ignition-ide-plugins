@@ -1,0 +1,735 @@
+{
+  "module": "urllib2",
+  "description": "Extensible library for opening URLs. Provides functions and classes for HTTP authentication, redirections, cookies, and more.",
+  "functions": [
+    {
+      "name": "urlopen",
+      "signature": "urlopen(url, data=None, timeout=None)",
+      "params": [
+        {
+          "name": "url",
+          "type": "str or Request",
+          "description": "URL string or Request object to open"
+        },
+        {
+          "name": "data",
+          "type": "str",
+          "description": "Additional data to send to the server. If provided, the request becomes a POST. Should be a buffer in standard application/x-www-form-urlencoded format."
+        },
+        {
+          "name": "timeout",
+          "type": "float",
+          "description": "Timeout in seconds for blocking operations like the connection attempt. If not specified, the global default timeout is used."
+        }
+      ],
+      "returns": {
+        "type": "addinfourl",
+        "description": "A file-like object with read(), readline(), readlines(), fileno(), close(), info(), getcode(), and geturl() methods"
+      },
+      "description": "Open the URL, which can be either a string or a Request object. Returns a file-like response object. For HTTP and HTTPS URLs, returns an httplib.HTTPResponse-wrapped object.",
+      "deprecated": false
+    },
+    {
+      "name": "install_opener",
+      "signature": "install_opener(opener)",
+      "params": [
+        {
+          "name": "opener",
+          "type": "OpenerDirector",
+          "description": "An OpenerDirector instance to install as the default global opener"
+        }
+      ],
+      "returns": {
+        "type": "None",
+        "description": "No return value"
+      },
+      "description": "Install an OpenerDirector instance as the default global opener. Subsequent calls to urlopen() will use the installed opener.",
+      "deprecated": false
+    },
+    {
+      "name": "build_opener",
+      "signature": "build_opener(*handlers)",
+      "params": [
+        {
+          "name": "*handlers",
+          "type": "BaseHandler or class",
+          "description": "Handler instances or handler classes to use. Classes are instantiated without arguments. Several default handlers are always included unless overridden."
+        }
+      ],
+      "returns": {
+        "type": "OpenerDirector",
+        "description": "An OpenerDirector instance with the given handlers and default handlers chained together"
+      },
+      "description": "Return an OpenerDirector instance which chains the given handlers in order. Default handlers include ProxyHandler, UnknownHandler, HTTPHandler, HTTPDefaultErrorHandler, HTTPRedirectHandler, FTPHandler, FileHandler, HTTPErrorProcessor. Handlers can be instances or classes.",
+      "deprecated": false
+    }
+  ],
+  "classes": [
+    {
+      "name": "Request",
+      "description": "Abstraction of a URL request. Encapsulates a URL, headers, data, and request type.",
+      "constructors": [
+        {
+          "signature": "Request(url, data=None, headers={}, origin_req_host=None, unverifiable=False)",
+          "params": [
+            {
+              "name": "url",
+              "type": "str",
+              "description": "The URL to request. Must be a valid URL string."
+            },
+            {
+              "name": "data",
+              "type": "str",
+              "description": "Data to send with the request. If provided, the request becomes a POST. Should be in application/x-www-form-urlencoded format or any bytes payload."
+            },
+            {
+              "name": "headers",
+              "type": "dict",
+              "description": "Dictionary of HTTP headers. Each key is a header name, each value is the header value. Header names are case-insensitive."
+            },
+            {
+              "name": "origin_req_host",
+              "type": "str",
+              "description": "The host of the origin transaction, as defined by RFC 2965. Defaults to cookielib.request_host(self)."
+            },
+            {
+              "name": "unverifiable",
+              "type": "bool",
+              "description": "Whether the request is unverifiable as defined by RFC 2965. Defaults to False."
+            }
+          ],
+          "description": "Create a new Request object for the given URL with optional data and headers."
+        }
+      ],
+      "methods": [
+        {
+          "name": "add_header",
+          "signature": "add_header(key, val)",
+          "params": [
+            {
+              "name": "key",
+              "type": "str",
+              "description": "Header name"
+            },
+            {
+              "name": "val",
+              "type": "str",
+              "description": "Header value"
+            }
+          ],
+          "returns": {
+            "type": "None",
+            "description": "No return value"
+          },
+          "description": "Add a header to the request. Currently does not check if the header already exists; duplicate headers will be appended. The header is stored with the key capitalized.",
+          "deprecated": false
+        },
+        {
+          "name": "add_data",
+          "signature": "add_data(data)",
+          "params": [
+            {
+              "name": "data",
+              "type": "str",
+              "description": "Data to set on the request"
+            }
+          ],
+          "returns": {
+            "type": "None",
+            "description": "No return value"
+          },
+          "description": "Set the request data. This changes the request method from GET to POST.",
+          "deprecated": false
+        },
+        {
+          "name": "add_unredirected_header",
+          "signature": "add_unredirected_header(key, val)",
+          "params": [
+            {
+              "name": "key",
+              "type": "str",
+              "description": "Header name"
+            },
+            {
+              "name": "val",
+              "type": "str",
+              "description": "Header value"
+            }
+          ],
+          "returns": {
+            "type": "None",
+            "description": "No return value"
+          },
+          "description": "Add a header that will not be sent on redirect. Used for headers that should only be sent on the original request.",
+          "deprecated": false
+        },
+        {
+          "name": "has_header",
+          "signature": "has_header(header)",
+          "params": [
+            {
+              "name": "header",
+              "type": "str",
+              "description": "Header name to check"
+            }
+          ],
+          "returns": {
+            "type": "bool",
+            "description": "True if the header is present (either regular or unredirected)"
+          },
+          "description": "Return whether the request has the named header. Checks both regular and unredirected headers.",
+          "deprecated": false
+        },
+        {
+          "name": "get_header",
+          "signature": "get_header(header_name, default=None)",
+          "params": [
+            {
+              "name": "header_name",
+              "type": "str",
+              "description": "Header name to retrieve"
+            },
+            {
+              "name": "default",
+              "type": "str",
+              "description": "Default value if the header is not found"
+            }
+          ],
+          "returns": {
+            "type": "str",
+            "description": "Header value or default if not found"
+          },
+          "description": "Return the value of the given header. Checks regular headers first, then unredirected headers. Returns default if not found.",
+          "deprecated": false
+        },
+        {
+          "name": "header_items",
+          "signature": "header_items()",
+          "params": [],
+          "returns": {
+            "type": "list",
+            "description": "List of (header_name, header_value) tuples"
+          },
+          "description": "Return a list of tuples (header_name, header_value) of all headers in the request.",
+          "deprecated": false
+        },
+        {
+          "name": "get_full_url",
+          "signature": "get_full_url()",
+          "params": [],
+          "returns": {
+            "type": "str",
+            "description": "The full URL string"
+          },
+          "description": "Return the full URL of the request.",
+          "deprecated": false
+        },
+        {
+          "name": "get_host",
+          "signature": "get_host()",
+          "params": [],
+          "returns": {
+            "type": "str",
+            "description": "The host portion of the URL"
+          },
+          "description": "Return the host to which the request will be sent.",
+          "deprecated": false
+        },
+        {
+          "name": "get_type",
+          "signature": "get_type()",
+          "params": [],
+          "returns": {
+            "type": "str",
+            "description": "The URL scheme (e.g. 'http', 'https', 'ftp')"
+          },
+          "description": "Return the URL scheme (type) of the request.",
+          "deprecated": false
+        },
+        {
+          "name": "get_selector",
+          "signature": "get_selector()",
+          "params": [],
+          "returns": {
+            "type": "str",
+            "description": "The path and query portion of the URL"
+          },
+          "description": "Return the selector (path + query) portion of the URL.",
+          "deprecated": false
+        },
+        {
+          "name": "set_proxy",
+          "signature": "set_proxy(host, type)",
+          "params": [
+            {
+              "name": "host",
+              "type": "str",
+              "description": "Proxy host string"
+            },
+            {
+              "name": "type",
+              "type": "str",
+              "description": "Proxy type (URL scheme)"
+            }
+          ],
+          "returns": {
+            "type": "None",
+            "description": "No return value"
+          },
+          "description": "Prepare the request to connect via a proxy by setting the host and type to the proxy values.",
+          "deprecated": false
+        },
+        {
+          "name": "has_data",
+          "signature": "has_data()",
+          "params": [],
+          "returns": {
+            "type": "bool",
+            "description": "True if the request has data"
+          },
+          "description": "Return whether the request has data (i.e. is a POST request).",
+          "deprecated": false
+        },
+        {
+          "name": "get_data",
+          "signature": "get_data()",
+          "params": [],
+          "returns": {
+            "type": "str",
+            "description": "The request data or None"
+          },
+          "description": "Return the request data.",
+          "deprecated": false
+        }
+      ],
+      "fields": []
+    },
+    {
+      "name": "OpenerDirector",
+      "description": "Manages a collection of handlers and coordinates opening URLs by dispatching to the appropriate handler chain.",
+      "constructors": [
+        {
+          "signature": "OpenerDirector()",
+          "params": [],
+          "description": "Create a new OpenerDirector. Typically you should use build_opener() instead of instantiating directly."
+        }
+      ],
+      "methods": [
+        {
+          "name": "open",
+          "signature": "open(url, data=None, timeout=None)",
+          "params": [
+            {
+              "name": "url",
+              "type": "str or Request",
+              "description": "URL string or Request object to open"
+            },
+            {
+              "name": "data",
+              "type": "str",
+              "description": "Data to send with the request"
+            },
+            {
+              "name": "timeout",
+              "type": "float",
+              "description": "Timeout in seconds for the operation"
+            }
+          ],
+          "returns": {
+            "type": "addinfourl",
+            "description": "A file-like response object"
+          },
+          "description": "Open the given URL. Dispatches to installed handler chain. The url argument may be a string URL or a Request object.",
+          "deprecated": false
+        },
+        {
+          "name": "error",
+          "signature": "error(proto, *args)",
+          "params": [
+            {
+              "name": "proto",
+              "type": "str",
+              "description": "Protocol scheme or 'default' for error handling"
+            },
+            {
+              "name": "*args",
+              "type": "any",
+              "description": "Arguments to pass to the error handler"
+            }
+          ],
+          "returns": {
+            "type": "any",
+            "description": "Return value from the error handler"
+          },
+          "description": "Handle an error for the given protocol. Looks for a registered error handler and dispatches to it.",
+          "deprecated": false
+        },
+        {
+          "name": "add_handler",
+          "signature": "add_handler(handler)",
+          "params": [
+            {
+              "name": "handler",
+              "type": "BaseHandler",
+              "description": "Handler instance to add to the opener"
+            }
+          ],
+          "returns": {
+            "type": "None",
+            "description": "No return value"
+          },
+          "description": "Add a handler to the opener. The handler is inserted into the chain and will be used for matching protocols and error handling.",
+          "deprecated": false
+        }
+      ],
+      "fields": []
+    },
+    {
+      "name": "BaseHandler",
+      "description": "Base class for all URL handlers. Subclasses implement protocol-specific open and error methods. Handlers are registered with an OpenerDirector.",
+      "constructors": [],
+      "methods": [],
+      "fields": [
+        {
+          "name": "parent",
+          "type": "OpenerDirector",
+          "description": "The OpenerDirector this handler is registered with. Set by add_handler()."
+        }
+      ]
+    },
+    {
+      "name": "HTTPHandler",
+      "description": "Handler for opening HTTP URLs. Uses httplib.HTTPConnection.",
+      "constructors": [
+        {
+          "signature": "HTTPHandler(debuglevel=0)",
+          "params": [
+            {
+              "name": "debuglevel",
+              "type": "int",
+              "description": "Debug level for httplib. Set to 1 to print HTTP request/response details."
+            }
+          ],
+          "description": "Create an HTTP handler with the given debug level."
+        }
+      ],
+      "methods": [],
+      "fields": []
+    },
+    {
+      "name": "HTTPSHandler",
+      "description": "Handler for opening HTTPS URLs. Uses httplib.HTTPSConnection. Requires ssl module support.",
+      "constructors": [
+        {
+          "signature": "HTTPSHandler(debuglevel=0, context=None)",
+          "params": [
+            {
+              "name": "debuglevel",
+              "type": "int",
+              "description": "Debug level for httplib. Set to 1 to print HTTPS request/response details."
+            },
+            {
+              "name": "context",
+              "type": "ssl.SSLContext",
+              "description": "SSL context for configuring SSL options. If not provided, a default context is used."
+            }
+          ],
+          "description": "Create an HTTPS handler with the given debug level and optional SSL context."
+        }
+      ],
+      "methods": [],
+      "fields": []
+    },
+    {
+      "name": "ProxyHandler",
+      "description": "Handler for routing requests through proxy servers. Reads proxy settings from environment variables if no proxies dict is given.",
+      "constructors": [
+        {
+          "signature": "ProxyHandler(proxies=None)",
+          "params": [
+            {
+              "name": "proxies",
+              "type": "dict",
+              "description": "Dictionary mapping protocol names to proxy URLs (e.g. {'http': 'http://proxy:8080'}). If None, reads from environment variables (http_proxy, https_proxy, etc.)."
+            }
+          ],
+          "description": "Create a proxy handler. If proxies is None, proxy settings are detected from environment variables."
+        }
+      ],
+      "methods": [],
+      "fields": []
+    },
+    {
+      "name": "HTTPBasicAuthHandler",
+      "description": "Handler for HTTP Basic Authentication. Retries requests with credentials when a 401 response is received.",
+      "constructors": [
+        {
+          "signature": "HTTPBasicAuthHandler(password_mgr=None)",
+          "params": [
+            {
+              "name": "password_mgr",
+              "type": "HTTPPasswordMgr",
+              "description": "Password manager providing credentials. If None, an HTTPPasswordMgr is created."
+            }
+          ],
+          "description": "Create a Basic Auth handler with the given password manager."
+        }
+      ],
+      "methods": [],
+      "fields": []
+    },
+    {
+      "name": "HTTPPasswordMgr",
+      "description": "Manages a mapping of (realm, URI) to (user, password) pairs. Used by authentication handlers to look up credentials.",
+      "constructors": [
+        {
+          "signature": "HTTPPasswordMgr()",
+          "params": [],
+          "description": "Create a new password manager."
+        }
+      ],
+      "methods": [
+        {
+          "name": "add_password",
+          "signature": "add_password(realm, uri, user, passwd)",
+          "params": [
+            {
+              "name": "realm",
+              "type": "str",
+              "description": "Authentication realm. Use None to match any realm."
+            },
+            {
+              "name": "uri",
+              "type": "str or sequence",
+              "description": "URI or sequence of URIs that these credentials apply to"
+            },
+            {
+              "name": "user",
+              "type": "str",
+              "description": "Username"
+            },
+            {
+              "name": "passwd",
+              "type": "str",
+              "description": "Password"
+            }
+          ],
+          "returns": {
+            "type": "None",
+            "description": "No return value"
+          },
+          "description": "Add credentials for the given realm and URI(s).",
+          "deprecated": false
+        },
+        {
+          "name": "find_user_password",
+          "signature": "find_user_password(realm, authuri)",
+          "params": [
+            {
+              "name": "realm",
+              "type": "str",
+              "description": "Authentication realm to look up"
+            },
+            {
+              "name": "authuri",
+              "type": "str",
+              "description": "URI to look up credentials for"
+            }
+          ],
+          "returns": {
+            "type": "tuple",
+            "description": "Tuple of (user, password) or (None, None) if no matching credentials found"
+          },
+          "description": "Find credentials for the given realm and URI. Searches registered URIs from longest to shortest path.",
+          "deprecated": false
+        }
+      ],
+      "fields": []
+    },
+    {
+      "name": "HTTPPasswordMgrWithDefaultRealm",
+      "description": "A password manager that also supports a default realm. Credentials added with realm=None will match any realm for the given URI.",
+      "constructors": [
+        {
+          "signature": "HTTPPasswordMgrWithDefaultRealm()",
+          "params": [],
+          "description": "Create a new password manager with default realm support."
+        }
+      ],
+      "methods": [
+        {
+          "name": "add_password",
+          "signature": "add_password(realm, uri, user, passwd)",
+          "params": [
+            {
+              "name": "realm",
+              "type": "str",
+              "description": "Authentication realm. Use None as the default realm that matches any challenge."
+            },
+            {
+              "name": "uri",
+              "type": "str or sequence",
+              "description": "URI or sequence of URIs that these credentials apply to"
+            },
+            {
+              "name": "user",
+              "type": "str",
+              "description": "Username"
+            },
+            {
+              "name": "passwd",
+              "type": "str",
+              "description": "Password"
+            }
+          ],
+          "returns": {
+            "type": "None",
+            "description": "No return value"
+          },
+          "description": "Add credentials for the given realm and URI(s). If realm is None, the credentials serve as a fallback for any realm.",
+          "deprecated": false
+        },
+        {
+          "name": "find_user_password",
+          "signature": "find_user_password(realm, authuri)",
+          "params": [
+            {
+              "name": "realm",
+              "type": "str",
+              "description": "Authentication realm to look up"
+            },
+            {
+              "name": "authuri",
+              "type": "str",
+              "description": "URI to look up credentials for"
+            }
+          ],
+          "returns": {
+            "type": "tuple",
+            "description": "Tuple of (user, password) or (None, None) if no matching credentials found"
+          },
+          "description": "Find credentials for the given realm and URI. If no match for the specified realm, falls back to credentials stored under None realm.",
+          "deprecated": false
+        }
+      ],
+      "fields": []
+    },
+    {
+      "name": "HTTPCookieProcessor",
+      "description": "Handler for automatic cookie handling. Stores cookies from responses and sends them with subsequent requests.",
+      "constructors": [
+        {
+          "signature": "HTTPCookieProcessor(cookiejar=None)",
+          "params": [
+            {
+              "name": "cookiejar",
+              "type": "cookielib.CookieJar",
+              "description": "CookieJar instance to use for storing cookies. If None, a cookielib.CookieJar is created."
+            }
+          ],
+          "description": "Create a cookie handler. If cookiejar is None, a new CookieJar is created."
+        }
+      ],
+      "methods": [],
+      "fields": [
+        {
+          "name": "cookiejar",
+          "type": "cookielib.CookieJar",
+          "description": "The CookieJar instance used to store and retrieve cookies"
+        }
+      ]
+    },
+    {
+      "name": "URLError",
+      "description": "Exception raised when a URL cannot be opened. Subclass of IOError.",
+      "constructors": [],
+      "methods": [],
+      "fields": [
+        {
+          "name": "reason",
+          "type": "str or socket.error",
+          "description": "The reason for the error. A string or an underlying socket exception."
+        }
+      ]
+    },
+    {
+      "name": "HTTPError",
+      "description": "Exception raised for HTTP errors (non-success status codes). Subclass of URLError and also acts as a file-like response object, so it can be read directly.",
+      "constructors": [
+        {
+          "signature": "HTTPError(url, code, msg, hdrs, fp)",
+          "params": [
+            {
+              "name": "url",
+              "type": "str",
+              "description": "The URL that caused the error"
+            },
+            {
+              "name": "code",
+              "type": "int",
+              "description": "HTTP status code"
+            },
+            {
+              "name": "msg",
+              "type": "str",
+              "description": "HTTP reason phrase"
+            },
+            {
+              "name": "hdrs",
+              "type": "httplib.HTTPMessage",
+              "description": "Response headers"
+            },
+            {
+              "name": "fp",
+              "type": "file",
+              "description": "File-like body of the response"
+            }
+          ],
+          "description": "Create an HTTPError. Usually raised by handlers, not instantiated directly."
+        }
+      ],
+      "methods": [
+        {
+          "name": "read",
+          "signature": "read()",
+          "params": [],
+          "returns": {
+            "type": "str",
+            "description": "The response body bytes"
+          },
+          "description": "Read the response body. HTTPError doubles as a file-like response object.",
+          "deprecated": false
+        }
+      ],
+      "fields": [
+        {
+          "name": "code",
+          "type": "int",
+          "description": "HTTP status code (e.g. 404, 500)"
+        },
+        {
+          "name": "msg",
+          "type": "str",
+          "description": "HTTP reason phrase (e.g. 'Not Found', 'Internal Server Error')"
+        },
+        {
+          "name": "headers",
+          "type": "httplib.HTTPMessage",
+          "description": "Response headers from the server"
+        },
+        {
+          "name": "url",
+          "type": "str",
+          "description": "The URL that caused the error"
+        },
+        {
+          "name": "reason",
+          "type": "str",
+          "description": "Alias for msg. Inherited from URLError."
+        }
+      ]
+    }
+  ],
+  "constants": [],
+  "docs_url": "https://docs.python.org/2.7/library/urllib2.html"
+}

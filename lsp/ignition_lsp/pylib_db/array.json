@@ -1,0 +1,378 @@
+{
+  "module": "array",
+  "description": "Efficient arrays of numeric values. Defines an object type which can compactly represent an array of basic values: characters, integers, floating point numbers.",
+  "functions": [],
+  "classes": [
+    {
+      "name": "array",
+      "description": "A new array whose items are restricted by typecode, and initialized from the optional initializer value, which must be a list, string, or iterable over elements of the appropriate type. Arrays represent basic values and behave very much like lists, except the type of objects stored in them is constrained.",
+      "constructors": [
+        {
+          "name": "array",
+          "signature": "array(typecode[, initializer])",
+          "params": [
+            {
+              "name": "typecode",
+              "type": "str",
+              "description": "A single character defining the type of values in the array. Valid typecodes: 'c' (char, 1 byte), 'b' (signed char, 1 byte), 'B' (unsigned char, 1 byte), 'u' (Py_UNICODE, 2 bytes), 'h' (signed short, 2 bytes), 'H' (unsigned short, 2 bytes), 'i' (signed int, 2 bytes), 'I' (unsigned int, 2 bytes), 'l' (signed long, 4 bytes), 'L' (unsigned long, 4 bytes), 'f' (float, 4 bytes), 'd' (double, 8 bytes)."
+            },
+            {
+              "name": "initializer",
+              "type": "iterable",
+              "description": "An optional initializer value which must be a list, string, or iterable over elements of the appropriate type.",
+              "optional": true
+            }
+          ],
+          "returns": {
+            "type": "array",
+            "description": "A new array object."
+          },
+          "description": "Create a new array with the given typecode and optional initializer."
+        }
+      ],
+      "methods": [
+        {
+          "name": "append",
+          "signature": "append(x)",
+          "params": [
+            {
+              "name": "x",
+              "type": "object",
+              "description": "The item to append. Must be of the correct type for the array's typecode."
+            }
+          ],
+          "returns": {
+            "type": "None",
+            "description": "Modifies the array in place."
+          },
+          "description": "Append a new item with value x to the end of the array.",
+          "deprecated": false
+        },
+        {
+          "name": "buffer_info",
+          "signature": "buffer_info()",
+          "params": [],
+          "returns": {
+            "type": "tuple",
+            "description": "A tuple (address, length) giving the current memory address and the length in elements of the buffer used to hold array's contents."
+          },
+          "description": "Return a tuple (address, length) giving the current memory address and the length in elements of the buffer used to hold array's contents.",
+          "deprecated": false
+        },
+        {
+          "name": "byteswap",
+          "signature": "byteswap()",
+          "params": [],
+          "returns": {
+            "type": "None",
+            "description": "Modifies the array in place."
+          },
+          "description": "Byteswap all items of the array. This is only supported for values which are 1, 2, 4, or 8 bytes in size; for other types of values, RuntimeError is raised.",
+          "deprecated": false
+        },
+        {
+          "name": "count",
+          "signature": "count(x)",
+          "params": [
+            {
+              "name": "x",
+              "type": "object",
+              "description": "The value to count."
+            }
+          ],
+          "returns": {
+            "type": "int",
+            "description": "The number of occurrences of x in the array."
+          },
+          "description": "Return the number of occurrences of x in the array.",
+          "deprecated": false
+        },
+        {
+          "name": "extend",
+          "signature": "extend(iterable)",
+          "params": [
+            {
+              "name": "iterable",
+              "type": "iterable",
+              "description": "An iterable of items to append. Can be another array or any iterable."
+            }
+          ],
+          "returns": {
+            "type": "None",
+            "description": "Modifies the array in place."
+          },
+          "description": "Append items from iterable to the end of the array. If iterable is another array, it must have exactly the same typecode; if not, TypeError will be raised.",
+          "deprecated": false
+        },
+        {
+          "name": "fromfile",
+          "signature": "fromfile(f, n)",
+          "params": [
+            {
+              "name": "f",
+              "type": "file",
+              "description": "An open file object to read from."
+            },
+            {
+              "name": "n",
+              "type": "int",
+              "description": "The number of items to read."
+            }
+          ],
+          "returns": {
+            "type": "None",
+            "description": "Modifies the array in place."
+          },
+          "description": "Read n items (as machine values) from the file object f and append them to the end of the array. If less than n items are available, EOFError is raised, but the items that were available are still inserted into the array.",
+          "deprecated": false
+        },
+        {
+          "name": "fromlist",
+          "signature": "fromlist(list)",
+          "params": [
+            {
+              "name": "list",
+              "type": "list",
+              "description": "A list of items to append."
+            }
+          ],
+          "returns": {
+            "type": "None",
+            "description": "Modifies the array in place."
+          },
+          "description": "Append items from the list. This is equivalent to for x in list: a.append(x) except that if there is a type error, the array is unchanged.",
+          "deprecated": false
+        },
+        {
+          "name": "fromstring",
+          "signature": "fromstring(s)",
+          "params": [
+            {
+              "name": "s",
+              "type": "str",
+              "description": "A string of machine values to append."
+            }
+          ],
+          "returns": {
+            "type": "None",
+            "description": "Modifies the array in place."
+          },
+          "description": "Appends items from the string, interpreting the string as an array of machine values (as if it had been read from a file using the fromfile() method).",
+          "deprecated": false
+        },
+        {
+          "name": "fromunicode",
+          "signature": "fromunicode(s)",
+          "params": [
+            {
+              "name": "s",
+              "type": "unicode",
+              "description": "A unicode string to extend the array with."
+            }
+          ],
+          "returns": {
+            "type": "None",
+            "description": "Modifies the array in place."
+          },
+          "description": "Extends this array with data from the given unicode string. The array must be a type 'u' array; otherwise a ValueError is raised.",
+          "deprecated": false
+        },
+        {
+          "name": "index",
+          "signature": "index(x)",
+          "params": [
+            {
+              "name": "x",
+              "type": "object",
+              "description": "The value to find."
+            }
+          ],
+          "returns": {
+            "type": "int",
+            "description": "The smallest index i such that the item at position i is equal to x."
+          },
+          "description": "Return the smallest i such that i is the index of the first occurrence of x in the array. Raises ValueError if x is not found.",
+          "deprecated": false
+        },
+        {
+          "name": "insert",
+          "signature": "insert(i, x)",
+          "params": [
+            {
+              "name": "i",
+              "type": "int",
+              "description": "The index before which to insert."
+            },
+            {
+              "name": "x",
+              "type": "object",
+              "description": "The value to insert."
+            }
+          ],
+          "returns": {
+            "type": "None",
+            "description": "Modifies the array in place."
+          },
+          "description": "Insert a new item with value x in the array before position i. Negative values are treated as being relative to the end of the array.",
+          "deprecated": false
+        },
+        {
+          "name": "pop",
+          "signature": "pop([i])",
+          "params": [
+            {
+              "name": "i",
+              "type": "int",
+              "description": "The index of the item to remove and return. Defaults to -1 (last item).",
+              "optional": true,
+              "default": "-1"
+            }
+          ],
+          "returns": {
+            "type": "object",
+            "description": "The item removed from the array."
+          },
+          "description": "Removes the item with the index i from the array and returns it. The optional argument defaults to -1, so that by default the last item is removed and returned.",
+          "deprecated": false
+        },
+        {
+          "name": "read",
+          "signature": "read(f, n)",
+          "params": [
+            {
+              "name": "f",
+              "type": "file",
+              "description": "An open file object to read from."
+            },
+            {
+              "name": "n",
+              "type": "int",
+              "description": "The number of items to read."
+            }
+          ],
+          "returns": {
+            "type": "None",
+            "description": "Modifies the array in place."
+          },
+          "description": "Read n items (as machine values) from the file object f and append them to the end of the array. Deprecated since version 1.5.1; use fromfile() instead.",
+          "deprecated": true
+        },
+        {
+          "name": "remove",
+          "signature": "remove(x)",
+          "params": [
+            {
+              "name": "x",
+              "type": "object",
+              "description": "The value to remove."
+            }
+          ],
+          "returns": {
+            "type": "None",
+            "description": "Modifies the array in place."
+          },
+          "description": "Remove the first occurrence of x from the array. Raises ValueError if x is not found.",
+          "deprecated": false
+        },
+        {
+          "name": "reverse",
+          "signature": "reverse()",
+          "params": [],
+          "returns": {
+            "type": "None",
+            "description": "Modifies the array in place."
+          },
+          "description": "Reverse the order of the items in the array.",
+          "deprecated": false
+        },
+        {
+          "name": "tofile",
+          "signature": "tofile(f)",
+          "params": [
+            {
+              "name": "f",
+              "type": "file",
+              "description": "An open file object to write to."
+            }
+          ],
+          "returns": {
+            "type": "None",
+            "description": "Void."
+          },
+          "description": "Write all items (as machine values) to the file object f.",
+          "deprecated": false
+        },
+        {
+          "name": "tolist",
+          "signature": "tolist()",
+          "params": [],
+          "returns": {
+            "type": "list",
+            "description": "A list with the same items as the array."
+          },
+          "description": "Convert the array to an ordinary list with the same items.",
+          "deprecated": false
+        },
+        {
+          "name": "tostring",
+          "signature": "tostring()",
+          "params": [],
+          "returns": {
+            "type": "str",
+            "description": "A string of the machine values in the array (the same sequence of bytes that would be written to a file by tofile())."
+          },
+          "description": "Convert the array to an array of machine values and return the string representation (the same sequence of bytes that would be written to a file by the tofile() method).",
+          "deprecated": false
+        },
+        {
+          "name": "tounicode",
+          "signature": "tounicode()",
+          "params": [],
+          "returns": {
+            "type": "unicode",
+            "description": "A unicode string of the array contents."
+          },
+          "description": "Convert the array to a unicode string. The array must be a type 'u' array; otherwise a ValueError is raised.",
+          "deprecated": false
+        },
+        {
+          "name": "write",
+          "signature": "write(f)",
+          "params": [
+            {
+              "name": "f",
+              "type": "file",
+              "description": "An open file object to write to."
+            }
+          ],
+          "returns": {
+            "type": "None",
+            "description": "Void."
+          },
+          "description": "Write all items (as machine values) to the file object f. Deprecated since version 1.5.1; use tofile() instead.",
+          "deprecated": true
+        }
+      ],
+      "fields": [
+        {
+          "name": "typecode",
+          "type": "str",
+          "description": "The typecode character used to create the array."
+        },
+        {
+          "name": "itemsize",
+          "type": "int",
+          "description": "The length in bytes of one array item in the internal representation."
+        }
+      ]
+    }
+  ],
+  "constants": [
+    {
+      "name": "ArrayType",
+      "type": "type",
+      "description": "Obsolete alias for the array type. Use array.array instead."
+    }
+  ],
+  "docs_url": "https://docs.python.org/2.7/library/array.html"
+}

@@ -1,0 +1,56 @@
+{
+  "module": "copy",
+  "description": "Shallow and deep copy operations. Provides generic shallow and deep copying of objects. Classes can define __copy__() and __deepcopy__() methods to customize copy behavior.",
+  "functions": [
+    {
+      "name": "copy",
+      "signature": "copy(x)",
+      "params": [
+        {
+          "name": "x",
+          "type": "any",
+          "description": "Object to copy"
+        }
+      ],
+      "returns": {
+        "type": "any",
+        "description": "A shallow copy of x"
+      },
+      "description": "Return a shallow copy of x. Creates a new compound object and then (to the extent possible) inserts references to the objects found in the original. For atomic types (int, str, etc.), returns the same object. For compound types (list, dict, class instances), creates a new container with references to the same child objects. Classes can customize this by defining a __copy__() method.",
+      "deprecated": false
+    },
+    {
+      "name": "deepcopy",
+      "signature": "deepcopy(x, memo=None)",
+      "params": [
+        {
+          "name": "x",
+          "type": "any",
+          "description": "Object to deep copy"
+        },
+        {
+          "name": "memo",
+          "type": "dict",
+          "description": "Dictionary of already-copied objects to handle circular references. Used internally; generally not needed by callers."
+        }
+      ],
+      "returns": {
+        "type": "any",
+        "description": "A deep copy of x"
+      },
+      "description": "Return a deep copy of x. Creates a new compound object and then, recursively, inserts copies of the objects found in the original. Handles circular references via a memo dictionary. Classes can customize this by defining a __deepcopy__(memo) method. Objects that cannot be copied raise copy.Error.",
+      "deprecated": false
+    }
+  ],
+  "classes": [
+    {
+      "name": "error",
+      "description": "Exception raised for copy-related errors. Raised when an object cannot be copied (e.g., module objects, file objects, socket objects).",
+      "constructors": [],
+      "methods": [],
+      "fields": []
+    }
+  ],
+  "constants": [],
+  "docs_url": "https://docs.python.org/2.7/library/copy.html"
+}

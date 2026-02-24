@@ -1,0 +1,315 @@
+{
+  "module": "traceback",
+  "description": "Extract, format, and print stack traces of Python programs.",
+  "functions": [
+    {
+      "name": "print_exc",
+      "signature": "print_exc([limit[, file]])",
+      "params": [
+        {
+          "name": "limit",
+          "type": "int",
+          "description": "Maximum number of stack trace entries to print. If None, all entries are printed."
+        },
+        {
+          "name": "file",
+          "type": "file",
+          "description": "File to write the output to. Defaults to sys.stderr."
+        }
+      ],
+      "returns": {
+        "type": "None",
+        "description": "No return value."
+      },
+      "description": "Shorthand for print_exception(sys.exc_type, sys.exc_value, sys.exc_traceback, limit, file). Prints exception information and stack trace entries from the current exception.",
+      "deprecated": false
+    },
+    {
+      "name": "format_exc",
+      "signature": "format_exc([limit])",
+      "params": [
+        {
+          "name": "limit",
+          "type": "int",
+          "description": "Maximum number of stack trace entries. If None, all entries are included."
+        }
+      ],
+      "returns": {
+        "type": "str",
+        "description": "Formatted exception string."
+      },
+      "description": "Like print_exc() but returns a string instead of printing to a file.",
+      "deprecated": false
+    },
+    {
+      "name": "print_exception",
+      "signature": "print_exception(etype, value, tb[, limit[, file]])",
+      "params": [
+        {
+          "name": "etype",
+          "type": "type",
+          "description": "The exception type."
+        },
+        {
+          "name": "value",
+          "type": "BaseException",
+          "description": "The exception value (instance)."
+        },
+        {
+          "name": "tb",
+          "type": "traceback",
+          "description": "The traceback object."
+        },
+        {
+          "name": "limit",
+          "type": "int",
+          "description": "Maximum number of stack trace entries. If None, all entries are printed."
+        },
+        {
+          "name": "file",
+          "type": "file",
+          "description": "File to write the output to. Defaults to sys.stderr."
+        }
+      ],
+      "returns": {
+        "type": "None",
+        "description": "No return value."
+      },
+      "description": "Print exception information and up to limit stack trace entries from traceback tb to file.",
+      "deprecated": false
+    },
+    {
+      "name": "format_exception",
+      "signature": "format_exception(etype, value, tb[, limit])",
+      "params": [
+        {
+          "name": "etype",
+          "type": "type",
+          "description": "The exception type."
+        },
+        {
+          "name": "value",
+          "type": "BaseException",
+          "description": "The exception value (instance)."
+        },
+        {
+          "name": "tb",
+          "type": "traceback",
+          "description": "The traceback object."
+        },
+        {
+          "name": "limit",
+          "type": "int",
+          "description": "Maximum number of stack trace entries. If None, all entries are included."
+        }
+      ],
+      "returns": {
+        "type": "list",
+        "description": "A list of strings, each ending in a newline and some containing internal newlines."
+      },
+      "description": "Format a stack trace and the exception information. Returns a list of strings ready for printing.",
+      "deprecated": false
+    },
+    {
+      "name": "print_tb",
+      "signature": "print_tb(tb[, limit[, file]])",
+      "params": [
+        {
+          "name": "tb",
+          "type": "traceback",
+          "description": "The traceback object to print."
+        },
+        {
+          "name": "limit",
+          "type": "int",
+          "description": "Maximum number of entries. If None, all entries are printed."
+        },
+        {
+          "name": "file",
+          "type": "file",
+          "description": "File to write the output to. Defaults to sys.stderr."
+        }
+      ],
+      "returns": {
+        "type": "None",
+        "description": "No return value."
+      },
+      "description": "Print up to limit stack trace entries from the traceback object tb.",
+      "deprecated": false
+    },
+    {
+      "name": "format_tb",
+      "signature": "format_tb(tb[, limit])",
+      "params": [
+        {
+          "name": "tb",
+          "type": "traceback",
+          "description": "The traceback object."
+        },
+        {
+          "name": "limit",
+          "type": "int",
+          "description": "Maximum number of entries. If None, all entries are included."
+        }
+      ],
+      "returns": {
+        "type": "list",
+        "description": "A list of formatted stack trace entry strings."
+      },
+      "description": "Format the stack trace from traceback object tb. Shorthand for format_list(extract_tb(tb, limit)).",
+      "deprecated": false
+    },
+    {
+      "name": "extract_tb",
+      "signature": "extract_tb(tb[, limit])",
+      "params": [
+        {
+          "name": "tb",
+          "type": "traceback",
+          "description": "The traceback object."
+        },
+        {
+          "name": "limit",
+          "type": "int",
+          "description": "Maximum number of entries to extract. If None, all entries are extracted."
+        }
+      ],
+      "returns": {
+        "type": "list",
+        "description": "A list of 4-tuples (filename, line number, function name, text)."
+      },
+      "description": "Extract the raw traceback from the traceback object tb and return it as a list of 4-tuples.",
+      "deprecated": false
+    },
+    {
+      "name": "extract_stack",
+      "signature": "extract_stack([f[, limit]])",
+      "params": [
+        {
+          "name": "f",
+          "type": "frame",
+          "description": "The frame object. If None, uses the caller's frame."
+        },
+        {
+          "name": "limit",
+          "type": "int",
+          "description": "Maximum number of entries. If None, all entries are extracted."
+        }
+      ],
+      "returns": {
+        "type": "list",
+        "description": "A list of 4-tuples (filename, line number, function name, text)."
+      },
+      "description": "Extract the raw traceback from the current stack frame and return it as a list of 4-tuples.",
+      "deprecated": false
+    },
+    {
+      "name": "print_stack",
+      "signature": "print_stack([f[, limit[, file]]])",
+      "params": [
+        {
+          "name": "f",
+          "type": "frame",
+          "description": "The frame object. If None, uses the caller's frame."
+        },
+        {
+          "name": "limit",
+          "type": "int",
+          "description": "Maximum number of entries. If None, all entries are printed."
+        },
+        {
+          "name": "file",
+          "type": "file",
+          "description": "File to write the output to. Defaults to sys.stderr."
+        }
+      ],
+      "returns": {
+        "type": "None",
+        "description": "No return value."
+      },
+      "description": "Print up to limit stack trace entries from the invocation point.",
+      "deprecated": false
+    },
+    {
+      "name": "format_stack",
+      "signature": "format_stack([f[, limit]])",
+      "params": [
+        {
+          "name": "f",
+          "type": "frame",
+          "description": "The frame object. If None, uses the caller's frame."
+        },
+        {
+          "name": "limit",
+          "type": "int",
+          "description": "Maximum number of entries. If None, all entries are included."
+        }
+      ],
+      "returns": {
+        "type": "list",
+        "description": "A list of formatted stack trace entry strings."
+      },
+      "description": "Extract the raw traceback from the current stack frame and format it as a list of strings.",
+      "deprecated": false
+    },
+    {
+      "name": "format_list",
+      "signature": "format_list(extracted_list)",
+      "params": [
+        {
+          "name": "extracted_list",
+          "type": "list",
+          "description": "A list of 4-tuples (filename, lineno, name, line) as returned by extract_tb() or extract_stack()."
+        }
+      ],
+      "returns": {
+        "type": "list",
+        "description": "A list of formatted strings ready for printing."
+      },
+      "description": "Format a list of tuples as returned by extract_tb() or extract_stack() into printable strings.",
+      "deprecated": false
+    },
+    {
+      "name": "print_list",
+      "signature": "print_list(extracted_list[, file])",
+      "params": [
+        {
+          "name": "extracted_list",
+          "type": "list",
+          "description": "A list of 4-tuples as returned by extract_tb() or extract_stack()."
+        },
+        {
+          "name": "file",
+          "type": "file",
+          "description": "File to write the output to. Defaults to sys.stderr."
+        }
+      ],
+      "returns": {
+        "type": "None",
+        "description": "No return value."
+      },
+      "description": "Print the list of tuples as returned by extract_tb() or extract_stack() as a formatted stack trace.",
+      "deprecated": false
+    },
+    {
+      "name": "tb_lineno",
+      "signature": "tb_lineno(tb)",
+      "params": [
+        {
+          "name": "tb",
+          "type": "traceback",
+          "description": "A traceback object."
+        }
+      ],
+      "returns": {
+        "type": "int",
+        "description": "The line number set in the traceback."
+      },
+      "description": "Return the line number set in the traceback object. This was necessary because of a bug in Python 2.2 (tb.tb_lineno was not always correct); kept for compatibility.",
+      "deprecated": true
+    }
+  ],
+  "classes": [],
+  "constants": [],
+  "docs_url": "https://docs.python.org/2.7/library/traceback.html"
+}

@@ -1,0 +1,380 @@
+{
+  "module": "codecs",
+  "description": "Codec registry and base classes. Provides access to the Python codec registry, which manages codec lookup and error handling, and base classes for implementing custom codecs.",
+  "functions": [
+    {
+      "name": "encode",
+      "signature": "encode(obj, encoding='ascii', errors='strict')",
+      "params": [
+        {
+          "name": "obj",
+          "type": "any",
+          "description": "The object to encode (typically a unicode string)"
+        },
+        {
+          "name": "encoding",
+          "type": "str",
+          "description": "The encoding to use. Default is 'ascii'."
+        },
+        {
+          "name": "errors",
+          "type": "str",
+          "description": "Error handling scheme: 'strict', 'ignore', 'replace', 'xmlcharrefreplace', 'backslashreplace'. Default is 'strict'."
+        }
+      ],
+      "returns": {
+        "type": "str",
+        "description": "The encoded object (typically a byte string)"
+      },
+      "description": "Encodes obj using the codec registered for encoding. Errors may be given to set the desired error handling scheme.",
+      "deprecated": false
+    },
+    {
+      "name": "decode",
+      "signature": "decode(obj, encoding='ascii', errors='strict')",
+      "params": [
+        {
+          "name": "obj",
+          "type": "any",
+          "description": "The object to decode (typically a byte string)"
+        },
+        {
+          "name": "encoding",
+          "type": "str",
+          "description": "The encoding to use. Default is 'ascii'."
+        },
+        {
+          "name": "errors",
+          "type": "str",
+          "description": "Error handling scheme: 'strict', 'ignore', 'replace'. Default is 'strict'."
+        }
+      ],
+      "returns": {
+        "type": "unicode",
+        "description": "The decoded object (typically a unicode string)"
+      },
+      "description": "Decodes obj using the codec registered for encoding. Errors may be given to set the desired error handling scheme.",
+      "deprecated": false
+    },
+    {
+      "name": "getencoder",
+      "signature": "getencoder(encoding)",
+      "params": [
+        {
+          "name": "encoding",
+          "type": "str",
+          "description": "The encoding name to look up"
+        }
+      ],
+      "returns": {
+        "type": "function",
+        "description": "The encoder function for the given encoding"
+      },
+      "description": "Look up the codec for the given encoding and return its encoder function. Raises a LookupError if the encoding cannot be found.",
+      "deprecated": false
+    },
+    {
+      "name": "getdecoder",
+      "signature": "getdecoder(encoding)",
+      "params": [
+        {
+          "name": "encoding",
+          "type": "str",
+          "description": "The encoding name to look up"
+        }
+      ],
+      "returns": {
+        "type": "function",
+        "description": "The decoder function for the given encoding"
+      },
+      "description": "Look up the codec for the given encoding and return its decoder function. Raises a LookupError if the encoding cannot be found.",
+      "deprecated": false
+    },
+    {
+      "name": "getreader",
+      "signature": "getreader(encoding)",
+      "params": [
+        {
+          "name": "encoding",
+          "type": "str",
+          "description": "The encoding name to look up"
+        }
+      ],
+      "returns": {
+        "type": "type",
+        "description": "A StreamReader class for the given encoding"
+      },
+      "description": "Look up the codec for the given encoding and return its StreamReader class or factory function. Raises a LookupError if the encoding cannot be found.",
+      "deprecated": false
+    },
+    {
+      "name": "getwriter",
+      "signature": "getwriter(encoding)",
+      "params": [
+        {
+          "name": "encoding",
+          "type": "str",
+          "description": "The encoding name to look up"
+        }
+      ],
+      "returns": {
+        "type": "type",
+        "description": "A StreamWriter class for the given encoding"
+      },
+      "description": "Look up the codec for the given encoding and return its StreamWriter class or factory function. Raises a LookupError if the encoding cannot be found.",
+      "deprecated": false
+    },
+    {
+      "name": "register",
+      "signature": "register(search_function)",
+      "params": [
+        {
+          "name": "search_function",
+          "type": "callable",
+          "description": "A function that takes an encoding name (lowercase) and returns a CodecInfo object or None if it doesn't handle that encoding"
+        }
+      ],
+      "returns": {
+        "type": "None",
+        "description": "No return value"
+      },
+      "description": "Register a codec search function. Search functions are expected to take one argument, the encoding name in all lowercase letters, and return a CodecInfo object or None.",
+      "deprecated": false
+    },
+    {
+      "name": "lookup",
+      "signature": "lookup(encoding)",
+      "params": [
+        {
+          "name": "encoding",
+          "type": "str",
+          "description": "The encoding name to look up"
+        }
+      ],
+      "returns": {
+        "type": "CodecInfo",
+        "description": "A CodecInfo object containing encoder, decoder, stream reader, and stream writer"
+      },
+      "description": "Looks up the codec info in the Python codec registry and returns a CodecInfo object. Encodings are first looked up in the registry's cache. If not found, the list of registered search functions is scanned.",
+      "deprecated": false
+    },
+    {
+      "name": "open",
+      "signature": "open(filename, mode='rb', encoding=None, errors='strict', buffering=1)",
+      "params": [
+        {
+          "name": "filename",
+          "type": "str",
+          "description": "The file path to open"
+        },
+        {
+          "name": "mode",
+          "type": "str",
+          "description": "File mode. Default is 'rb'."
+        },
+        {
+          "name": "encoding",
+          "type": "str",
+          "description": "The encoding to use. If None, returns a plain file object."
+        },
+        {
+          "name": "errors",
+          "type": "str",
+          "description": "Error handling scheme. Default is 'strict'."
+        },
+        {
+          "name": "buffering",
+          "type": "int",
+          "description": "Buffering policy (0=unbuffered, 1=line buffered, >1=buffer size). Default is 1."
+        }
+      ],
+      "returns": {
+        "type": "StreamReaderWriter",
+        "description": "A wrapped file object providing transparent encoding/decoding"
+      },
+      "description": "Open an encoded file using the given mode and return a wrapped version that provides transparent encoding/decoding. The default file mode is 'rb'.",
+      "deprecated": false
+    }
+  ],
+  "classes": [
+    {
+      "name": "StreamReader",
+      "description": "A codec StreamReader that wraps a file-like object for transparent decoding. Reads from the stream and returns decoded unicode strings.",
+      "constructors": [
+        {
+          "signature": "StreamReader(stream, errors='strict')",
+          "params": [
+            {
+              "name": "stream",
+              "type": "file",
+              "description": "The underlying file-like object to read from"
+            },
+            {
+              "name": "errors",
+              "type": "str",
+              "description": "Error handling scheme. Default is 'strict'."
+            }
+          ],
+          "description": "Create a StreamReader wrapping the given stream. Typically obtained via codecs.getreader(encoding)(stream) rather than directly."
+        }
+      ],
+      "methods": [
+        {
+          "name": "read",
+          "signature": "read(size=-1, chars=-1, firstline=False)",
+          "params": [
+            {
+              "name": "size",
+              "type": "int",
+              "description": "Number of bytes to read from the underlying stream. -1 for all. Default is -1."
+            },
+            {
+              "name": "chars",
+              "type": "int",
+              "description": "Number of decoded characters to return. -1 for all available. Default is -1."
+            },
+            {
+              "name": "firstline",
+              "type": "bool",
+              "description": "If True, return only the first line in case of a decoding error on later lines. Default is False."
+            }
+          ],
+          "returns": {
+            "type": "unicode",
+            "description": "The decoded data"
+          },
+          "description": "Decodes data from the stream and returns the resulting unicode object.",
+          "deprecated": false
+        },
+        {
+          "name": "readline",
+          "signature": "readline(size=None, keepends=True)",
+          "params": [
+            {
+              "name": "size",
+              "type": "int",
+              "description": "Maximum number of bytes to read. None for no limit."
+            },
+            {
+              "name": "keepends",
+              "type": "bool",
+              "description": "If True, line endings are included in the returned data. Default is True."
+            }
+          ],
+          "returns": {
+            "type": "unicode",
+            "description": "One line of decoded text"
+          },
+          "description": "Read one input line from the stream, decode it, and return the decoded string.",
+          "deprecated": false
+        },
+        {
+          "name": "readlines",
+          "signature": "readlines(sizehint=None, keepends=True)",
+          "params": [
+            {
+              "name": "sizehint",
+              "type": "int",
+              "description": "Approximate number of bytes to read. None to read all."
+            },
+            {
+              "name": "keepends",
+              "type": "bool",
+              "description": "If True, line endings are included. Default is True."
+            }
+          ],
+          "returns": {
+            "type": "list",
+            "description": "List of decoded lines"
+          },
+          "description": "Read all lines available from the stream, decode them, and return a list of unicode lines.",
+          "deprecated": false
+        },
+        {
+          "name": "reset",
+          "signature": "reset()",
+          "params": [],
+          "returns": {
+            "type": "None",
+            "description": "No return value"
+          },
+          "description": "Resets the codec buffers used for keeping state. Calling this method should ensure that the data on the output is put into a clean state that allows appending of new fresh data without having to rescan the whole stream.",
+          "deprecated": false
+        }
+      ],
+      "fields": []
+    },
+    {
+      "name": "StreamWriter",
+      "description": "A codec StreamWriter that wraps a file-like object for transparent encoding. Accepts unicode strings and writes encoded bytes to the underlying stream.",
+      "constructors": [
+        {
+          "signature": "StreamWriter(stream, errors='strict')",
+          "params": [
+            {
+              "name": "stream",
+              "type": "file",
+              "description": "The underlying file-like object to write to"
+            },
+            {
+              "name": "errors",
+              "type": "str",
+              "description": "Error handling scheme. Default is 'strict'."
+            }
+          ],
+          "description": "Create a StreamWriter wrapping the given stream. Typically obtained via codecs.getwriter(encoding)(stream) rather than directly."
+        }
+      ],
+      "methods": [
+        {
+          "name": "write",
+          "signature": "write(object)",
+          "params": [
+            {
+              "name": "object",
+              "type": "unicode",
+              "description": "The unicode string to encode and write"
+            }
+          ],
+          "returns": {
+            "type": "None",
+            "description": "No return value"
+          },
+          "description": "Encodes the object's contents and writes the resulting encoded bytes to the underlying stream.",
+          "deprecated": false
+        },
+        {
+          "name": "writelines",
+          "signature": "writelines(list)",
+          "params": [
+            {
+              "name": "list",
+              "type": "list",
+              "description": "List of unicode strings to encode and write"
+            }
+          ],
+          "returns": {
+            "type": "None",
+            "description": "No return value"
+          },
+          "description": "Encodes and writes the concatenation of the strings in the list to the stream. Line endings are not added automatically.",
+          "deprecated": false
+        },
+        {
+          "name": "reset",
+          "signature": "reset()",
+          "params": [],
+          "returns": {
+            "type": "None",
+            "description": "No return value"
+          },
+          "description": "Flushes and resets the codec buffers used for keeping state.",
+          "deprecated": false
+        }
+      ],
+      "fields": []
+    }
+  ],
+  "constants": [],
+  "docs_url": "https://docs.python.org/2.7/library/codecs.html"
+}

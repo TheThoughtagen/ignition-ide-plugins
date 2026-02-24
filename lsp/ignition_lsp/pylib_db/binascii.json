@@ -1,0 +1,258 @@
+{
+  "module": "binascii",
+  "description": "Convert between binary data and ASCII-encoded representations. Contains functions to convert between binary and various ASCII-encoded binary formats including hex, base64, and quoted-printable.",
+  "functions": [
+    {
+      "name": "hexlify",
+      "signature": "hexlify(data)",
+      "params": [
+        {
+          "name": "data",
+          "type": "str",
+          "description": "Binary data string to convert"
+        }
+      ],
+      "returns": {
+        "type": "str",
+        "description": "Hexadecimal string representation (two hex digits per byte, lowercase)"
+      },
+      "description": "Return the hexadecimal representation of the binary data. Every byte is converted into the corresponding two-digit hex representation. The result is a string twice as long as the input.",
+      "deprecated": false
+    },
+    {
+      "name": "unhexlify",
+      "signature": "unhexlify(hexstr)",
+      "params": [
+        {
+          "name": "hexstr",
+          "type": "str",
+          "description": "Hexadecimal string to convert (must have an even number of hex digits)"
+        }
+      ],
+      "returns": {
+        "type": "str",
+        "description": "Binary data string"
+      },
+      "description": "Return the binary data represented by the hexadecimal string. The input must contain an even number of hex digits (0-9, a-f, A-F). Raises TypeError on non-hexadecimal characters.",
+      "deprecated": false
+    },
+    {
+      "name": "b2a_hex",
+      "signature": "b2a_hex(data)",
+      "params": [
+        {
+          "name": "data",
+          "type": "str",
+          "description": "Binary data string to convert"
+        }
+      ],
+      "returns": {
+        "type": "str",
+        "description": "Hexadecimal string representation"
+      },
+      "description": "Return the hexadecimal representation of the binary data. Alias for hexlify().",
+      "deprecated": false
+    },
+    {
+      "name": "a2b_hex",
+      "signature": "a2b_hex(hexstr)",
+      "params": [
+        {
+          "name": "hexstr",
+          "type": "str",
+          "description": "Hexadecimal string to convert"
+        }
+      ],
+      "returns": {
+        "type": "str",
+        "description": "Binary data string"
+      },
+      "description": "Return the binary data represented by the hexadecimal string. Alias for unhexlify().",
+      "deprecated": false
+    },
+    {
+      "name": "b2a_base64",
+      "signature": "b2a_base64(data)",
+      "params": [
+        {
+          "name": "data",
+          "type": "str",
+          "description": "Binary data string to encode"
+        }
+      ],
+      "returns": {
+        "type": "str",
+        "description": "Base64 encoded string, including a trailing newline character"
+      },
+      "description": "Convert binary data to a line of base64-encoded ASCII characters. The return value includes a trailing newline character.",
+      "deprecated": false
+    },
+    {
+      "name": "a2b_base64",
+      "signature": "a2b_base64(string)",
+      "params": [
+        {
+          "name": "string",
+          "type": "str",
+          "description": "Base64 encoded ASCII string to decode"
+        }
+      ],
+      "returns": {
+        "type": "str",
+        "description": "Decoded binary data string"
+      },
+      "description": "Convert a block of base64-encoded data back to binary. More than one line of base64 data can be passed at a time. Ignores whitespace and invalid characters.",
+      "deprecated": false
+    },
+    {
+      "name": "b2a_qp",
+      "signature": "b2a_qp(data, quotetabs=False, istext=True, header=False)",
+      "params": [
+        {
+          "name": "data",
+          "type": "str",
+          "description": "Binary data string to encode"
+        },
+        {
+          "name": "quotetabs",
+          "type": "bool",
+          "description": "If True, encode embedded tabs and spaces. If False (default), leave them unquoted."
+        },
+        {
+          "name": "istext",
+          "type": "bool",
+          "description": "If True (default), encode newlines according to text rules. If False, encode all newlines."
+        },
+        {
+          "name": "header",
+          "type": "bool",
+          "description": "If True, encode spaces as underscores per RFC 2045 header encoding rules"
+        }
+      ],
+      "returns": {
+        "type": "str",
+        "description": "Quoted-printable encoded string"
+      },
+      "description": "Convert binary data to quoted-printable encoding. Lines are limited to 76 characters with soft line breaks inserted as needed.",
+      "deprecated": false
+    },
+    {
+      "name": "a2b_qp",
+      "signature": "a2b_qp(string, header=False)",
+      "params": [
+        {
+          "name": "string",
+          "type": "str",
+          "description": "Quoted-printable encoded string to decode"
+        },
+        {
+          "name": "header",
+          "type": "bool",
+          "description": "If True, decode underscores as spaces per RFC 2045 header encoding rules"
+        }
+      ],
+      "returns": {
+        "type": "str",
+        "description": "Decoded binary data string"
+      },
+      "description": "Convert a block of quoted-printable data back to binary data.",
+      "deprecated": false
+    },
+    {
+      "name": "crc_hqx",
+      "signature": "crc_hqx(data, crc)",
+      "params": [
+        {
+          "name": "data",
+          "type": "str",
+          "description": "Binary data to compute CRC over"
+        },
+        {
+          "name": "crc",
+          "type": "int",
+          "description": "Initial CRC value (pass 0 for the first call, or the return value of a previous call to continue)"
+        }
+      ],
+      "returns": {
+        "type": "int",
+        "description": "CRC-16 value as an integer"
+      },
+      "description": "Compute a 16-bit CRC value of data, starting with an initial CRC of crc. Uses the CRC-CCITT polynomial x^16 + x^12 + x^5 + 1 (0x1021). Used in the binhex4 format.",
+      "deprecated": false
+    },
+    {
+      "name": "crc32",
+      "signature": "crc32(data, crc=0)",
+      "params": [
+        {
+          "name": "data",
+          "type": "str",
+          "description": "Binary data to compute CRC over"
+        },
+        {
+          "name": "crc",
+          "type": "int",
+          "description": "Initial CRC value. Default is 0. Pass the return value of a previous call to continue computing over multiple chunks."
+        }
+      ],
+      "returns": {
+        "type": "int",
+        "description": "CRC-32 value as a signed 32-bit integer"
+      },
+      "description": "Compute CRC-32 checksum of data. The result is a signed 32-bit integer. To get an unsigned result, use: crc32(data) & 0xffffffff. Note: on Python 2.7, the return value may be a signed integer.",
+      "deprecated": false
+    },
+    {
+      "name": "rlecode_hqx",
+      "signature": "rlecode_hqx(data)",
+      "params": [
+        {
+          "name": "data",
+          "type": "str",
+          "description": "Binary data to encode"
+        }
+      ],
+      "returns": {
+        "type": "str",
+        "description": "RLE-encoded binary data"
+      },
+      "description": "Perform binhex4 style run-length encoding on data. Consecutive repeated bytes are replaced by the byte value, a repeat marker (0x90), and a count byte.",
+      "deprecated": false
+    },
+    {
+      "name": "rledecode_hqx",
+      "signature": "rledecode_hqx(data)",
+      "params": [
+        {
+          "name": "data",
+          "type": "str",
+          "description": "RLE-encoded binary data to decode"
+        }
+      ],
+      "returns": {
+        "type": "str",
+        "description": "Decoded binary data"
+      },
+      "description": "Perform binhex4 style run-length decoding on data. Raises Incomplete if the data ends with an orphaned repeat marker.",
+      "deprecated": false
+    }
+  ],
+  "classes": [
+    {
+      "name": "Error",
+      "description": "Exception raised on errors in binascii functions. Subclass of ValueError.",
+      "constructors": [],
+      "methods": [],
+      "fields": []
+    },
+    {
+      "name": "Incomplete",
+      "description": "Exception raised when incomplete data is encountered. Raised when rledecode_hqx encounters data that is not complete. Subclass of Exception.",
+      "constructors": [],
+      "methods": [],
+      "fields": []
+    }
+  ],
+  "constants": [],
+  "docs_url": "https://docs.python.org/2.7/library/binascii.html"
+}

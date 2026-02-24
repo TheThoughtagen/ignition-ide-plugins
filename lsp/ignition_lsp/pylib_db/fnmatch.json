@@ -1,0 +1,92 @@
+{
+  "module": "fnmatch",
+  "description": "Unix filename pattern matching using shell-style wildcards.",
+  "functions": [
+    {
+      "name": "fnmatch",
+      "signature": "fnmatch(filename, pattern)",
+      "params": [
+        {
+          "name": "filename",
+          "type": "str",
+          "description": "The filename to test."
+        },
+        {
+          "name": "pattern",
+          "type": "str",
+          "description": "The shell-style wildcard pattern to match against. Supports *, ?, [seq], and [!seq]."
+        }
+      ],
+      "returns": {
+        "type": "bool",
+        "description": "True if filename matches the pattern, False otherwise."
+      },
+      "description": "Test whether the filename matches the pattern. The comparison is case-insensitive on platforms where the file system is case-insensitive (e.g., Windows). Both filename and pattern are first case-normalized using os.path.normcase().",
+      "deprecated": false
+    },
+    {
+      "name": "fnmatchcase",
+      "signature": "fnmatchcase(filename, pattern)",
+      "params": [
+        {
+          "name": "filename",
+          "type": "str",
+          "description": "The filename to test."
+        },
+        {
+          "name": "pattern",
+          "type": "str",
+          "description": "The shell-style wildcard pattern to match against."
+        }
+      ],
+      "returns": {
+        "type": "bool",
+        "description": "True if filename matches the pattern, False otherwise."
+      },
+      "description": "Test whether the filename matches the pattern with a case-sensitive comparison, regardless of the platform's file system case sensitivity.",
+      "deprecated": false
+    },
+    {
+      "name": "filter",
+      "signature": "filter(names, pattern)",
+      "params": [
+        {
+          "name": "names",
+          "type": "list",
+          "description": "List of filenames to filter."
+        },
+        {
+          "name": "pattern",
+          "type": "str",
+          "description": "The shell-style wildcard pattern to match against."
+        }
+      ],
+      "returns": {
+        "type": "list",
+        "description": "A subset of names matching the pattern."
+      },
+      "description": "Return the subset of the list of names that match the pattern. Equivalent to [n for n in names if fnmatch(n, pattern)] but implemented more efficiently.",
+      "deprecated": false
+    },
+    {
+      "name": "translate",
+      "signature": "translate(pattern)",
+      "params": [
+        {
+          "name": "pattern",
+          "type": "str",
+          "description": "The shell-style wildcard pattern to translate."
+        }
+      ],
+      "returns": {
+        "type": "str",
+        "description": "A regular expression string equivalent to the shell pattern."
+      },
+      "description": "Translate a shell wildcard pattern to a regular expression. The resulting regex can be used with re.match(). There is no way to quote metacharacters.",
+      "deprecated": false
+    }
+  ],
+  "classes": [],
+  "constants": [],
+  "docs_url": "https://docs.python.org/2.7/library/fnmatch.html"
+}

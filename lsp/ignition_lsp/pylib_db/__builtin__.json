@@ -1,0 +1,2836 @@
+{
+  "module": "__builtin__",
+  "description": "The module that provides the built-in namespace. All built-in functions, types, exceptions, and constants are accessible without importing. In Python 2.7 this is named __builtin__ (with underscores); in Python 3 it is builtins.",
+  "functions": [
+    {
+      "name": "abs",
+      "signature": "abs(x)",
+      "params": [
+        {
+          "name": "x",
+          "type": "number",
+          "description": "A number (int, long, float, or complex)."
+        }
+      ],
+      "returns": {
+        "type": "number",
+        "description": "The absolute value of x. For complex numbers, returns the magnitude."
+      },
+      "description": "Return the absolute value of a number. The argument may be a plain or long integer, a floating point number, or a complex number. If the argument is a complex number, its magnitude is returned.",
+      "deprecated": false
+    },
+    {
+      "name": "all",
+      "signature": "all(iterable)",
+      "params": [
+        {
+          "name": "iterable",
+          "type": "iterable",
+          "description": "An iterable of elements to test."
+        }
+      ],
+      "returns": {
+        "type": "bool",
+        "description": "True if all elements are true (or if the iterable is empty)."
+      },
+      "description": "Return True if all elements of the iterable are true (or if the iterable is empty). Equivalent to: def all(iterable): for element in iterable: if not element: return False; return True",
+      "deprecated": false
+    },
+    {
+      "name": "any",
+      "signature": "any(iterable)",
+      "params": [
+        {
+          "name": "iterable",
+          "type": "iterable",
+          "description": "An iterable of elements to test."
+        }
+      ],
+      "returns": {
+        "type": "bool",
+        "description": "True if any element is true. Returns False if the iterable is empty."
+      },
+      "description": "Return True if any element of the iterable is true. If the iterable is empty, return False. Equivalent to: def any(iterable): for element in iterable: if element: return True; return False",
+      "deprecated": false
+    },
+    {
+      "name": "apply",
+      "signature": "apply(function[, args[, kwargs]])",
+      "params": [
+        {
+          "name": "function",
+          "type": "callable",
+          "description": "The function to call."
+        },
+        {
+          "name": "args",
+          "type": "tuple",
+          "description": "Positional arguments to pass to the function.",
+          "optional": true
+        },
+        {
+          "name": "kwargs",
+          "type": "dict",
+          "description": "Keyword arguments to pass to the function.",
+          "optional": true
+        }
+      ],
+      "returns": {
+        "type": "object",
+        "description": "The return value of the function call."
+      },
+      "description": "Call a callable with positional and keyword arguments. Deprecated since Python 2.3; use function(*args, **kwargs) instead.",
+      "deprecated": true
+    },
+    {
+      "name": "basestring",
+      "signature": "basestring()",
+      "params": [],
+      "returns": {
+        "type": "type",
+        "description": "Abstract base type for str and unicode."
+      },
+      "description": "This abstract type is the superclass for str and unicode. It cannot be called or instantiated, but it can be used to test whether an object is an instance of str or unicode: isinstance(obj, basestring).",
+      "deprecated": false
+    },
+    {
+      "name": "bin",
+      "signature": "bin(x)",
+      "params": [
+        {
+          "name": "x",
+          "type": "int",
+          "description": "An integer number."
+        }
+      ],
+      "returns": {
+        "type": "str",
+        "description": "A binary string prefixed with '0b' (e.g. '0b1010')."
+      },
+      "description": "Convert an integer number to a binary string. The result is a valid Python expression. If x is not a Python int object, it has to define an __index__() method that returns an integer.",
+      "deprecated": false
+    },
+    {
+      "name": "bool",
+      "signature": "bool([x])",
+      "params": [
+        {
+          "name": "x",
+          "type": "object",
+          "description": "The value to convert to bool. If omitted, returns False.",
+          "optional": true
+        }
+      ],
+      "returns": {
+        "type": "bool",
+        "description": "True or False."
+      },
+      "description": "Convert a value to a Boolean, using the standard truth testing procedure. If x is false or omitted, returns False; otherwise returns True. bool is also a class, which is a subclass of int. Class bool cannot be subclassed further.",
+      "deprecated": false
+    },
+    {
+      "name": "bytearray",
+      "signature": "bytearray([source[, encoding[, errors]]])",
+      "params": [
+        {
+          "name": "source",
+          "type": "object",
+          "description": "If a string, the encoding (and optionally errors) parameters specify how to decode the string. If an integer, the array will have that size and be initialized with null bytes. If an iterable, must be an iterable of integers in range(256). If no argument, creates an empty bytearray.",
+          "optional": true
+        },
+        {
+          "name": "encoding",
+          "type": "str",
+          "description": "The encoding to use when source is a string.",
+          "optional": true
+        },
+        {
+          "name": "errors",
+          "type": "str",
+          "description": "The error handling scheme to use when source is a string.",
+          "optional": true
+        }
+      ],
+      "returns": {
+        "type": "bytearray",
+        "description": "A new bytearray object."
+      },
+      "description": "Return a new array of bytes. The bytearray type is a mutable sequence of integers in the range 0 <= x < 256.",
+      "deprecated": false
+    },
+    {
+      "name": "callable",
+      "signature": "callable(object)",
+      "params": [
+        {
+          "name": "object",
+          "type": "object",
+          "description": "The object to check."
+        }
+      ],
+      "returns": {
+        "type": "bool",
+        "description": "True if the object appears callable, False otherwise."
+      },
+      "description": "Return True if the object argument appears callable, False if not. If this returns true, it is still possible that a call fails, but if it is false, calling object will never succeed.",
+      "deprecated": false
+    },
+    {
+      "name": "chr",
+      "signature": "chr(i)",
+      "params": [
+        {
+          "name": "i",
+          "type": "int",
+          "description": "An integer in range(256)."
+        }
+      ],
+      "returns": {
+        "type": "str",
+        "description": "A string of one character whose ASCII code is the integer i."
+      },
+      "description": "Return a string of one character whose ASCII code is the integer i. This is the inverse of ord(). The argument must be in the range [0..255]; ValueError will be raised if i is outside that range.",
+      "deprecated": false
+    },
+    {
+      "name": "classmethod",
+      "signature": "classmethod(function)",
+      "params": [
+        {
+          "name": "function",
+          "type": "callable",
+          "description": "The function to convert to a class method."
+        }
+      ],
+      "returns": {
+        "type": "classmethod",
+        "description": "A class method object."
+      },
+      "description": "Return a class method for function. A class method receives the class as implicit first argument, just like an instance method receives the instance. Typically used as a decorator: @classmethod.",
+      "deprecated": false
+    },
+    {
+      "name": "cmp",
+      "signature": "cmp(x, y)",
+      "params": [
+        {
+          "name": "x",
+          "type": "object",
+          "description": "First object to compare."
+        },
+        {
+          "name": "y",
+          "type": "object",
+          "description": "Second object to compare."
+        }
+      ],
+      "returns": {
+        "type": "int",
+        "description": "Negative if x < y, zero if x == y, positive if x > y."
+      },
+      "description": "Compare the two objects x and y and return an integer according to the outcome. The return value is negative if x < y, zero if x == y and strictly positive if x > y. Note: this function is removed in Python 3.",
+      "deprecated": false
+    },
+    {
+      "name": "coerce",
+      "signature": "coerce(x, y)",
+      "params": [
+        {
+          "name": "x",
+          "type": "number",
+          "description": "First number."
+        },
+        {
+          "name": "y",
+          "type": "number",
+          "description": "Second number."
+        }
+      ],
+      "returns": {
+        "type": "tuple",
+        "description": "A tuple of the two numeric arguments converted to a common type."
+      },
+      "description": "Return a tuple consisting of the two numeric arguments converted to a common type. Deprecated since Python 2.7; removed in Python 3.",
+      "deprecated": true
+    },
+    {
+      "name": "compile",
+      "signature": "compile(source, filename, mode[, flags[, dont_inherit]])",
+      "params": [
+        {
+          "name": "source",
+          "type": "str",
+          "description": "The source code string, AST object, or code object to compile."
+        },
+        {
+          "name": "filename",
+          "type": "str",
+          "description": "The file name from which the code was read; used in error messages. Pass '<string>' if not read from a file."
+        },
+        {
+          "name": "mode",
+          "type": "str",
+          "description": "'exec' for a module body, 'eval' for a single expression, 'single' for a single interactive statement."
+        },
+        {
+          "name": "flags",
+          "type": "int",
+          "description": "Compiler flags (from __future__ module).",
+          "optional": true,
+          "default": "0"
+        },
+        {
+          "name": "dont_inherit",
+          "type": "bool",
+          "description": "If true, do not inherit the effect of any future statements in the code calling compile.",
+          "optional": true,
+          "default": "False"
+        }
+      ],
+      "returns": {
+        "type": "code",
+        "description": "A code object that can be executed by exec or eval."
+      },
+      "description": "Compile the source into a code object. Code objects can be executed by an exec statement or evaluated by a call to eval().",
+      "deprecated": false
+    },
+    {
+      "name": "complex",
+      "signature": "complex([real[, imag]])",
+      "params": [
+        {
+          "name": "real",
+          "type": "number or str",
+          "description": "The real part, or a string representation of a complex number (e.g. '1+2j'). Defaults to 0.",
+          "optional": true,
+          "default": "0"
+        },
+        {
+          "name": "imag",
+          "type": "number",
+          "description": "The imaginary part. Defaults to 0.",
+          "optional": true,
+          "default": "0"
+        }
+      ],
+      "returns": {
+        "type": "complex",
+        "description": "A complex number."
+      },
+      "description": "Create a complex number with the value real + imag*j or convert a string or number to a complex number. If the first parameter is a string, it will be interpreted as a complex number and the function must be called without a second parameter.",
+      "deprecated": false
+    },
+    {
+      "name": "delattr",
+      "signature": "delattr(object, name)",
+      "params": [
+        {
+          "name": "object",
+          "type": "object",
+          "description": "The object from which to delete the attribute."
+        },
+        {
+          "name": "name",
+          "type": "str",
+          "description": "The name of the attribute to delete."
+        }
+      ],
+      "returns": {
+        "type": "None",
+        "description": "Void."
+      },
+      "description": "Delete the named attribute from the object, if the object allows it. delattr(x, 'foobar') is equivalent to del x.foobar.",
+      "deprecated": false
+    },
+    {
+      "name": "dict",
+      "signature": "dict(**kwargs) or dict(mapping, **kwargs) or dict(iterable, **kwargs)",
+      "params": [
+        {
+          "name": "mapping_or_iterable",
+          "type": "mapping or iterable",
+          "description": "A mapping object or an iterable of key-value pairs.",
+          "optional": true
+        },
+        {
+          "name": "**kwargs",
+          "type": "keyword arguments",
+          "description": "Keyword arguments to add as key-value pairs.",
+          "optional": true
+        }
+      ],
+      "returns": {
+        "type": "dict",
+        "description": "A new dictionary."
+      },
+      "description": "Create a new dictionary. If no positional argument is given, an empty dictionary is created. If a positional argument is given and it is a mapping object, a dictionary is created with the same key-value pairs. Otherwise, the positional argument must be an iterable of key-value pairs.",
+      "deprecated": false
+    },
+    {
+      "name": "dir",
+      "signature": "dir([object])",
+      "params": [
+        {
+          "name": "object",
+          "type": "object",
+          "description": "The object to list attributes for. If omitted, returns names in the current local scope.",
+          "optional": true
+        }
+      ],
+      "returns": {
+        "type": "list",
+        "description": "A sorted list of names (strings)."
+      },
+      "description": "Without arguments, return the list of names in the current local scope. With an argument, attempt to return a list of valid attributes for that object.",
+      "deprecated": false
+    },
+    {
+      "name": "divmod",
+      "signature": "divmod(a, b)",
+      "params": [
+        {
+          "name": "a",
+          "type": "number",
+          "description": "The dividend."
+        },
+        {
+          "name": "b",
+          "type": "number",
+          "description": "The divisor."
+        }
+      ],
+      "returns": {
+        "type": "tuple",
+        "description": "A pair of numbers (quotient, remainder) such that a == quotient * b + remainder."
+      },
+      "description": "Take two (non-complex) numbers as arguments and return a pair of numbers consisting of their quotient and remainder when using long division. For integers, the result is the same as (a // b, a % b). For floating point numbers, the result is (q, a % b), where q is usually math.floor(a / b).",
+      "deprecated": false
+    },
+    {
+      "name": "enumerate",
+      "signature": "enumerate(sequence, start=0)",
+      "params": [
+        {
+          "name": "sequence",
+          "type": "iterable",
+          "description": "An iterable to enumerate over."
+        },
+        {
+          "name": "start",
+          "type": "int",
+          "description": "The starting value of the count. Defaults to 0.",
+          "optional": true,
+          "default": "0"
+        }
+      ],
+      "returns": {
+        "type": "enumerate",
+        "description": "An enumerate object yielding tuples of (index, value)."
+      },
+      "description": "Return an enumerate object. sequence must be a sequence, an iterator, or some other object which supports iteration. The __next__() method of the iterator returned by enumerate() returns a tuple containing a count (from start which defaults to 0) and the values obtained from iterating over sequence.",
+      "deprecated": false
+    },
+    {
+      "name": "eval",
+      "signature": "eval(expression[, globals[, locals]])",
+      "params": [
+        {
+          "name": "expression",
+          "type": "str or code",
+          "description": "A Python expression (string or code object) to evaluate."
+        },
+        {
+          "name": "globals",
+          "type": "dict",
+          "description": "The global namespace for the evaluation.",
+          "optional": true
+        },
+        {
+          "name": "locals",
+          "type": "dict",
+          "description": "The local namespace for the evaluation.",
+          "optional": true
+        }
+      ],
+      "returns": {
+        "type": "object",
+        "description": "The result of the evaluated expression."
+      },
+      "description": "The expression argument is parsed and evaluated as a Python expression. The globals and locals arguments are used as the global and local namespace, respectively.",
+      "deprecated": false
+    },
+    {
+      "name": "execfile",
+      "signature": "execfile(filename[, globals[, locals]])",
+      "params": [
+        {
+          "name": "filename",
+          "type": "str",
+          "description": "The path to the Python file to execute."
+        },
+        {
+          "name": "globals",
+          "type": "dict",
+          "description": "Global namespace for the execution.",
+          "optional": true
+        },
+        {
+          "name": "locals",
+          "type": "dict",
+          "description": "Local namespace for the execution.",
+          "optional": true
+        }
+      ],
+      "returns": {
+        "type": "None",
+        "description": "Void."
+      },
+      "description": "Read and execute a Python script from a file. This is similar to the exec statement, but parses a file instead of a string. Note: removed in Python 3.",
+      "deprecated": false
+    },
+    {
+      "name": "file",
+      "signature": "file(name[, mode[, buffering]])",
+      "params": [
+        {
+          "name": "name",
+          "type": "str",
+          "description": "The file path to open."
+        },
+        {
+          "name": "mode",
+          "type": "str",
+          "description": "The file mode: 'r' (read), 'w' (write), 'a' (append), etc.",
+          "optional": true,
+          "default": "'r'"
+        },
+        {
+          "name": "buffering",
+          "type": "int",
+          "description": "0 for unbuffered, 1 for line buffered, larger for buffer size.",
+          "optional": true
+        }
+      ],
+      "returns": {
+        "type": "file",
+        "description": "A file object."
+      },
+      "description": "Constructor function for the file type. The recommended way to open a file is with the open() built-in function. file is more suited to type testing (e.g. isinstance(f, file)).",
+      "deprecated": false
+    },
+    {
+      "name": "filter",
+      "signature": "filter(function, iterable)",
+      "params": [
+        {
+          "name": "function",
+          "type": "callable or None",
+          "description": "A function that returns a truthy value to keep the element, or None to use identity (remove falsy values)."
+        },
+        {
+          "name": "iterable",
+          "type": "iterable",
+          "description": "The iterable to filter."
+        }
+      ],
+      "returns": {
+        "type": "list",
+        "description": "A list of elements for which function returns true. If function is None, returns elements that are true."
+      },
+      "description": "Construct a list from those elements of iterable for which function returns true. If function is None, the identity function is assumed, that is, all elements of iterable that are false are removed. Note: in Python 2.7 filter() returns a list; if iterable is a string or tuple, the result is of the same type.",
+      "deprecated": false
+    },
+    {
+      "name": "float",
+      "signature": "float([x])",
+      "params": [
+        {
+          "name": "x",
+          "type": "number or str",
+          "description": "A number or string to convert to float. If omitted, returns 0.0.",
+          "optional": true,
+          "default": "0"
+        }
+      ],
+      "returns": {
+        "type": "float",
+        "description": "A floating point number."
+      },
+      "description": "Convert a string or number to a floating point number. If the argument is a string, it must contain a decimal or floating point number, optionally preceded by a sign, optionally embedded in whitespace. The argument may also be '+inf', '-inf', or 'nan'.",
+      "deprecated": false
+    },
+    {
+      "name": "format",
+      "signature": "format(value[, format_spec])",
+      "params": [
+        {
+          "name": "value",
+          "type": "object",
+          "description": "The value to format."
+        },
+        {
+          "name": "format_spec",
+          "type": "str",
+          "description": "A format specification string. The interpretation depends on the type of value.",
+          "optional": true,
+          "default": "''"
+        }
+      ],
+      "returns": {
+        "type": "str",
+        "description": "The formatted representation of value."
+      },
+      "description": "Convert a value to a 'formatted' representation, as controlled by format_spec. Calls value.__format__(format_spec). The default format_spec is an empty string which usually gives the same effect as calling str(value).",
+      "deprecated": false
+    },
+    {
+      "name": "frozenset",
+      "signature": "frozenset([iterable])",
+      "params": [
+        {
+          "name": "iterable",
+          "type": "iterable",
+          "description": "An iterable of elements to include. If omitted, creates an empty frozenset.",
+          "optional": true
+        }
+      ],
+      "returns": {
+        "type": "frozenset",
+        "description": "A new frozenset object."
+      },
+      "description": "Return a new frozenset object, optionally with elements taken from iterable. frozenset is an immutable version of set; it is hashable and can be used as a dictionary key or as an element of another set.",
+      "deprecated": false
+    },
+    {
+      "name": "getattr",
+      "signature": "getattr(object, name[, default])",
+      "params": [
+        {
+          "name": "object",
+          "type": "object",
+          "description": "The object to get the attribute from."
+        },
+        {
+          "name": "name",
+          "type": "str",
+          "description": "The name of the attribute."
+        },
+        {
+          "name": "default",
+          "type": "object",
+          "description": "Value to return if the attribute does not exist. If not provided and the attribute does not exist, AttributeError is raised.",
+          "optional": true
+        }
+      ],
+      "returns": {
+        "type": "object",
+        "description": "The value of the named attribute, or default if provided and the attribute does not exist."
+      },
+      "description": "Return the value of the named attribute of object. name must be a string. If the string is the name of one of the object's attributes, the result is the value of that attribute. If the named attribute does not exist, default is returned if provided, otherwise AttributeError is raised.",
+      "deprecated": false
+    },
+    {
+      "name": "globals",
+      "signature": "globals()",
+      "params": [],
+      "returns": {
+        "type": "dict",
+        "description": "A dictionary representing the current global symbol table."
+      },
+      "description": "Return a dictionary representing the current global symbol table. This is always the dictionary of the current module.",
+      "deprecated": false
+    },
+    {
+      "name": "hasattr",
+      "signature": "hasattr(object, name)",
+      "params": [
+        {
+          "name": "object",
+          "type": "object",
+          "description": "The object to check."
+        },
+        {
+          "name": "name",
+          "type": "str",
+          "description": "The name of the attribute to check for."
+        }
+      ],
+      "returns": {
+        "type": "bool",
+        "description": "True if the object has the given attribute, False otherwise."
+      },
+      "description": "Return True if the string name is the name of one of the object's attributes. This is implemented by calling getattr(object, name) and seeing whether it raises an exception or not.",
+      "deprecated": false
+    },
+    {
+      "name": "hash",
+      "signature": "hash(object)",
+      "params": [
+        {
+          "name": "object",
+          "type": "object",
+          "description": "The object to hash. Must be hashable."
+        }
+      ],
+      "returns": {
+        "type": "int",
+        "description": "The hash value of the object."
+      },
+      "description": "Return the hash value of the object (if it has one). Hash values are integers used to quickly compare dictionary keys during a dictionary lookup.",
+      "deprecated": false
+    },
+    {
+      "name": "help",
+      "signature": "help([object])",
+      "params": [
+        {
+          "name": "object",
+          "type": "object",
+          "description": "The object to get help on. If omitted, enters interactive help.",
+          "optional": true
+        }
+      ],
+      "returns": {
+        "type": "None",
+        "description": "Prints help text to stdout."
+      },
+      "description": "Invoke the built-in help system. If no argument is given, the interactive help system starts on the interpreter console. If the argument is a string, it is looked up as a module, function, class, method, keyword, or documentation topic. If the argument is any other kind of object, a help page on the object is generated.",
+      "deprecated": false
+    },
+    {
+      "name": "hex",
+      "signature": "hex(x)",
+      "params": [
+        {
+          "name": "x",
+          "type": "int",
+          "description": "An integer number."
+        }
+      ],
+      "returns": {
+        "type": "str",
+        "description": "A lowercase hexadecimal string prefixed with '0x' (e.g. '0xff')."
+      },
+      "description": "Convert an integer number to a lowercase hexadecimal string prefixed with '0x'. If x is not a Python int or long object, it has to define an __hex__() method that returns a string.",
+      "deprecated": false
+    },
+    {
+      "name": "id",
+      "signature": "id(object)",
+      "params": [
+        {
+          "name": "object",
+          "type": "object",
+          "description": "Any object."
+        }
+      ],
+      "returns": {
+        "type": "int",
+        "description": "The identity of the object (memory address in CPython)."
+      },
+      "description": "Return the 'identity' of an object. This is an integer (or long integer) which is guaranteed to be unique and constant for this object during its lifetime. Two objects with non-overlapping lifetimes may have the same id() value.",
+      "deprecated": false
+    },
+    {
+      "name": "input",
+      "signature": "input([prompt])",
+      "params": [
+        {
+          "name": "prompt",
+          "type": "str",
+          "description": "A prompt string to display.",
+          "optional": true
+        }
+      ],
+      "returns": {
+        "type": "object",
+        "description": "The evaluated result of the user's input."
+      },
+      "description": "Equivalent to eval(raw_input(prompt)). WARNING: This function is not safe for user input because it evaluates arbitrary expressions. Use raw_input() instead. Note: In Python 3, input() behaves like Python 2's raw_input().",
+      "deprecated": false
+    },
+    {
+      "name": "int",
+      "signature": "int(x=0) or int(x, base=10)",
+      "params": [
+        {
+          "name": "x",
+          "type": "number or str",
+          "description": "A number or string to convert to integer. Defaults to 0.",
+          "optional": true,
+          "default": "0"
+        },
+        {
+          "name": "base",
+          "type": "int",
+          "description": "The base for string conversion (2-36). Only valid when x is a string. Defaults to 10.",
+          "optional": true,
+          "default": "10"
+        }
+      ],
+      "returns": {
+        "type": "int",
+        "description": "An integer."
+      },
+      "description": "Convert a number or string to an integer. If x is a floating point number, the conversion truncates towards zero. If x is a string, it must represent an integer literal in the given base. The base defaults to 10. Valid bases are 0 and 2-36. Base 0 means to interpret the string exactly as an integer literal.",
+      "deprecated": false
+    },
+    {
+      "name": "isinstance",
+      "signature": "isinstance(object, classinfo)",
+      "params": [
+        {
+          "name": "object",
+          "type": "object",
+          "description": "The object to check."
+        },
+        {
+          "name": "classinfo",
+          "type": "type or tuple",
+          "description": "A class, type, or tuple of classes/types to check against."
+        }
+      ],
+      "returns": {
+        "type": "bool",
+        "description": "True if the object is an instance of classinfo (or a subclass thereof), False otherwise."
+      },
+      "description": "Return true if the object argument is an instance of the classinfo argument, or of a (direct, indirect, or virtual) subclass thereof. If classinfo is a tuple, check against each type in the tuple (like an 'or' test).",
+      "deprecated": false
+    },
+    {
+      "name": "issubclass",
+      "signature": "issubclass(class, classinfo)",
+      "params": [
+        {
+          "name": "class",
+          "type": "type",
+          "description": "The class to check."
+        },
+        {
+          "name": "classinfo",
+          "type": "type or tuple",
+          "description": "A class or tuple of classes to check against."
+        }
+      ],
+      "returns": {
+        "type": "bool",
+        "description": "True if class is a subclass of classinfo."
+      },
+      "description": "Return true if class is a subclass (direct, indirect, or virtual) of classinfo. A class is considered a subclass of itself.",
+      "deprecated": false
+    },
+    {
+      "name": "iter",
+      "signature": "iter(o[, sentinel])",
+      "params": [
+        {
+          "name": "o",
+          "type": "object",
+          "description": "An iterable object, or a callable if sentinel is provided."
+        },
+        {
+          "name": "sentinel",
+          "type": "object",
+          "description": "If provided, o must be a callable. The iterator will call o with no arguments for each call to its next() method; if the value returned is equal to sentinel, StopIteration will be raised.",
+          "optional": true
+        }
+      ],
+      "returns": {
+        "type": "iterator",
+        "description": "An iterator object."
+      },
+      "description": "Return an iterator object. The first argument is interpreted differently depending on the presence of the second argument. Without a second argument, o must be a collection object which supports the iteration protocol (__iter__) or the sequence protocol (__getitem__ with integer indices starting at 0).",
+      "deprecated": false
+    },
+    {
+      "name": "len",
+      "signature": "len(s)",
+      "params": [
+        {
+          "name": "s",
+          "type": "sequence or mapping",
+          "description": "A sequence (string, list, tuple, etc.) or mapping (dict) whose length is to be determined."
+        }
+      ],
+      "returns": {
+        "type": "int",
+        "description": "The number of items in the argument."
+      },
+      "description": "Return the length (the number of items) of an object. The argument may be a sequence (string, tuple, list, etc.) or a mapping (dictionary).",
+      "deprecated": false
+    },
+    {
+      "name": "list",
+      "signature": "list([iterable])",
+      "params": [
+        {
+          "name": "iterable",
+          "type": "iterable",
+          "description": "An iterable to create the list from. If omitted, creates an empty list.",
+          "optional": true
+        }
+      ],
+      "returns": {
+        "type": "list",
+        "description": "A new list."
+      },
+      "description": "Return a list whose items are the same and in the same order as iterable's items. If no argument is given, returns a new empty list.",
+      "deprecated": false
+    },
+    {
+      "name": "locals",
+      "signature": "locals()",
+      "params": [],
+      "returns": {
+        "type": "dict",
+        "description": "A dictionary representing the current local symbol table."
+      },
+      "description": "Update and return a dictionary representing the current local symbol table. The contents of this dictionary should not be modified; changes may not affect the values of local and free variables used by the interpreter.",
+      "deprecated": false
+    },
+    {
+      "name": "long",
+      "signature": "long(x=0) or long(x, base=10)",
+      "params": [
+        {
+          "name": "x",
+          "type": "number or str",
+          "description": "A number or string to convert to long. Defaults to 0.",
+          "optional": true,
+          "default": "0"
+        },
+        {
+          "name": "base",
+          "type": "int",
+          "description": "The base for string conversion (2-36). Only valid when x is a string.",
+          "optional": true,
+          "default": "10"
+        }
+      ],
+      "returns": {
+        "type": "long",
+        "description": "A long integer."
+      },
+      "description": "Convert a string or number to a long integer. If the argument is a string, it must contain a possibly signed number of arbitrary size, possibly embedded in whitespace. Note: the long type is removed in Python 3; use int instead.",
+      "deprecated": false
+    },
+    {
+      "name": "map",
+      "signature": "map(function, iterable, ...)",
+      "params": [
+        {
+          "name": "function",
+          "type": "callable or None",
+          "description": "A function to apply to each element. If None, acts as the identity function; if there are multiple iterables, map() acts like zip()."
+        },
+        {
+          "name": "iterable",
+          "type": "iterable",
+          "description": "One or more iterables. If multiple iterables are provided, function must accept that many arguments."
+        }
+      ],
+      "returns": {
+        "type": "list",
+        "description": "A list of the results of applying function to each item of iterable."
+      },
+      "description": "Apply function to every item of iterable and return a list of the results. If additional iterable arguments are passed, function must take that many arguments and is applied to the items from all iterables in parallel. Note: in Python 2.7, map() returns a list; in Python 3, it returns an iterator.",
+      "deprecated": false
+    },
+    {
+      "name": "max",
+      "signature": "max(iterable[, key]) or max(arg1, arg2, *args[, key])",
+      "params": [
+        {
+          "name": "iterable",
+          "type": "iterable",
+          "description": "An iterable to find the maximum value in, OR two or more positional arguments to compare."
+        },
+        {
+          "name": "key",
+          "type": "callable",
+          "description": "A one-argument ordering function like that used for list.sort().",
+          "optional": true
+        }
+      ],
+      "returns": {
+        "type": "object",
+        "description": "The largest item in the iterable or the largest of the arguments."
+      },
+      "description": "With a single iterable argument, return the largest item. With two or more arguments, return the largest argument. The optional key argument specifies a one-argument ordering function.",
+      "deprecated": false
+    },
+    {
+      "name": "memoryview",
+      "signature": "memoryview(obj)",
+      "params": [
+        {
+          "name": "obj",
+          "type": "object",
+          "description": "An object that supports the buffer protocol (e.g. bytearray, bytes)."
+        }
+      ],
+      "returns": {
+        "type": "memoryview",
+        "description": "A memoryview object."
+      },
+      "description": "Create a memoryview object that references obj. obj must support the buffer protocol. Built-in objects that support the buffer protocol include bytes and bytearray.",
+      "deprecated": false
+    },
+    {
+      "name": "min",
+      "signature": "min(iterable[, key]) or min(arg1, arg2, *args[, key])",
+      "params": [
+        {
+          "name": "iterable",
+          "type": "iterable",
+          "description": "An iterable to find the minimum value in, OR two or more positional arguments to compare."
+        },
+        {
+          "name": "key",
+          "type": "callable",
+          "description": "A one-argument ordering function like that used for list.sort().",
+          "optional": true
+        }
+      ],
+      "returns": {
+        "type": "object",
+        "description": "The smallest item in the iterable or the smallest of the arguments."
+      },
+      "description": "With a single iterable argument, return the smallest item. With two or more arguments, return the smallest argument. The optional key argument specifies a one-argument ordering function.",
+      "deprecated": false
+    },
+    {
+      "name": "next",
+      "signature": "next(iterator[, default])",
+      "params": [
+        {
+          "name": "iterator",
+          "type": "iterator",
+          "description": "An iterator object."
+        },
+        {
+          "name": "default",
+          "type": "object",
+          "description": "A default value to return if the iterator is exhausted. If not given and the iterator is exhausted, StopIteration is raised.",
+          "optional": true
+        }
+      ],
+      "returns": {
+        "type": "object",
+        "description": "The next item from the iterator, or default if the iterator is exhausted."
+      },
+      "description": "Retrieve the next item from the iterator by calling its next() method. If default is given and the iterator is exhausted, it is returned instead of raising StopIteration.",
+      "deprecated": false
+    },
+    {
+      "name": "object",
+      "signature": "object()",
+      "params": [],
+      "returns": {
+        "type": "object",
+        "description": "A new featureless object."
+      },
+      "description": "Return a new featureless object. object is a base for all new style classes. It has the methods that are common to all instances of new style classes.",
+      "deprecated": false
+    },
+    {
+      "name": "oct",
+      "signature": "oct(x)",
+      "params": [
+        {
+          "name": "x",
+          "type": "int",
+          "description": "An integer number."
+        }
+      ],
+      "returns": {
+        "type": "str",
+        "description": "An octal string prefixed with '0' (e.g. '012' for 10)."
+      },
+      "description": "Convert an integer number to an octal string. The result is a valid Python expression. In Python 2.7, the octal string is prefixed with '0' (not '0o' as in Python 3).",
+      "deprecated": false
+    },
+    {
+      "name": "open",
+      "signature": "open(name[, mode[, buffering]])",
+      "params": [
+        {
+          "name": "name",
+          "type": "str",
+          "description": "The file path to open."
+        },
+        {
+          "name": "mode",
+          "type": "str",
+          "description": "The file mode: 'r' (read, default), 'w' (write), 'a' (append), 'b' (binary), '+' (read/write). Modes can be combined (e.g. 'rb', 'w+').",
+          "optional": true,
+          "default": "'r'"
+        },
+        {
+          "name": "buffering",
+          "type": "int",
+          "description": "0 for unbuffered, 1 for line buffered, larger positive integer for buffer size.",
+          "optional": true
+        }
+      ],
+      "returns": {
+        "type": "file",
+        "description": "A file object."
+      },
+      "description": "Open a file, returning a file object. If the file cannot be opened, IOError is raised. The mode and buffering arguments have the same meaning as the corresponding arguments to the C function fopen().",
+      "deprecated": false
+    },
+    {
+      "name": "ord",
+      "signature": "ord(c)",
+      "params": [
+        {
+          "name": "c",
+          "type": "str or unicode",
+          "description": "A string of length 1."
+        }
+      ],
+      "returns": {
+        "type": "int",
+        "description": "The integer ordinal of the character."
+      },
+      "description": "Given a string of length one, return an integer representing the Unicode code point of the character (for a unicode argument) or the value of the byte (for an 8-bit string argument). This is the inverse of chr() for 8-bit strings and of unichr() for unicode objects.",
+      "deprecated": false
+    },
+    {
+      "name": "pow",
+      "signature": "pow(x, y[, z])",
+      "params": [
+        {
+          "name": "x",
+          "type": "number",
+          "description": "The base."
+        },
+        {
+          "name": "y",
+          "type": "number",
+          "description": "The exponent."
+        },
+        {
+          "name": "z",
+          "type": "number",
+          "description": "The modulus. If present, returns (x**y) % z, computed more efficiently than pow(x, y) % z.",
+          "optional": true
+        }
+      ],
+      "returns": {
+        "type": "number",
+        "description": "x raised to the power y, optionally modulo z."
+      },
+      "description": "Return x to the power y; if z is present, return x to the power y, modulo z (computed more efficiently than pow(x, y) % z). The two-argument form pow(x, y) is equivalent to using the power operator: x**y.",
+      "deprecated": false
+    },
+    {
+      "name": "print",
+      "signature": "print(*objects, sep=' ', end='\\n', file=sys.stdout)",
+      "params": [
+        {
+          "name": "*objects",
+          "type": "object",
+          "description": "The objects to print."
+        },
+        {
+          "name": "sep",
+          "type": "str",
+          "description": "String inserted between objects. Defaults to a space.",
+          "optional": true,
+          "default": "' '"
+        },
+        {
+          "name": "end",
+          "type": "str",
+          "description": "String appended after the last object. Defaults to a newline.",
+          "optional": true,
+          "default": "'\\n'"
+        },
+        {
+          "name": "file",
+          "type": "file-like",
+          "description": "An object with a write(string) method. Defaults to sys.stdout.",
+          "optional": true,
+          "default": "sys.stdout"
+        }
+      ],
+      "returns": {
+        "type": "None",
+        "description": "Void."
+      },
+      "description": "Print objects to the stream file, separated by sep and followed by end. Available as a function in Python 2.7 with 'from __future__ import print_function'. Without the future import, 'print' is a statement in Python 2.7.",
+      "deprecated": false
+    },
+    {
+      "name": "property",
+      "signature": "property([fget[, fset[, fdel[, doc]]]])",
+      "params": [
+        {
+          "name": "fget",
+          "type": "callable",
+          "description": "A function for getting an attribute value.",
+          "optional": true
+        },
+        {
+          "name": "fset",
+          "type": "callable",
+          "description": "A function for setting an attribute value.",
+          "optional": true
+        },
+        {
+          "name": "fdel",
+          "type": "callable",
+          "description": "A function for deleting an attribute value.",
+          "optional": true
+        },
+        {
+          "name": "doc",
+          "type": "str",
+          "description": "Docstring for the attribute.",
+          "optional": true
+        }
+      ],
+      "returns": {
+        "type": "property",
+        "description": "A property attribute."
+      },
+      "description": "Return a property attribute for new-style classes (classes that derive from object). Typically used as a decorator: @property.",
+      "deprecated": false
+    },
+    {
+      "name": "range",
+      "signature": "range([start], stop[, step])",
+      "params": [
+        {
+          "name": "start",
+          "type": "int",
+          "description": "The starting value (inclusive). Defaults to 0.",
+          "optional": true,
+          "default": "0"
+        },
+        {
+          "name": "stop",
+          "type": "int",
+          "description": "The end value (exclusive)."
+        },
+        {
+          "name": "step",
+          "type": "int",
+          "description": "The step between values. Defaults to 1. Must not be zero.",
+          "optional": true,
+          "default": "1"
+        }
+      ],
+      "returns": {
+        "type": "list",
+        "description": "A list of integers from start to stop (exclusive) with the given step."
+      },
+      "description": "Return a list of arithmetic progressions. This is a versatile function to create lists containing arithmetic progressions. Note: in Python 2.7, range() returns a list; use xrange() for a memory-efficient iterator. In Python 3, range() returns an iterator (like xrange).",
+      "deprecated": false
+    },
+    {
+      "name": "raw_input",
+      "signature": "raw_input([prompt])",
+      "params": [
+        {
+          "name": "prompt",
+          "type": "str",
+          "description": "A prompt string to display before reading input.",
+          "optional": true
+        }
+      ],
+      "returns": {
+        "type": "str",
+        "description": "The line read from input, without the trailing newline."
+      },
+      "description": "Read a line from input (stdin), convert it to a string (stripping a trailing newline), and return that. If the prompt argument is present, it is written to standard output without a trailing newline. Note: renamed to input() in Python 3.",
+      "deprecated": false
+    },
+    {
+      "name": "reduce",
+      "signature": "reduce(function, iterable[, initializer])",
+      "params": [
+        {
+          "name": "function",
+          "type": "callable",
+          "description": "A function of two arguments to apply cumulatively to the items of iterable."
+        },
+        {
+          "name": "iterable",
+          "type": "iterable",
+          "description": "The iterable to reduce."
+        },
+        {
+          "name": "initializer",
+          "type": "object",
+          "description": "A value placed before the items of the iterable in the reduction, and serves as a default when the iterable is empty.",
+          "optional": true
+        }
+      ],
+      "returns": {
+        "type": "object",
+        "description": "The single result of cumulatively applying function to the items."
+      },
+      "description": "Apply function of two arguments cumulatively to the items of iterable, from left to right, so as to reduce the iterable to a single value. For example, reduce(lambda x, y: x+y, [1, 2, 3, 4, 5]) calculates ((((1+2)+3)+4)+5). Note: in Python 3, moved to functools.reduce().",
+      "deprecated": false
+    },
+    {
+      "name": "reload",
+      "signature": "reload(module)",
+      "params": [
+        {
+          "name": "module",
+          "type": "module",
+          "description": "A previously imported module to reload."
+        }
+      ],
+      "returns": {
+        "type": "module",
+        "description": "The reloaded module object."
+      },
+      "description": "Reload a previously imported module. The argument must be a module object, so it must have been successfully imported before. This is useful if you have edited the module source file and want to try out the new version without leaving the Python interpreter.",
+      "deprecated": false
+    },
+    {
+      "name": "repr",
+      "signature": "repr(object)",
+      "params": [
+        {
+          "name": "object",
+          "type": "object",
+          "description": "The object to get a string representation of."
+        }
+      ],
+      "returns": {
+        "type": "str",
+        "description": "A string containing a printable representation of the object."
+      },
+      "description": "Return a string containing a printable representation of an object. For many types, this function makes an attempt to return a string that would yield an object with the same value when passed to eval(), otherwise the representation is a string enclosed in angle brackets.",
+      "deprecated": false
+    },
+    {
+      "name": "reversed",
+      "signature": "reversed(seq)",
+      "params": [
+        {
+          "name": "seq",
+          "type": "sequence",
+          "description": "A sequence to reverse. Must be an object that has a __reversed__() method or supports the sequence protocol (__len__() and __getitem__())."
+        }
+      ],
+      "returns": {
+        "type": "iterator",
+        "description": "A reverse iterator over the values of the sequence."
+      },
+      "description": "Return a reverse iterator. seq must be an object which has a __reversed__() method or supports the sequence protocol (the __len__() method and the __getitem__() method with integer arguments starting at 0).",
+      "deprecated": false
+    },
+    {
+      "name": "round",
+      "signature": "round(number[, ndigits])",
+      "params": [
+        {
+          "name": "number",
+          "type": "float",
+          "description": "The number to round."
+        },
+        {
+          "name": "ndigits",
+          "type": "int",
+          "description": "The number of decimal digits to round to. If omitted or None, rounds to the nearest integer.",
+          "optional": true,
+          "default": "0"
+        }
+      ],
+      "returns": {
+        "type": "float",
+        "description": "The rounded floating point value."
+      },
+      "description": "Return the floating point value number rounded to ndigits digits after the decimal point. If ndigits is omitted, it defaults to zero. The result is a floating point number. Values are rounded to the closest multiple of 10 to the power minus ndigits. Note: Python 2.7 uses round-half-away-from-zero; Python 3 uses banker's rounding.",
+      "deprecated": false
+    },
+    {
+      "name": "set",
+      "signature": "set([iterable])",
+      "params": [
+        {
+          "name": "iterable",
+          "type": "iterable",
+          "description": "An iterable of elements. If omitted, creates an empty set.",
+          "optional": true
+        }
+      ],
+      "returns": {
+        "type": "set",
+        "description": "A new set object."
+      },
+      "description": "Return a new set object, optionally with elements taken from iterable. set is a built-in class.",
+      "deprecated": false
+    },
+    {
+      "name": "setattr",
+      "signature": "setattr(object, name, value)",
+      "params": [
+        {
+          "name": "object",
+          "type": "object",
+          "description": "The object to set the attribute on."
+        },
+        {
+          "name": "name",
+          "type": "str",
+          "description": "The name of the attribute."
+        },
+        {
+          "name": "value",
+          "type": "object",
+          "description": "The value to set the attribute to."
+        }
+      ],
+      "returns": {
+        "type": "None",
+        "description": "Void."
+      },
+      "description": "Set a named attribute on an object. setattr(x, 'y', v) is equivalent to x.y = v.",
+      "deprecated": false
+    },
+    {
+      "name": "slice",
+      "signature": "slice([start], stop[, step])",
+      "params": [
+        {
+          "name": "start",
+          "type": "int or None",
+          "description": "Start of the slice. Defaults to None.",
+          "optional": true
+        },
+        {
+          "name": "stop",
+          "type": "int or None",
+          "description": "End of the slice."
+        },
+        {
+          "name": "step",
+          "type": "int or None",
+          "description": "Step of the slice. Defaults to None.",
+          "optional": true
+        }
+      ],
+      "returns": {
+        "type": "slice",
+        "description": "A slice object representing a set of indices."
+      },
+      "description": "Return a slice object representing the set of indices specified by range(start, stop, step). slice objects are also generated when extended indexing syntax is used. For example: a[start:stop:step] or a[start:stop, i].",
+      "deprecated": false
+    },
+    {
+      "name": "sorted",
+      "signature": "sorted(iterable[, cmp[, key[, reverse]]])",
+      "params": [
+        {
+          "name": "iterable",
+          "type": "iterable",
+          "description": "The iterable to sort."
+        },
+        {
+          "name": "cmp",
+          "type": "callable",
+          "description": "A custom comparison function of two arguments (items from iterable) which should return a negative, zero or positive number. In Python 2.7 only; removed in Python 3.",
+          "optional": true
+        },
+        {
+          "name": "key",
+          "type": "callable",
+          "description": "A function of one argument that is used to extract a comparison key from each element (e.g. key=str.lower).",
+          "optional": true
+        },
+        {
+          "name": "reverse",
+          "type": "bool",
+          "description": "If True, sort in descending order. Defaults to False.",
+          "optional": true,
+          "default": "False"
+        }
+      ],
+      "returns": {
+        "type": "list",
+        "description": "A new sorted list from the items in iterable."
+      },
+      "description": "Return a new sorted list from the items in iterable. Has two optional arguments: key specifies a function of one argument used to extract a comparison key, and reverse is a boolean value. If set to True, list elements are sorted as if each comparison were reversed. The cmp parameter (Python 2.7 only) specifies a custom comparison function.",
+      "deprecated": false
+    },
+    {
+      "name": "staticmethod",
+      "signature": "staticmethod(function)",
+      "params": [
+        {
+          "name": "function",
+          "type": "callable",
+          "description": "The function to convert to a static method."
+        }
+      ],
+      "returns": {
+        "type": "staticmethod",
+        "description": "A static method object."
+      },
+      "description": "Return a static method for function. A static method does not receive an implicit first argument. Typically used as a decorator: @staticmethod.",
+      "deprecated": false
+    },
+    {
+      "name": "str",
+      "signature": "str(object='')",
+      "params": [
+        {
+          "name": "object",
+          "type": "object",
+          "description": "The object to convert to a string. Defaults to empty string.",
+          "optional": true,
+          "default": "''"
+        }
+      ],
+      "returns": {
+        "type": "str",
+        "description": "A string representation of the object."
+      },
+      "description": "Return a string containing a nicely printable representation of an object. For strings, this returns the string itself. The difference with repr(object) is that str(object) does not always attempt to return a string that is acceptable to eval().",
+      "deprecated": false
+    },
+    {
+      "name": "sum",
+      "signature": "sum(iterable[, start])",
+      "params": [
+        {
+          "name": "iterable",
+          "type": "iterable",
+          "description": "An iterable of numbers to sum."
+        },
+        {
+          "name": "start",
+          "type": "number",
+          "description": "A value added to the sum of items from the iterable. Defaults to 0.",
+          "optional": true,
+          "default": "0"
+        }
+      ],
+      "returns": {
+        "type": "number",
+        "description": "The sum of start and the items of the iterable."
+      },
+      "description": "Sums start and the items of an iterable from left to right and returns the total. The iterable's items are normally numbers, and the start value is not allowed to be a string. For some use cases, there are good alternatives to sum(): for concatenating strings, use ''.join(sequence); for floating point, use math.fsum().",
+      "deprecated": false
+    },
+    {
+      "name": "super",
+      "signature": "super(type[, object-or-type])",
+      "params": [
+        {
+          "name": "type",
+          "type": "type",
+          "description": "The class to find the parent of."
+        },
+        {
+          "name": "object-or-type",
+          "type": "object or type",
+          "description": "The object or type to bind the super object to.",
+          "optional": true
+        }
+      ],
+      "returns": {
+        "type": "super",
+        "description": "A proxy object that delegates method calls to the parent class."
+      },
+      "description": "Return a proxy object that delegates method calls to a parent or sibling class of type. This is useful for accessing inherited methods that have been overridden in a class. In Python 2.7, super() requires explicit arguments: super(MyClass, self). In Python 3, super() can be called without arguments.",
+      "deprecated": false
+    },
+    {
+      "name": "tuple",
+      "signature": "tuple([iterable])",
+      "params": [
+        {
+          "name": "iterable",
+          "type": "iterable",
+          "description": "An iterable to create the tuple from. If omitted, creates an empty tuple.",
+          "optional": true
+        }
+      ],
+      "returns": {
+        "type": "tuple",
+        "description": "A new tuple."
+      },
+      "description": "Return a tuple whose items are the same and in the same order as iterable's items. If no argument is given, the constructor creates a new empty tuple. Tuples are immutable sequences.",
+      "deprecated": false
+    },
+    {
+      "name": "type",
+      "signature": "type(object) or type(name, bases, dict)",
+      "params": [
+        {
+          "name": "object",
+          "type": "object",
+          "description": "In the one-argument form, return the type of the object."
+        },
+        {
+          "name": "name",
+          "type": "str",
+          "description": "In the three-argument form, the name of the new class.",
+          "optional": true
+        },
+        {
+          "name": "bases",
+          "type": "tuple",
+          "description": "In the three-argument form, the base classes.",
+          "optional": true
+        },
+        {
+          "name": "dict",
+          "type": "dict",
+          "description": "In the three-argument form, the namespace dictionary.",
+          "optional": true
+        }
+      ],
+      "returns": {
+        "type": "type",
+        "description": "The type of the object (one-argument form) or a new type/class (three-argument form)."
+      },
+      "description": "With one argument, return the type of an object. The return value is a type object. The isinstance() built-in function is recommended for testing the type of an object. With three arguments, return a new type object (this is essentially a dynamic form of the class statement).",
+      "deprecated": false
+    },
+    {
+      "name": "unichr",
+      "signature": "unichr(i)",
+      "params": [
+        {
+          "name": "i",
+          "type": "int",
+          "description": "An integer in the range 0 to 0x10ffff (the full Unicode range, or 0 to 0xffff for narrow builds)."
+        }
+      ],
+      "returns": {
+        "type": "unicode",
+        "description": "A Unicode string of one character with ordinal i."
+      },
+      "description": "Return the Unicode string of one character whose Unicode code is the integer i. This is the inverse of ord() for Unicode strings. The valid range for the argument depends on how Python was configured. Note: removed in Python 3; use chr() instead.",
+      "deprecated": false
+    },
+    {
+      "name": "unicode",
+      "signature": "unicode([object[, encoding[, errors]]])",
+      "params": [
+        {
+          "name": "object",
+          "type": "object",
+          "description": "The object to convert to unicode. If omitted, returns an empty unicode string.",
+          "optional": true,
+          "default": "u''"
+        },
+        {
+          "name": "encoding",
+          "type": "str",
+          "description": "The encoding to use when object is a string.",
+          "optional": true,
+          "default": "'utf-8'"
+        },
+        {
+          "name": "errors",
+          "type": "str",
+          "description": "Error handling: 'strict' (default), 'ignore', 'replace', etc.",
+          "optional": true,
+          "default": "'strict'"
+        }
+      ],
+      "returns": {
+        "type": "unicode",
+        "description": "A Unicode string."
+      },
+      "description": "Return the Unicode string version of object. If encoding and/or errors is given, unicode() will decode the object which can be an 8-bit string or a character buffer. Note: removed in Python 3; use str() instead.",
+      "deprecated": false
+    },
+    {
+      "name": "vars",
+      "signature": "vars([object])",
+      "params": [
+        {
+          "name": "object",
+          "type": "object",
+          "description": "The object to return the __dict__ of. If omitted, equivalent to locals().",
+          "optional": true
+        }
+      ],
+      "returns": {
+        "type": "dict",
+        "description": "The __dict__ attribute of the object, or the current local symbol table if no argument."
+      },
+      "description": "Return the __dict__ attribute for a module, class, instance, or any other object with a __dict__ attribute. Without an argument, acts like locals().",
+      "deprecated": false
+    },
+    {
+      "name": "xrange",
+      "signature": "xrange([start], stop[, step])",
+      "params": [
+        {
+          "name": "start",
+          "type": "int",
+          "description": "The starting value (inclusive). Defaults to 0.",
+          "optional": true,
+          "default": "0"
+        },
+        {
+          "name": "stop",
+          "type": "int",
+          "description": "The end value (exclusive)."
+        },
+        {
+          "name": "step",
+          "type": "int",
+          "description": "The step between values. Defaults to 1.",
+          "optional": true,
+          "default": "1"
+        }
+      ],
+      "returns": {
+        "type": "xrange",
+        "description": "An xrange object (iterable, not a list)."
+      },
+      "description": "Like range(), but instead of returning a list, returns an xrange object that generates the numbers in the range on demand. For looping, this is slightly faster than range() and more memory efficient. Note: in Python 3, xrange is removed and range() behaves like xrange().",
+      "deprecated": false
+    },
+    {
+      "name": "zip",
+      "signature": "zip([iterable, ...])",
+      "params": [
+        {
+          "name": "*iterables",
+          "type": "iterable",
+          "description": "Zero or more iterables to zip together."
+        }
+      ],
+      "returns": {
+        "type": "list",
+        "description": "A list of tuples, where the i-th tuple contains the i-th element from each of the argument iterables."
+      },
+      "description": "Return a list of tuples, where the i-th tuple contains the i-th element from each of the argument sequences or iterables. The returned list is truncated in length to the length of the shortest argument sequence. Note: in Python 2.7, zip() returns a list; in Python 3, it returns an iterator.",
+      "deprecated": false
+    },
+    {
+      "name": "__import__",
+      "signature": "__import__(name[, globals[, locals[, fromlist[, level]]]])",
+      "params": [
+        {
+          "name": "name",
+          "type": "str",
+          "description": "The name of the module to import."
+        },
+        {
+          "name": "globals",
+          "type": "dict",
+          "description": "The global namespace (used to determine the package context).",
+          "optional": true
+        },
+        {
+          "name": "locals",
+          "type": "dict",
+          "description": "The local namespace (unused).",
+          "optional": true
+        },
+        {
+          "name": "fromlist",
+          "type": "list",
+          "description": "Names to import from the module.",
+          "optional": true
+        },
+        {
+          "name": "level",
+          "type": "int",
+          "description": "Specifies whether to use absolute or relative imports. 0 means absolute, positive values indicate relative levels.",
+          "optional": true,
+          "default": "-1"
+        }
+      ],
+      "returns": {
+        "type": "module",
+        "description": "The imported module."
+      },
+      "description": "This function is invoked by the import statement. It can be replaced to change semantics of the import statement, but it is strongly discouraged. Use importlib.import_module() for programmatic importing instead.",
+      "deprecated": false
+    }
+  ],
+  "classes": [
+    {
+      "name": "str",
+      "description": "The built-in string type (byte string in Python 2.7). Immutable sequence of characters. Use unicode for Unicode strings in Python 2.7.",
+      "constructors": [
+        {
+          "name": "str",
+          "signature": "str(object='')",
+          "params": [
+            {
+              "name": "object",
+              "type": "object",
+              "description": "The object to convert to a string.",
+              "optional": true,
+              "default": "''"
+            }
+          ],
+          "returns": {
+            "type": "str",
+            "description": "A string representation of the object."
+          },
+          "description": "Return a string containing a nicely printable representation of an object."
+        }
+      ],
+      "methods": [
+        {
+          "name": "upper",
+          "signature": "str.upper()",
+          "params": [],
+          "returns": { "type": "str", "description": "A copy of the string with all cased characters converted to uppercase." },
+          "description": "Return a copy of the string with all the cased characters converted to uppercase.",
+          "deprecated": false
+        },
+        {
+          "name": "lower",
+          "signature": "str.lower()",
+          "params": [],
+          "returns": { "type": "str", "description": "A copy of the string with all cased characters converted to lowercase." },
+          "description": "Return a copy of the string with all the cased characters converted to lowercase.",
+          "deprecated": false
+        },
+        {
+          "name": "strip",
+          "signature": "str.strip([chars])",
+          "params": [
+            {
+              "name": "chars",
+              "type": "str",
+              "description": "A string of characters to strip. If omitted or None, strips whitespace.",
+              "optional": true
+            }
+          ],
+          "returns": { "type": "str", "description": "A copy of the string with leading and trailing characters removed." },
+          "description": "Return a copy of the string with leading and trailing characters removed. The chars argument is a string specifying the set of characters to be removed. If omitted or None, whitespace characters are removed.",
+          "deprecated": false
+        },
+        {
+          "name": "lstrip",
+          "signature": "str.lstrip([chars])",
+          "params": [
+            {
+              "name": "chars",
+              "type": "str",
+              "description": "A string of characters to strip from the left. If omitted, strips whitespace.",
+              "optional": true
+            }
+          ],
+          "returns": { "type": "str", "description": "A copy of the string with leading characters removed." },
+          "description": "Return a copy of the string with leading characters removed.",
+          "deprecated": false
+        },
+        {
+          "name": "rstrip",
+          "signature": "str.rstrip([chars])",
+          "params": [
+            {
+              "name": "chars",
+              "type": "str",
+              "description": "A string of characters to strip from the right. If omitted, strips whitespace.",
+              "optional": true
+            }
+          ],
+          "returns": { "type": "str", "description": "A copy of the string with trailing characters removed." },
+          "description": "Return a copy of the string with trailing characters removed.",
+          "deprecated": false
+        },
+        {
+          "name": "split",
+          "signature": "str.split([sep[, maxsplit]])",
+          "params": [
+            {
+              "name": "sep",
+              "type": "str",
+              "description": "The delimiter string. If omitted or None, splits on any whitespace and discards empty strings.",
+              "optional": true
+            },
+            {
+              "name": "maxsplit",
+              "type": "int",
+              "description": "Maximum number of splits to do. -1 (the default) means no limit.",
+              "optional": true,
+              "default": "-1"
+            }
+          ],
+          "returns": { "type": "list", "description": "A list of the words in the string, using sep as the delimiter." },
+          "description": "Return a list of the words in the string, using sep as the delimiter string. If maxsplit is given, at most maxsplit splits are done.",
+          "deprecated": false
+        },
+        {
+          "name": "rsplit",
+          "signature": "str.rsplit([sep[, maxsplit]])",
+          "params": [
+            {
+              "name": "sep",
+              "type": "str",
+              "description": "The delimiter string.",
+              "optional": true
+            },
+            {
+              "name": "maxsplit",
+              "type": "int",
+              "description": "Maximum number of splits, starting from the right.",
+              "optional": true,
+              "default": "-1"
+            }
+          ],
+          "returns": { "type": "list", "description": "A list of the words in the string, splitting from the right." },
+          "description": "Return a list of the words in the string, using sep as the delimiter string, splitting from the right. If maxsplit is given, at most maxsplit splits are done.",
+          "deprecated": false
+        },
+        {
+          "name": "join",
+          "signature": "str.join(iterable)",
+          "params": [
+            {
+              "name": "iterable",
+              "type": "iterable",
+              "description": "An iterable of strings to join."
+            }
+          ],
+          "returns": { "type": "str", "description": "A string which is the concatenation of the strings in iterable, separated by the string providing this method." },
+          "description": "Return a string which is the concatenation of the strings in iterable. A TypeError will be raised if there are any non-string values in iterable. The separator between elements is the string providing this method.",
+          "deprecated": false
+        },
+        {
+          "name": "replace",
+          "signature": "str.replace(old, new[, count])",
+          "params": [
+            {
+              "name": "old",
+              "type": "str",
+              "description": "The substring to search for."
+            },
+            {
+              "name": "new",
+              "type": "str",
+              "description": "The substring to replace old with."
+            },
+            {
+              "name": "count",
+              "type": "int",
+              "description": "Maximum number of replacements. If omitted, all occurrences are replaced.",
+              "optional": true
+            }
+          ],
+          "returns": { "type": "str", "description": "A copy of the string with occurrences of old replaced by new." },
+          "description": "Return a copy of the string with all occurrences of substring old replaced by new. If the optional argument count is given, only the first count occurrences are replaced.",
+          "deprecated": false
+        },
+        {
+          "name": "find",
+          "signature": "str.find(sub[, start[, end]])",
+          "params": [
+            { "name": "sub", "type": "str", "description": "The substring to search for." },
+            { "name": "start", "type": "int", "description": "Start index for the search.", "optional": true, "default": "0" },
+            { "name": "end", "type": "int", "description": "End index for the search.", "optional": true }
+          ],
+          "returns": { "type": "int", "description": "The lowest index where the substring is found, or -1 if not found." },
+          "description": "Return the lowest index in the string where substring sub is found within the slice s[start:end]. Return -1 if sub is not found.",
+          "deprecated": false
+        },
+        {
+          "name": "rfind",
+          "signature": "str.rfind(sub[, start[, end]])",
+          "params": [
+            { "name": "sub", "type": "str", "description": "The substring to search for." },
+            { "name": "start", "type": "int", "description": "Start index for the search.", "optional": true, "default": "0" },
+            { "name": "end", "type": "int", "description": "End index for the search.", "optional": true }
+          ],
+          "returns": { "type": "int", "description": "The highest index where the substring is found, or -1 if not found." },
+          "description": "Return the highest index in the string where substring sub is found. Return -1 if sub is not found.",
+          "deprecated": false
+        },
+        {
+          "name": "index",
+          "signature": "str.index(sub[, start[, end]])",
+          "params": [
+            { "name": "sub", "type": "str", "description": "The substring to search for." },
+            { "name": "start", "type": "int", "description": "Start index for the search.", "optional": true, "default": "0" },
+            { "name": "end", "type": "int", "description": "End index for the search.", "optional": true }
+          ],
+          "returns": { "type": "int", "description": "The lowest index where the substring is found." },
+          "description": "Like find(), but raise ValueError when the substring is not found.",
+          "deprecated": false
+        },
+        {
+          "name": "rindex",
+          "signature": "str.rindex(sub[, start[, end]])",
+          "params": [
+            { "name": "sub", "type": "str", "description": "The substring to search for." },
+            { "name": "start", "type": "int", "description": "Start index for the search.", "optional": true, "default": "0" },
+            { "name": "end", "type": "int", "description": "End index for the search.", "optional": true }
+          ],
+          "returns": { "type": "int", "description": "The highest index where the substring is found." },
+          "description": "Like rfind(), but raise ValueError when the substring is not found.",
+          "deprecated": false
+        },
+        {
+          "name": "count",
+          "signature": "str.count(sub[, start[, end]])",
+          "params": [
+            { "name": "sub", "type": "str", "description": "The substring to count." },
+            { "name": "start", "type": "int", "description": "Start index.", "optional": true, "default": "0" },
+            { "name": "end", "type": "int", "description": "End index.", "optional": true }
+          ],
+          "returns": { "type": "int", "description": "The number of non-overlapping occurrences of substring sub." },
+          "description": "Return the number of non-overlapping occurrences of substring sub in the range [start, end].",
+          "deprecated": false
+        },
+        {
+          "name": "startswith",
+          "signature": "str.startswith(prefix[, start[, end]])",
+          "params": [
+            { "name": "prefix", "type": "str or tuple", "description": "The prefix(es) to check for." },
+            { "name": "start", "type": "int", "description": "Start index.", "optional": true, "default": "0" },
+            { "name": "end", "type": "int", "description": "End index.", "optional": true }
+          ],
+          "returns": { "type": "bool", "description": "True if the string starts with the prefix, False otherwise." },
+          "description": "Return True if string starts with the prefix, otherwise return False. prefix can also be a tuple of prefixes to look for.",
+          "deprecated": false
+        },
+        {
+          "name": "endswith",
+          "signature": "str.endswith(suffix[, start[, end]])",
+          "params": [
+            { "name": "suffix", "type": "str or tuple", "description": "The suffix(es) to check for." },
+            { "name": "start", "type": "int", "description": "Start index.", "optional": true, "default": "0" },
+            { "name": "end", "type": "int", "description": "End index.", "optional": true }
+          ],
+          "returns": { "type": "bool", "description": "True if the string ends with the suffix, False otherwise." },
+          "description": "Return True if the string ends with the specified suffix, otherwise return False. suffix can also be a tuple of suffixes to look for.",
+          "deprecated": false
+        },
+        {
+          "name": "encode",
+          "signature": "str.encode([encoding[, errors]])",
+          "params": [
+            { "name": "encoding", "type": "str", "description": "The encoding to use.", "optional": true, "default": "'ascii'" },
+            { "name": "errors", "type": "str", "description": "Error handling scheme.", "optional": true, "default": "'strict'" }
+          ],
+          "returns": { "type": "str", "description": "An encoded version of the string." },
+          "description": "Return an encoded version of the string. Default encoding is the current default string encoding.",
+          "deprecated": false
+        },
+        {
+          "name": "decode",
+          "signature": "str.decode([encoding[, errors]])",
+          "params": [
+            { "name": "encoding", "type": "str", "description": "The encoding to use.", "optional": true, "default": "'ascii'" },
+            { "name": "errors", "type": "str", "description": "Error handling scheme.", "optional": true, "default": "'strict'" }
+          ],
+          "returns": { "type": "unicode", "description": "A decoded (Unicode) version of the string." },
+          "description": "Decode the string using the codec registered for encoding. Python 2.7 only; removed from str in Python 3.",
+          "deprecated": false
+        },
+        {
+          "name": "format",
+          "signature": "str.format(*args, **kwargs)",
+          "params": [
+            { "name": "*args", "type": "object", "description": "Positional arguments for replacement fields." },
+            { "name": "**kwargs", "type": "object", "description": "Keyword arguments for replacement fields." }
+          ],
+          "returns": { "type": "str", "description": "A formatted version of the string." },
+          "description": "Perform a string formatting operation. The string on which this method is called can contain literal text or replacement fields delimited by braces {}.",
+          "deprecated": false
+        },
+        {
+          "name": "isalpha",
+          "signature": "str.isalpha()",
+          "params": [],
+          "returns": { "type": "bool", "description": "True if all characters are alphabetic and there is at least one character." },
+          "description": "Return true if all characters in the string are alphabetic and there is at least one character, false otherwise.",
+          "deprecated": false
+        },
+        {
+          "name": "isdigit",
+          "signature": "str.isdigit()",
+          "params": [],
+          "returns": { "type": "bool", "description": "True if all characters are digits and there is at least one character." },
+          "description": "Return true if all characters in the string are digits and there is at least one character, false otherwise.",
+          "deprecated": false
+        },
+        {
+          "name": "isalnum",
+          "signature": "str.isalnum()",
+          "params": [],
+          "returns": { "type": "bool", "description": "True if all characters are alphanumeric and there is at least one character." },
+          "description": "Return true if all characters in the string are alphanumeric and there is at least one character, false otherwise.",
+          "deprecated": false
+        },
+        {
+          "name": "isspace",
+          "signature": "str.isspace()",
+          "params": [],
+          "returns": { "type": "bool", "description": "True if all characters are whitespace and there is at least one character." },
+          "description": "Return true if there are only whitespace characters in the string and there is at least one character, false otherwise.",
+          "deprecated": false
+        },
+        {
+          "name": "islower",
+          "signature": "str.islower()",
+          "params": [],
+          "returns": { "type": "bool", "description": "True if all cased characters are lowercase and there is at least one cased character." },
+          "description": "Return true if all cased characters in the string are lowercase and there is at least one cased character, false otherwise.",
+          "deprecated": false
+        },
+        {
+          "name": "isupper",
+          "signature": "str.isupper()",
+          "params": [],
+          "returns": { "type": "bool", "description": "True if all cased characters are uppercase and there is at least one cased character." },
+          "description": "Return true if all cased characters in the string are uppercase and there is at least one cased character, false otherwise.",
+          "deprecated": false
+        },
+        {
+          "name": "istitle",
+          "signature": "str.istitle()",
+          "params": [],
+          "returns": { "type": "bool", "description": "True if the string is titlecased." },
+          "description": "Return true if the string is a titlecased string and there is at least one character.",
+          "deprecated": false
+        },
+        {
+          "name": "title",
+          "signature": "str.title()",
+          "params": [],
+          "returns": { "type": "str", "description": "A titlecased version of the string." },
+          "description": "Return a titlecased version of the string where words start with an uppercase character and the remaining characters are lowercase.",
+          "deprecated": false
+        },
+        {
+          "name": "capitalize",
+          "signature": "str.capitalize()",
+          "params": [],
+          "returns": { "type": "str", "description": "A copy of the string with its first character capitalized and the rest lowercased." },
+          "description": "Return a copy of the string with its first character capitalized and the rest lowercased.",
+          "deprecated": false
+        },
+        {
+          "name": "swapcase",
+          "signature": "str.swapcase()",
+          "params": [],
+          "returns": { "type": "str", "description": "A copy of the string with uppercase characters converted to lowercase and vice versa." },
+          "description": "Return a copy of the string with uppercase characters converted to lowercase and vice versa.",
+          "deprecated": false
+        },
+        {
+          "name": "center",
+          "signature": "str.center(width[, fillchar])",
+          "params": [
+            { "name": "width", "type": "int", "description": "The total width of the resulting string." },
+            { "name": "fillchar", "type": "str", "description": "The fill character. Defaults to a space.", "optional": true, "default": "' '" }
+          ],
+          "returns": { "type": "str", "description": "A centered string of length width." },
+          "description": "Return centered in a string of length width. Padding is done using the specified fill character (default is a space).",
+          "deprecated": false
+        },
+        {
+          "name": "ljust",
+          "signature": "str.ljust(width[, fillchar])",
+          "params": [
+            { "name": "width", "type": "int", "description": "The total width of the resulting string." },
+            { "name": "fillchar", "type": "str", "description": "The fill character.", "optional": true, "default": "' '" }
+          ],
+          "returns": { "type": "str", "description": "A left-justified string of length width." },
+          "description": "Return the string left justified in a string of length width.",
+          "deprecated": false
+        },
+        {
+          "name": "rjust",
+          "signature": "str.rjust(width[, fillchar])",
+          "params": [
+            { "name": "width", "type": "int", "description": "The total width of the resulting string." },
+            { "name": "fillchar", "type": "str", "description": "The fill character.", "optional": true, "default": "' '" }
+          ],
+          "returns": { "type": "str", "description": "A right-justified string of length width." },
+          "description": "Return the string right justified in a string of length width.",
+          "deprecated": false
+        },
+        {
+          "name": "zfill",
+          "signature": "str.zfill(width)",
+          "params": [
+            { "name": "width", "type": "int", "description": "The total width of the resulting string." }
+          ],
+          "returns": { "type": "str", "description": "A string padded with zeros on the left to fill width." },
+          "description": "Return the numeric string left filled with zeros in a string of length width. A sign prefix is handled correctly.",
+          "deprecated": false
+        },
+        {
+          "name": "expandtabs",
+          "signature": "str.expandtabs([tabsize])",
+          "params": [
+            { "name": "tabsize", "type": "int", "description": "Number of spaces per tab. Defaults to 8.", "optional": true, "default": "8" }
+          ],
+          "returns": { "type": "str", "description": "A copy of the string with tabs expanded to spaces." },
+          "description": "Return a copy of the string where all tab characters are expanded using spaces.",
+          "deprecated": false
+        },
+        {
+          "name": "partition",
+          "signature": "str.partition(sep)",
+          "params": [
+            { "name": "sep", "type": "str", "description": "The separator to split on." }
+          ],
+          "returns": { "type": "tuple", "description": "A 3-tuple: (before_sep, sep, after_sep). If sep is not found, returns (str, '', '')." },
+          "description": "Split the string at the first occurrence of sep, and return a 3-tuple containing the part before the separator, the separator itself, and the part after the separator.",
+          "deprecated": false
+        },
+        {
+          "name": "rpartition",
+          "signature": "str.rpartition(sep)",
+          "params": [
+            { "name": "sep", "type": "str", "description": "The separator to split on." }
+          ],
+          "returns": { "type": "tuple", "description": "A 3-tuple: (before_sep, sep, after_sep). If sep is not found, returns ('', '', str)." },
+          "description": "Split the string at the last occurrence of sep, and return a 3-tuple containing the part before the separator, the separator itself, and the part after the separator.",
+          "deprecated": false
+        },
+        {
+          "name": "translate",
+          "signature": "str.translate(table[, deletechars])",
+          "params": [
+            { "name": "table", "type": "str", "description": "A translation table of 256 characters (created by string.maketrans())." },
+            { "name": "deletechars", "type": "str", "description": "Characters to delete from the string.", "optional": true }
+          ],
+          "returns": { "type": "str", "description": "A copy of the string with characters translated and/or deleted." },
+          "description": "Return a copy of the string where all characters occurring in the optional argument deletechars are removed, and the remaining characters have been mapped through the given translation table. Note: in Python 2.7, use string.maketrans() to create the table; str.maketrans() is Python 3 only.",
+          "deprecated": false
+        }
+      ],
+      "fields": []
+    },
+    {
+      "name": "list",
+      "description": "The built-in mutable sequence type. Lists may be constructed in several ways: using square brackets [], using the type constructor list(), or using a list comprehension.",
+      "constructors": [
+        {
+          "name": "list",
+          "signature": "list([iterable])",
+          "params": [
+            {
+              "name": "iterable",
+              "type": "iterable",
+              "description": "An iterable to create the list from.",
+              "optional": true
+            }
+          ],
+          "returns": { "type": "list", "description": "A new list." },
+          "description": "Create a new list, optionally from an iterable."
+        }
+      ],
+      "methods": [
+        {
+          "name": "append",
+          "signature": "list.append(x)",
+          "params": [
+            { "name": "x", "type": "object", "description": "The item to append." }
+          ],
+          "returns": { "type": "None", "description": "Modifies the list in place." },
+          "description": "Add an item to the end of the list. Equivalent to a[len(a):] = [x].",
+          "deprecated": false
+        },
+        {
+          "name": "extend",
+          "signature": "list.extend(iterable)",
+          "params": [
+            { "name": "iterable", "type": "iterable", "description": "An iterable of items to append." }
+          ],
+          "returns": { "type": "None", "description": "Modifies the list in place." },
+          "description": "Extend the list by appending all the items from the iterable. Equivalent to a[len(a):] = iterable.",
+          "deprecated": false
+        },
+        {
+          "name": "insert",
+          "signature": "list.insert(i, x)",
+          "params": [
+            { "name": "i", "type": "int", "description": "The index before which to insert." },
+            { "name": "x", "type": "object", "description": "The item to insert." }
+          ],
+          "returns": { "type": "None", "description": "Modifies the list in place." },
+          "description": "Insert an item at a given position. a.insert(0, x) inserts at the front; a.insert(len(a), x) is equivalent to a.append(x).",
+          "deprecated": false
+        },
+        {
+          "name": "remove",
+          "signature": "list.remove(x)",
+          "params": [
+            { "name": "x", "type": "object", "description": "The first item with this value to remove." }
+          ],
+          "returns": { "type": "None", "description": "Modifies the list in place." },
+          "description": "Remove the first item from the list whose value is x. Raises ValueError if there is no such item.",
+          "deprecated": false
+        },
+        {
+          "name": "pop",
+          "signature": "list.pop([i])",
+          "params": [
+            { "name": "i", "type": "int", "description": "The index of the item to remove and return. Defaults to -1 (last item).", "optional": true, "default": "-1" }
+          ],
+          "returns": { "type": "object", "description": "The item at the given position." },
+          "description": "Remove the item at the given position in the list, and return it. If no index is specified, a.pop() removes and returns the last item in the list.",
+          "deprecated": false
+        },
+        {
+          "name": "index",
+          "signature": "list.index(x[, start[, end]])",
+          "params": [
+            { "name": "x", "type": "object", "description": "The value to search for." },
+            { "name": "start", "type": "int", "description": "Start of the search range.", "optional": true },
+            { "name": "end", "type": "int", "description": "End of the search range.", "optional": true }
+          ],
+          "returns": { "type": "int", "description": "The index of the first item whose value is x." },
+          "description": "Return zero-based index in the list of the first item whose value is x. Raises ValueError if there is no such item.",
+          "deprecated": false
+        },
+        {
+          "name": "count",
+          "signature": "list.count(x)",
+          "params": [
+            { "name": "x", "type": "object", "description": "The value to count." }
+          ],
+          "returns": { "type": "int", "description": "The number of times x appears in the list." },
+          "description": "Return the number of times x appears in the list.",
+          "deprecated": false
+        },
+        {
+          "name": "sort",
+          "signature": "list.sort([cmp[, key[, reverse]]])",
+          "params": [
+            { "name": "cmp", "type": "callable", "description": "A comparison function (Python 2.7 only).", "optional": true },
+            { "name": "key", "type": "callable", "description": "A function of one argument used to extract a comparison key.", "optional": true },
+            { "name": "reverse", "type": "bool", "description": "If True, sort in descending order.", "optional": true, "default": "False" }
+          ],
+          "returns": { "type": "None", "description": "Modifies the list in place." },
+          "description": "Sort the items of the list in place. The arguments can be used to customize the sort.",
+          "deprecated": false
+        },
+        {
+          "name": "reverse",
+          "signature": "list.reverse()",
+          "params": [],
+          "returns": { "type": "None", "description": "Modifies the list in place." },
+          "description": "Reverse the elements of the list in place.",
+          "deprecated": false
+        }
+      ],
+      "fields": []
+    },
+    {
+      "name": "dict",
+      "description": "The built-in mapping type. Dictionaries map hashable keys to arbitrary values. Dictionaries are mutable and can be created with curly braces {} or the dict() constructor.",
+      "constructors": [
+        {
+          "name": "dict",
+          "signature": "dict(**kwargs) or dict(mapping, **kwargs) or dict(iterable, **kwargs)",
+          "params": [
+            { "name": "mapping_or_iterable", "type": "mapping or iterable", "description": "A mapping or iterable of key-value pairs.", "optional": true },
+            { "name": "**kwargs", "type": "keyword arguments", "description": "Keyword arguments become key-value pairs.", "optional": true }
+          ],
+          "returns": { "type": "dict", "description": "A new dictionary." },
+          "description": "Create a new dictionary."
+        }
+      ],
+      "methods": [
+        {
+          "name": "keys",
+          "signature": "dict.keys()",
+          "params": [],
+          "returns": { "type": "list", "description": "A list of all the keys in the dictionary." },
+          "description": "Return a list of all the keys in the dictionary.",
+          "deprecated": false
+        },
+        {
+          "name": "values",
+          "signature": "dict.values()",
+          "params": [],
+          "returns": { "type": "list", "description": "A list of all the values in the dictionary." },
+          "description": "Return a list of all the values in the dictionary.",
+          "deprecated": false
+        },
+        {
+          "name": "items",
+          "signature": "dict.items()",
+          "params": [],
+          "returns": { "type": "list", "description": "A list of (key, value) tuples." },
+          "description": "Return a list of the dictionary's (key, value) pairs.",
+          "deprecated": false
+        },
+        {
+          "name": "iterkeys",
+          "signature": "dict.iterkeys()",
+          "params": [],
+          "returns": { "type": "iterator", "description": "An iterator over the keys." },
+          "description": "Return an iterator over the dictionary's keys. Python 2.7 only; use dict.keys() in Python 3.",
+          "deprecated": false
+        },
+        {
+          "name": "itervalues",
+          "signature": "dict.itervalues()",
+          "params": [],
+          "returns": { "type": "iterator", "description": "An iterator over the values." },
+          "description": "Return an iterator over the dictionary's values. Python 2.7 only; use dict.values() in Python 3.",
+          "deprecated": false
+        },
+        {
+          "name": "iteritems",
+          "signature": "dict.iteritems()",
+          "params": [],
+          "returns": { "type": "iterator", "description": "An iterator over (key, value) pairs." },
+          "description": "Return an iterator over the dictionary's (key, value) pairs. Python 2.7 only; use dict.items() in Python 3.",
+          "deprecated": false
+        },
+        {
+          "name": "get",
+          "signature": "dict.get(key[, default])",
+          "params": [
+            { "name": "key", "type": "object", "description": "The key to look up." },
+            { "name": "default", "type": "object", "description": "Value to return if key is not found. Defaults to None.", "optional": true, "default": "None" }
+          ],
+          "returns": { "type": "object", "description": "The value for key if key is in the dictionary, else default." },
+          "description": "Return the value for key if key is in the dictionary, else default. If default is not given, it defaults to None.",
+          "deprecated": false
+        },
+        {
+          "name": "setdefault",
+          "signature": "dict.setdefault(key[, default])",
+          "params": [
+            { "name": "key", "type": "object", "description": "The key to look up." },
+            { "name": "default", "type": "object", "description": "Value to set and return if key is not found. Defaults to None.", "optional": true, "default": "None" }
+          ],
+          "returns": { "type": "object", "description": "The value for key if key is in the dictionary; otherwise, insert key with a value of default and return default." },
+          "description": "If key is in the dictionary, return its value. If not, insert key with a value of default and return default.",
+          "deprecated": false
+        },
+        {
+          "name": "update",
+          "signature": "dict.update([other], **kwargs)",
+          "params": [
+            { "name": "other", "type": "dict or iterable", "description": "A dict or iterable of key-value pairs to update from.", "optional": true },
+            { "name": "**kwargs", "type": "keyword arguments", "description": "Additional key-value pairs.", "optional": true }
+          ],
+          "returns": { "type": "None", "description": "Modifies the dictionary in place." },
+          "description": "Update the dictionary with the key/value pairs from other, overwriting existing keys.",
+          "deprecated": false
+        },
+        {
+          "name": "pop",
+          "signature": "dict.pop(key[, default])",
+          "params": [
+            { "name": "key", "type": "object", "description": "The key to remove." },
+            { "name": "default", "type": "object", "description": "Value to return if key is not found. If not given and key is not found, KeyError is raised.", "optional": true }
+          ],
+          "returns": { "type": "object", "description": "The value for key if key was in the dictionary, else default." },
+          "description": "If key is in the dictionary, remove it and return its value, else return default. If default is not given and key is not in the dictionary, a KeyError is raised.",
+          "deprecated": false
+        },
+        {
+          "name": "popitem",
+          "signature": "dict.popitem()",
+          "params": [],
+          "returns": { "type": "tuple", "description": "An arbitrary (key, value) pair." },
+          "description": "Remove and return an arbitrary (key, value) pair from the dictionary. Raises KeyError if the dictionary is empty.",
+          "deprecated": false
+        },
+        {
+          "name": "clear",
+          "signature": "dict.clear()",
+          "params": [],
+          "returns": { "type": "None", "description": "Modifies the dictionary in place." },
+          "description": "Remove all items from the dictionary.",
+          "deprecated": false
+        },
+        {
+          "name": "copy",
+          "signature": "dict.copy()",
+          "params": [],
+          "returns": { "type": "dict", "description": "A shallow copy of the dictionary." },
+          "description": "Return a shallow copy of the dictionary.",
+          "deprecated": false
+        },
+        {
+          "name": "has_key",
+          "signature": "dict.has_key(key)",
+          "params": [
+            { "name": "key", "type": "object", "description": "The key to check for." }
+          ],
+          "returns": { "type": "bool", "description": "True if key is in the dictionary, False otherwise." },
+          "description": "Test for the presence of key in the dictionary. Python 2.7 only; use 'key in dict' instead. Removed in Python 3.",
+          "deprecated": true
+        },
+        {
+          "name": "fromkeys",
+          "signature": "dict.fromkeys(seq[, value])",
+          "params": [
+            { "name": "seq", "type": "iterable", "description": "An iterable of keys." },
+            { "name": "value", "type": "object", "description": "The value for all keys. Defaults to None.", "optional": true, "default": "None" }
+          ],
+          "returns": { "type": "dict", "description": "A new dictionary with keys from seq and values set to value." },
+          "description": "Create a new dictionary with keys from seq and values set to value. This is a class method.",
+          "deprecated": false
+        }
+      ],
+      "fields": []
+    },
+    {
+      "name": "set",
+      "description": "The built-in mutable set type. An unordered collection of distinct hashable objects. Sets support mathematical set operations like union, intersection, difference, and symmetric difference.",
+      "constructors": [
+        {
+          "name": "set",
+          "signature": "set([iterable])",
+          "params": [
+            { "name": "iterable", "type": "iterable", "description": "An iterable of elements.", "optional": true }
+          ],
+          "returns": { "type": "set", "description": "A new set." },
+          "description": "Create a new set, optionally from an iterable."
+        }
+      ],
+      "methods": [
+        {
+          "name": "add",
+          "signature": "set.add(elem)",
+          "params": [
+            { "name": "elem", "type": "object", "description": "The element to add. Must be hashable." }
+          ],
+          "returns": { "type": "None", "description": "Modifies the set in place." },
+          "description": "Add element elem to the set.",
+          "deprecated": false
+        },
+        {
+          "name": "remove",
+          "signature": "set.remove(elem)",
+          "params": [
+            { "name": "elem", "type": "object", "description": "The element to remove." }
+          ],
+          "returns": { "type": "None", "description": "Modifies the set in place." },
+          "description": "Remove element elem from the set. Raises KeyError if elem is not contained in the set.",
+          "deprecated": false
+        },
+        {
+          "name": "discard",
+          "signature": "set.discard(elem)",
+          "params": [
+            { "name": "elem", "type": "object", "description": "The element to remove." }
+          ],
+          "returns": { "type": "None", "description": "Modifies the set in place." },
+          "description": "Remove element elem from the set if it is present. Does not raise an error if elem is not found.",
+          "deprecated": false
+        },
+        {
+          "name": "pop",
+          "signature": "set.pop()",
+          "params": [],
+          "returns": { "type": "object", "description": "An arbitrary element from the set." },
+          "description": "Remove and return an arbitrary element from the set. Raises KeyError if the set is empty.",
+          "deprecated": false
+        },
+        {
+          "name": "clear",
+          "signature": "set.clear()",
+          "params": [],
+          "returns": { "type": "None", "description": "Modifies the set in place." },
+          "description": "Remove all elements from the set.",
+          "deprecated": false
+        },
+        {
+          "name": "copy",
+          "signature": "set.copy()",
+          "params": [],
+          "returns": { "type": "set", "description": "A shallow copy of the set." },
+          "description": "Return a shallow copy of the set.",
+          "deprecated": false
+        },
+        {
+          "name": "union",
+          "signature": "set.union(*others)",
+          "params": [
+            { "name": "*others", "type": "iterable", "description": "Other sets or iterables." }
+          ],
+          "returns": { "type": "set", "description": "A new set with elements from the set and all others." },
+          "description": "Return a new set with elements from the set and all others. Equivalent to set | other | ...",
+          "deprecated": false
+        },
+        {
+          "name": "intersection",
+          "signature": "set.intersection(*others)",
+          "params": [
+            { "name": "*others", "type": "iterable", "description": "Other sets or iterables." }
+          ],
+          "returns": { "type": "set", "description": "A new set with elements common to the set and all others." },
+          "description": "Return a new set with elements common to the set and all others. Equivalent to set & other & ...",
+          "deprecated": false
+        },
+        {
+          "name": "difference",
+          "signature": "set.difference(*others)",
+          "params": [
+            { "name": "*others", "type": "iterable", "description": "Other sets or iterables." }
+          ],
+          "returns": { "type": "set", "description": "A new set with elements in the set that are not in the others." },
+          "description": "Return a new set with elements in the set that are not in the others. Equivalent to set - other - ...",
+          "deprecated": false
+        },
+        {
+          "name": "symmetric_difference",
+          "signature": "set.symmetric_difference(other)",
+          "params": [
+            { "name": "other", "type": "iterable", "description": "Another set or iterable." }
+          ],
+          "returns": { "type": "set", "description": "A new set with elements in either the set or other but not both." },
+          "description": "Return a new set with elements in either the set or other but not both. Equivalent to set ^ other.",
+          "deprecated": false
+        },
+        {
+          "name": "issubset",
+          "signature": "set.issubset(other)",
+          "params": [
+            { "name": "other", "type": "iterable", "description": "Another set or iterable." }
+          ],
+          "returns": { "type": "bool", "description": "True if every element in the set is in other." },
+          "description": "Test whether every element in the set is in other. Equivalent to set <= other.",
+          "deprecated": false
+        },
+        {
+          "name": "issuperset",
+          "signature": "set.issuperset(other)",
+          "params": [
+            { "name": "other", "type": "iterable", "description": "Another set or iterable." }
+          ],
+          "returns": { "type": "bool", "description": "True if every element in other is in the set." },
+          "description": "Test whether every element in other is in the set. Equivalent to set >= other.",
+          "deprecated": false
+        },
+        {
+          "name": "isdisjoint",
+          "signature": "set.isdisjoint(other)",
+          "params": [
+            { "name": "other", "type": "iterable", "description": "Another set or iterable." }
+          ],
+          "returns": { "type": "bool", "description": "True if the set has no elements in common with other." },
+          "description": "Return True if the set has no elements in common with other. Sets are disjoint if and only if their intersection is the empty set.",
+          "deprecated": false
+        },
+        {
+          "name": "update",
+          "signature": "set.update(*others)",
+          "params": [
+            { "name": "*others", "type": "iterable", "description": "Other sets or iterables." }
+          ],
+          "returns": { "type": "None", "description": "Modifies the set in place." },
+          "description": "Update the set, adding elements from all others. Equivalent to set |= other | ...",
+          "deprecated": false
+        },
+        {
+          "name": "intersection_update",
+          "signature": "set.intersection_update(*others)",
+          "params": [
+            { "name": "*others", "type": "iterable", "description": "Other sets or iterables." }
+          ],
+          "returns": { "type": "None", "description": "Modifies the set in place." },
+          "description": "Update the set, keeping only elements found in it and all others. Equivalent to set &= other & ...",
+          "deprecated": false
+        },
+        {
+          "name": "difference_update",
+          "signature": "set.difference_update(*others)",
+          "params": [
+            { "name": "*others", "type": "iterable", "description": "Other sets or iterables." }
+          ],
+          "returns": { "type": "None", "description": "Modifies the set in place." },
+          "description": "Update the set, removing elements found in others. Equivalent to set -= other | ...",
+          "deprecated": false
+        },
+        {
+          "name": "symmetric_difference_update",
+          "signature": "set.symmetric_difference_update(other)",
+          "params": [
+            { "name": "other", "type": "iterable", "description": "Another set or iterable." }
+          ],
+          "returns": { "type": "None", "description": "Modifies the set in place." },
+          "description": "Update the set, keeping only elements found in either set, but not in both. Equivalent to set ^= other.",
+          "deprecated": false
+        }
+      ],
+      "fields": []
+    },
+    {
+      "name": "tuple",
+      "description": "The built-in immutable sequence type. Tuples are immutable sequences, typically used to store collections of heterogeneous data. Tuples can be constructed with tuple() or with parentheses and commas.",
+      "constructors": [
+        {
+          "name": "tuple",
+          "signature": "tuple([iterable])",
+          "params": [
+            { "name": "iterable", "type": "iterable", "description": "An iterable to create the tuple from.", "optional": true }
+          ],
+          "returns": { "type": "tuple", "description": "A new tuple." },
+          "description": "Create a new tuple, optionally from an iterable."
+        }
+      ],
+      "methods": [
+        {
+          "name": "count",
+          "signature": "tuple.count(value)",
+          "params": [
+            { "name": "value", "type": "object", "description": "The value to count." }
+          ],
+          "returns": { "type": "int", "description": "The number of occurrences of value." },
+          "description": "Return the number of times value appears in the tuple.",
+          "deprecated": false
+        },
+        {
+          "name": "index",
+          "signature": "tuple.index(value[, start[, stop]])",
+          "params": [
+            { "name": "value", "type": "object", "description": "The value to search for." },
+            { "name": "start", "type": "int", "description": "Start of the search range.", "optional": true },
+            { "name": "stop", "type": "int", "description": "End of the search range.", "optional": true }
+          ],
+          "returns": { "type": "int", "description": "The index of the first occurrence of value." },
+          "description": "Return the first index of value. Raises ValueError if value is not present.",
+          "deprecated": false
+        }
+      ],
+      "fields": []
+    },
+    {
+      "name": "frozenset",
+      "description": "The built-in immutable set type. A frozenset is an immutable version of set. Since it is immutable and hashable, it can be used as a dictionary key or as an element of another set.",
+      "constructors": [
+        {
+          "name": "frozenset",
+          "signature": "frozenset([iterable])",
+          "params": [
+            { "name": "iterable", "type": "iterable", "description": "An iterable of elements.", "optional": true }
+          ],
+          "returns": { "type": "frozenset", "description": "A new frozenset." },
+          "description": "Create a new frozenset, optionally from an iterable."
+        }
+      ],
+      "methods": [
+        {
+          "name": "copy",
+          "signature": "frozenset.copy()",
+          "params": [],
+          "returns": { "type": "frozenset", "description": "A shallow copy of the frozenset." },
+          "description": "Return a shallow copy of the frozenset.",
+          "deprecated": false
+        },
+        {
+          "name": "union",
+          "signature": "frozenset.union(*others)",
+          "params": [
+            { "name": "*others", "type": "iterable", "description": "Other sets or iterables." }
+          ],
+          "returns": { "type": "frozenset", "description": "A new frozenset with elements from the frozenset and all others." },
+          "description": "Return a new frozenset with elements from the frozenset and all others.",
+          "deprecated": false
+        },
+        {
+          "name": "intersection",
+          "signature": "frozenset.intersection(*others)",
+          "params": [
+            { "name": "*others", "type": "iterable", "description": "Other sets or iterables." }
+          ],
+          "returns": { "type": "frozenset", "description": "A new frozenset with elements common to the frozenset and all others." },
+          "description": "Return a new frozenset with elements common to the frozenset and all others.",
+          "deprecated": false
+        },
+        {
+          "name": "difference",
+          "signature": "frozenset.difference(*others)",
+          "params": [
+            { "name": "*others", "type": "iterable", "description": "Other sets or iterables." }
+          ],
+          "returns": { "type": "frozenset", "description": "A new frozenset with elements in the frozenset that are not in the others." },
+          "description": "Return a new frozenset with elements in the frozenset that are not in the others.",
+          "deprecated": false
+        },
+        {
+          "name": "symmetric_difference",
+          "signature": "frozenset.symmetric_difference(other)",
+          "params": [
+            { "name": "other", "type": "iterable", "description": "Another set or iterable." }
+          ],
+          "returns": { "type": "frozenset", "description": "A new frozenset with elements in either the frozenset or other but not both." },
+          "description": "Return a new frozenset with elements in either the frozenset or other but not both.",
+          "deprecated": false
+        },
+        {
+          "name": "issubset",
+          "signature": "frozenset.issubset(other)",
+          "params": [
+            { "name": "other", "type": "iterable", "description": "Another set or iterable." }
+          ],
+          "returns": { "type": "bool", "description": "True if every element in the frozenset is in other." },
+          "description": "Test whether every element in the frozenset is in other.",
+          "deprecated": false
+        },
+        {
+          "name": "issuperset",
+          "signature": "frozenset.issuperset(other)",
+          "params": [
+            { "name": "other", "type": "iterable", "description": "Another set or iterable." }
+          ],
+          "returns": { "type": "bool", "description": "True if every element in other is in the frozenset." },
+          "description": "Test whether every element in other is in the frozenset.",
+          "deprecated": false
+        },
+        {
+          "name": "isdisjoint",
+          "signature": "frozenset.isdisjoint(other)",
+          "params": [
+            { "name": "other", "type": "iterable", "description": "Another set or iterable." }
+          ],
+          "returns": { "type": "bool", "description": "True if the frozenset has no elements in common with other." },
+          "description": "Return True if the frozenset has no elements in common with other.",
+          "deprecated": false
+        }
+      ],
+      "fields": []
+    }
+  ],
+  "constants": [
+    {
+      "name": "True",
+      "type": "bool",
+      "description": "The true value of the bool type."
+    },
+    {
+      "name": "False",
+      "type": "bool",
+      "description": "The false value of the bool type."
+    },
+    {
+      "name": "None",
+      "type": "NoneType",
+      "description": "The sole value of the type NoneType. None is frequently used to represent the absence of a value."
+    },
+    {
+      "name": "NotImplemented",
+      "type": "NotImplementedType",
+      "description": "Special value returned by binary special methods (e.g. __eq__(), __lt__()) to indicate that the operation is not implemented with respect to the other type."
+    },
+    {
+      "name": "Ellipsis",
+      "type": "ellipsis",
+      "description": "Special value used mostly in conjunction with extended slicing syntax. Also available as '...'."
+    },
+    {
+      "name": "__debug__",
+      "type": "bool",
+      "description": "True if Python was not started with an -O option."
+    }
+  ],
+  "docs_url": "https://docs.python.org/2.7/library/functions.html"
+}
