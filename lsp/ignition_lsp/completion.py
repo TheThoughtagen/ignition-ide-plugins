@@ -48,6 +48,12 @@ def get_completions(
     symbol_cache: Optional[SymbolCache] = None,
 ) -> CompletionList:
     """Generate completion items based on context."""
+    # Expression completions for virtual expression buffers
+    if "[Ignition:" in document.uri and (
+        "/Expression:" in document.uri or "/Expression]" in document.uri
+    ):
+        return _get_expression_completions(document, position)
+
     # JSON completions for Perspective views
     if document.uri.endswith(".json"):
         from .json_completion import get_json_completions, is_perspective_json
@@ -474,6 +480,44 @@ def _get_class_member_completions(
         )
 
     return items
+
+
+# ── Expression Function Completions ──────────────────────────────────
+
+
+def _get_expression_completions(
+    document: TextDocument,
+    position: CompletionParams.position,
+) -> CompletionList:
+    """Return completions for Ignition expression language functions."""
+    from .expression_functions import EXPRESSION_FUNCTIONS
+
+    context = get_completion_context(document, position)
+    items: List[CompletionItem] = []
+
+    for name, info in EXPRESSION_FUNCTIONS.items():
+        if context and not name.lower().startswith(context.lower()):
+            continue
+        items.append(
+            CompletionItem(
+                label=name,
+                kind=CompletionItemKind.Function,
+                detail=info["signature"],
+                documentation=MarkupContent(
+                    kind=MarkupKind.Markdown,
+                    value=(
+                        f"**{info['signature']}**\n\n"
+                        f"{info['description']}\n\n"
+                        f"*Category: {info['category']}*  \n"
+                        f"*Returns: {info['return_type']}*"
+                    ),
+                ),
+                insert_text=info.get("snippet", name + "($1)$0"),
+                insert_text_format=InsertTextFormat.Snippet,
+            )
+        )
+
+    return CompletionList(is_incomplete=False, items=items)
 
 
 # ── Java Class Completions ───────────────────────────────────────────

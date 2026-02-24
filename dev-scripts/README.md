@@ -4,6 +4,26 @@ Utilities for testing and developing ignition-nvim locally.
 
 ## Scripts
 
+### `diagnose-lsp.lua`
+Comprehensive LSP diagnostics to troubleshoot completion issues.
+
+**Usage:**
+```vim
+:luafile dev-scripts/diagnose-lsp.lua
+```
+
+**What it does:**
+- Checks Neovim version (0.11+ required)
+- Verifies plugin is loaded
+- Checks LSP server availability
+- Inspects current buffer filetype
+- Searches for project.json root marker
+- Lists active LSP clients
+- Attempts to start LSP if not running
+- Shows relevant log file paths
+
+**Use when:** LSP completions aren't working.
+
 ### `load-plugin.lua`
 Manually load the plugin in a running Neovim instance for quick testing.
 

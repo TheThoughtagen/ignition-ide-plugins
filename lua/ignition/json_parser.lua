@@ -14,6 +14,7 @@ M.SCRIPT_KEYS = {
   'onChange',       -- Value change scripts
   'onStartup',      -- Startup scripts
   'onShutdown',     -- Shutdown scripts
+  'expression',     -- Tag expressions and perspective binding expressions
 }
 
 -- Parse buffer to find all script locations
@@ -48,6 +49,8 @@ function M.find_scripts(bufnr)
             -- For eventScript entries, compute tag context (tag name + event name)
             if captured_key == 'eventScript' then
               script_entry.context = M.get_tag_context(lines, line_num)
+            elseif captured_key == 'expression' then
+              script_entry.context = M.get_expression_context(lines, line_num)
             end
 
             table.insert(scripts, script_entry)
@@ -173,6 +176,22 @@ function M.get_tag_context(lines, script_line_num)
   return nil
 end
 
+-- Get expression context for an expression entry
+-- Scans backward from the expression line to find the tag name
+-- Returns a string like "MyTag/Expression" or falls back to nil
+function M.get_expression_context(lines, script_line_num)
+  for i = script_line_num - 1, math.max(1, script_line_num - 15), -1 do
+    local line = lines[i]
+    if line then
+      local name = line:match('"name"%s*:%s*"([^"]*)"')
+      if name then
+        return name .. '/Expression'
+      end
+    end
+  end
+  return nil
+end
+
 -- Get context information for a script
 -- Returns a human-readable description of where the script is
 function M.get_script_context(script_info)
@@ -191,6 +210,7 @@ function M.get_script_context(script_info)
     onChange = 'Change Script',
     onStartup = 'Startup Script',
     onShutdown = 'Shutdown Script',
+    expression = 'Expression',
   }
 
   return contexts[key] or ('Script (' .. key .. ')')

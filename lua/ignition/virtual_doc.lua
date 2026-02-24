@@ -34,8 +34,9 @@ function M.create_virtual_doc(source_bufnr, script_info)
   local virtual_bufnr = vim.api.nvim_create_buf(false, true)
 
   -- Set buffer options
+  local is_expression = script_info.key == 'expression'
   vim.api.nvim_buf_set_option(virtual_bufnr, 'buftype', 'acwrite')
-  vim.api.nvim_buf_set_option(virtual_bufnr, 'filetype', 'python')
+  vim.api.nvim_buf_set_option(virtual_bufnr, 'filetype', is_expression and 'ignition_expr' or 'python')
   vim.api.nvim_buf_set_option(virtual_bufnr, 'swapfile', false)
 
   -- Set the buffer name
@@ -68,6 +69,23 @@ function M.create_virtual_doc(source_bufnr, script_info)
     end,
     desc = 'Clean up virtual document metadata',
   })
+
+  -- Start LSP for this virtual buffer
+  -- Virtual buffers have filetype='python' but may not trigger FileType autocmd
+  -- during creation, so we manually attach the LSP client.
+  -- We need to find the project root from the source file since virtual buffers
+  -- don't have real file paths (they're named like [Ignition:file.json:script:L123])
+  vim.schedule(function()
+    -- Find the Ignition project root from the source file
+    local root_dir = vim.fs.root(source_file, 'project.json')
+
+    if root_dir then
+      local lsp_module = require('ignition.lsp')
+      if lsp_module and lsp_module.start_lsp_for_buffer then
+        lsp_module.start_lsp_for_buffer(virtual_bufnr, root_dir)
+      end
+    end
+  end)
 
   return virtual_bufnr
 end

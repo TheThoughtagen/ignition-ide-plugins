@@ -134,6 +134,43 @@ def _get_jython_diagnostics(content: str, uri: str) -> List[Diagnostic]:
 
 
 # ---------------------------------------------------------------------------
+# Expression diagnostics (virtual expression buffers)
+# ---------------------------------------------------------------------------
+
+
+_EXPRESSION_LINT_AVAILABLE = False
+if _LINT_AVAILABLE:
+    try:
+        from ignition_lint.validators.expression import ExpressionValidator
+
+        _EXPRESSION_LINT_AVAILABLE = True
+    except ImportError as e:
+        logger.warning(f"Expression validator not available: {e}")
+
+
+def _get_expression_diagnostics(content: str, uri: str) -> List[Diagnostic]:
+    """Run ExpressionValidator on expression content."""
+    if not _EXPRESSION_LINT_AVAILABLE:
+        return []
+
+    diagnostics = []
+    try:
+        validator = ExpressionValidator()
+        issues = validator.validate_expression(
+            content,
+            file_path=uri,
+            component_path="",
+            component_type="expression",
+        )
+        for issue in issues:
+            diagnostics.append(_issue_to_diagnostic(issue, content))
+    except Exception as e:
+        logger.error(f"Error in expression diagnostics: {e}", exc_info=True)
+
+    return diagnostics
+
+
+# ---------------------------------------------------------------------------
 # Perspective view diagnostics (.json files)
 # ---------------------------------------------------------------------------
 
@@ -334,8 +371,11 @@ def get_diagnostics(document: TextDocument) -> List[Diagnostic]:
     uri = document.uri
     content = document.source
 
-    # Virtual buffers ([Ignition: prefix) → Jython validation
+    # Virtual buffers ([Ignition: prefix)
     if "[Ignition:" in uri:
+        if "/Expression:" in uri or "/Expression]" in uri:
+            logger.debug(f"Running expression diagnostics on virtual buffer: {uri}")
+            return _get_expression_diagnostics(content, uri)
         logger.debug(f"Running Jython diagnostics on virtual buffer: {uri}")
         return _get_jython_diagnostics(content, uri)
 

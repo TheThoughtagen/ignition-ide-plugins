@@ -84,6 +84,26 @@ end
 -- Add undo command for keymaps
 vim.b.undo_ftplugin = vim.b.undo_ftplugin .. '|mapclear <buffer>'
 
+-- Show decode hints on lines with encoded scripts/expressions
+vim.api.nvim_create_autocmd({ 'BufEnter', 'BufWritePost' }, {
+  buffer = 0,
+  callback = function()
+    local ns = vim.api.nvim_create_namespace('ignition_decode_hints')
+    vim.api.nvim_buf_clear_namespace(0, ns, 0, -1)
+    local lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
+    for i, line in ipairs(lines) do
+      if line:match('"expression"%s*:%s*"') or line:match('"script"%s*:%s*"') or line:match('"eventScript"%s*:%s*"') then
+        if line:find('\\n', 1, true) or line:find('\\u00', 1, true) or line:find('\\t', 1, true) then
+          vim.api.nvim_buf_set_extmark(0, ns, i - 1, 0, {
+            virt_text = { { '  <localleader>id to decode', 'Comment' } },
+            virt_text_pos = 'eol',
+          })
+        end
+      end
+    end
+  end,
+})
+
 -- Check if auto-decode is enabled
 local ignition_ok, ignition = pcall(require, 'ignition')
 if ignition_ok and ignition.config.decoder.auto_decode then
