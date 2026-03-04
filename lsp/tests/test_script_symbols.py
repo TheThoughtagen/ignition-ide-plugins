@@ -53,7 +53,7 @@ class TestExtractSimpleFunction:
         symbols = extract_symbols(path)
         f = symbols.functions[0]
         assert f.docstring == "Process incoming data with optional timeout."
-        assert f.params == ["data", "timeout"]
+        assert f.params == ["data", "timeout=..."]
 
     def test_function_with_defaults(self, tmp_path):
         path = _write_py(tmp_path, """\
@@ -62,7 +62,7 @@ class TestExtractSimpleFunction:
         """)
         symbols = extract_symbols(path)
         f = symbols.functions[0]
-        assert f.params == ["name", "value", "enabled"]
+        assert f.params == ["name", "value=...", "enabled=..."]
 
     def test_function_with_decorators(self, tmp_path):
         path = _write_py(tmp_path, """\

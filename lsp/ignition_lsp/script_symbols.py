@@ -35,8 +35,12 @@ class ScriptFunction:
         """Generate an LSP snippet with ${1:param} placeholders."""
         if not self.params:
             return f"{self.name}()$0"
+        # Only include required params (those without =... defaults) in snippets
+        required = [p for p in self.params if "=" not in p]
+        if not required:
+            return f"{self.name}()$0"
         parts = []
-        for i, param in enumerate(self.params, 1):
+        for i, param in enumerate(required, 1):
             parts.append(f"${{{i}:{param}}}")
         return f"{self.name}({', '.join(parts)})$0"
 
@@ -167,8 +171,18 @@ def _node_to_str(node: ast.AST) -> str:
 def _extract_function(node: ast.FunctionDef) -> ScriptFunction:
     """Extract a ScriptFunction from an ast.FunctionDef node."""
     # Parameter names (skip self/cls for methods)
-    all_params = [arg.arg for arg in node.args.args]
-    is_method = len(all_params) > 0 and all_params[0] in ("self", "cls")
+    # Mark params with defaults using "= ..." suffix for stub generation
+    all_param_names = [arg.arg for arg in node.args.args]
+    num_defaults = len(node.args.defaults)
+    num_params = len(all_param_names)
+    all_params = []
+    for i, name in enumerate(all_param_names):
+        # defaults are right-aligned: last num_defaults params have defaults
+        if i >= num_params - num_defaults:
+            all_params.append(f"{name}=...")
+        else:
+            all_params.append(name)
+    is_method = len(all_param_names) > 0 and all_param_names[0] in ("self", "cls")
     params = all_params[1:] if is_method else all_params
 
     # Build signature

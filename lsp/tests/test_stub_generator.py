@@ -1,5 +1,6 @@
 """Tests for stub_generator.py — .pyi stub generation for project scripts."""
 
+import json
 import os
 import textwrap
 
@@ -283,7 +284,7 @@ class TestStubContent:
         generate_project_stubs(index, cache)
 
         stub = (root / STUBS_DIR_NAME / "project" / "typed.pyi").read_text()
-        assert "def process(data, count) -> bool: ..." in stub
+        assert "def process(data, count=...) -> bool: ..." in stub
 
     def test_class_with_bases(self, tmp_path):
         root, index = _make_project(tmp_path, {
@@ -330,3 +331,75 @@ class TestStubContent:
         assert not (root / STUBS_DIR_NAME / "project" / "broken.pyi").exists()
         # Good module should
         assert (root / STUBS_DIR_NAME / "project" / "good.pyi").exists()
+
+
+# ── Pyrightconfig Tests ─────────────────────────────────────────────
+
+
+class TestPyrightConfig:
+    def test_creates_pyrightconfig_if_missing(self, tmp_path):
+        root, index = _make_project(tmp_path, {
+            "project.utils": "def f(): pass\n",
+        })
+        cache = SymbolCache()
+        generate_project_stubs(index, cache)
+
+        config_path = root / "pyrightconfig.json"
+        assert config_path.exists()
+        config = json.loads(config_path.read_text())
+        assert ".ignition-stubs" in config["extraPaths"]
+        assert config["reportMissingImports"] == "warning"
+        assert config["reportMissingModuleSource"] == "none"
+
+    def test_merges_into_existing_pyrightconfig(self, tmp_path):
+        root, index = _make_project(tmp_path, {
+            "project.utils": "def f(): pass\n",
+        })
+        # Pre-existing config with user settings
+        config_path = root / "pyrightconfig.json"
+        config_path.write_text(json.dumps({
+            "pythonVersion": "3.9",
+            "typeCheckingMode": "basic",
+        }, indent=2))
+
+        cache = SymbolCache()
+        generate_project_stubs(index, cache)
+
+        config = json.loads(config_path.read_text())
+        assert config["pythonVersion"] == "3.9"
+        assert config["typeCheckingMode"] == "basic"
+        assert ".ignition-stubs" in config["extraPaths"]
+        assert config["reportMissingImports"] == "warning"
+        assert config["reportMissingModuleSource"] == "none"
+
+    def test_does_not_duplicate_extraPaths_entry(self, tmp_path):
+        root, index = _make_project(tmp_path, {
+            "project.utils": "def f(): pass\n",
+        })
+        config_path = root / "pyrightconfig.json"
+        config_path.write_text(json.dumps({
+            "extraPaths": [".ignition-stubs"],
+        }, indent=2))
+
+        cache = SymbolCache()
+        generate_project_stubs(index, cache)
+
+        config = json.loads(config_path.read_text())
+        assert config["extraPaths"].count(".ignition-stubs") == 1
+
+    def test_preserves_existing_extraPaths(self, tmp_path):
+        root, index = _make_project(tmp_path, {
+            "project.utils": "def f(): pass\n",
+        })
+        config_path = root / "pyrightconfig.json"
+        config_path.write_text(json.dumps({
+            "extraPaths": ["./vendor", "./typings"],
+        }, indent=2))
+
+        cache = SymbolCache()
+        generate_project_stubs(index, cache)
+
+        config = json.loads(config_path.read_text())
+        assert "./vendor" in config["extraPaths"]
+        assert "./typings" in config["extraPaths"]
+        assert ".ignition-stubs" in config["extraPaths"]

@@ -8,6 +8,7 @@ Reuses the SymbolCache already populated during project scanning — stub
 generation is just string formatting on top of already-extracted AST data.
 """
 
+import json
 import logging
 import os
 from pathlib import Path
@@ -73,6 +74,7 @@ def generate_project_stubs(
         return None
 
     _update_gitignore(project_index.root_path)
+    _update_pyrightconfig(project_index.root_path)
 
     logger.info(
         f"Generated {len(written_paths)} stub files in {stubs_dir}"
@@ -201,3 +203,30 @@ def _update_gitignore(root_path: str) -> None:
         gitignore_path.write_text(content, encoding="utf-8")
     else:
         gitignore_path.write_text(f"{entry}\n", encoding="utf-8")
+
+
+def _update_pyrightconfig(root_path: str) -> None:
+    """Create or update pyrightconfig.json so Pyright can find .ignition-stubs/."""
+    config_path = Path(root_path) / "pyrightconfig.json"
+    stubs_entry = f".{STUBS_DIR_NAME.lstrip('.')}"  # ".ignition-stubs"
+
+    if config_path.exists():
+        try:
+            config = json.loads(config_path.read_text(encoding="utf-8"))
+        except (json.JSONDecodeError, OSError):
+            logger.warning(f"Could not parse {config_path}, skipping pyrightconfig update")
+            return
+    else:
+        config = {}
+
+    extra_paths = config.get("extraPaths", [])
+    if stubs_entry not in extra_paths:
+        extra_paths.append(stubs_entry)
+        config["extraPaths"] = extra_paths
+
+    config.setdefault("reportMissingImports", "warning")
+    config.setdefault("reportMissingModuleSource", "none")
+
+    config_path.write_text(
+        json.dumps(config, indent=2) + "\n", encoding="utf-8"
+    )
