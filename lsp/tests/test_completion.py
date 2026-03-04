@@ -441,7 +441,7 @@ class TestLeafModuleCompletions:
         assert len(items) == 1
         item = items[0]
         assert item.kind == CompletionItemKind.Function
-        assert "def process(data, timeout)" in item.detail
+        assert "def process(data, timeout=...)" in item.detail
 
     def test_partial_filtering(self, tmp_path, symbol_cache):
         path = _write_py(tmp_path, '''\
