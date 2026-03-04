@@ -13,8 +13,10 @@ function M.create_virtual_doc(source_bufnr, script_info)
   -- Set buffer name to indicate it's a virtual document
   local source_file = vim.api.nvim_buf_get_name(source_bufnr)
   local source_filename = vim.fn.fnamemodify(source_file, ':t')
-  -- Use context if available for a more descriptive buffer name
-  local display_key = script_info.context or script_info.key
+  -- Use context if available for a more descriptive buffer name.
+  -- Replace '/' with '>' to prevent Neovim from resolving the name as a
+  -- filesystem path (e.g., "MyTag/Expression" would be treated as a subdir).
+  local display_key = (script_info.context or script_info.key):gsub('/', '>')
   local virtual_name = string.format('[Ignition:%s:%s:L%d]', source_filename, display_key, script_info.line)
 
   -- Check if a virtual doc with this identity already exists

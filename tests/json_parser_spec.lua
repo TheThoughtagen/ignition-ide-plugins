@@ -158,6 +158,52 @@ describe('replace_script_in_line', function()
   end)
 end)
 
+describe('expression extraction', function()
+  it('expression key in SCRIPT_KEYS', function()
+    local keys = {}
+    for _, k in ipairs(json_parser.SCRIPT_KEYS) do
+      keys[k] = true
+    end
+    assert.is_true(keys['expression'])
+  end)
+
+  it('extracts simple expression without encoded patterns', function()
+    local line = '    "expression": "{[default]Level} * 100",'
+    local result = json_parser.extract_script_from_line(line, 'expression')
+    eq('{[default]Level} * 100', result)
+  end)
+
+  it('extracts expression with unicode escapes', function()
+    local line = '    "expression": "if({Tag}, \\u0027On\\u0027, \\u0027Off\\u0027)",'
+    local result = json_parser.extract_script_from_line(line, 'expression')
+    eq('if({Tag}, \\u0027On\\u0027, \\u0027Off\\u0027)', result)
+  end)
+end)
+
+describe('get_expression_context', function()
+  it('finds tag name above expression line', function()
+    local lines = {
+      '  {',
+      '    "name": "CalcTag",',
+      '    "tagType": "ExpressionTag",',
+      '    "expression": "{[default]Level} * 2"',
+      '  }',
+    }
+    local result = json_parser.get_expression_context(lines, 4)
+    eq('CalcTag/Expression', result)
+  end)
+
+  it('returns nil when no name found', function()
+    local lines = {
+      '  {',
+      '    "expression": "{[default]Level} * 2"',
+      '  }',
+    }
+    local result = json_parser.get_expression_context(lines, 2)
+    assert.is_nil(result)
+  end)
+end)
+
 describe('get_script_context', function()
   it('returns Script for script key', function()
     eq('Script', json_parser.get_script_context({ key = 'script' }))

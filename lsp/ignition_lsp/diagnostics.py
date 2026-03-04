@@ -96,6 +96,13 @@ def _issue_to_diagnostic(issue: "LintIssue", content: str) -> Diagnostic:
     col_end = line_length
     if issue.column is not None and issue.column > 0:
         col_start = issue.column - 1  # 0-indexed
+        # Narrow the range so the diagnostic doesn't span to end of line.
+        # This keeps virtual text visible on long single-line expressions.
+        end_col = issue.metadata.get("end_column") if issue.metadata else None
+        if end_col is not None:
+            col_end = int(end_col)
+        else:
+            col_end = min(col_start + 20, line_length)
 
     message = issue.message
     if issue.suggestion:
@@ -160,6 +167,7 @@ def _get_expression_diagnostics(content: str, uri: str) -> List[Diagnostic]:
         validator = ExpressionValidator()
         issues = validator.validate_expression(
             content,
+            context="",
             file_path=uri,
             component_path="",
             component_type="expression",
@@ -271,10 +279,16 @@ def _walk_tag_scripts(
     uri: str,
     tag_name: str = "",
 ) -> None:
-    """Recursively walk a tag JSON structure finding eventScript entries."""
+    """Recursively walk a tag JSON structure finding eventScript and expression entries."""
     if isinstance(node, dict):
         # Track tag name for context
         current_name = node.get("name", tag_name)
+
+        # NOTE: Expression fields (expression tags, derived tags) are NOT
+        # validated inline in the JSON — expressions are typically single-line
+        # and inline diagnostics just highlight the whole line red with no
+        # useful context. Expression diagnostics run in the virtual buffer
+        # instead, where the user can see and interact with the content.
 
         # Check for eventScripts block
         event_scripts = node.get("eventScripts")
