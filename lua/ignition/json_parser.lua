@@ -36,8 +36,10 @@ function M.find_scripts(bufnr)
         local script_content = M.extract_json_string_value(line_text, key_end + 1)
 
         if script_content and script_content ~= '' then
-          -- Check if this looks like an encoded script
-          if encoding.is_encoded_script(script_content) then
+          -- Expressions are always valid content (they may be short single-line
+          -- strings without encoded patterns like \n or \t). Scripts require
+          -- encoded pattern markers to distinguish them from plain string values.
+          if captured_key == 'expression' or encoding.is_encoded_script(script_content) then
             local script_entry = {
               key = captured_key,
               line = line_num,
