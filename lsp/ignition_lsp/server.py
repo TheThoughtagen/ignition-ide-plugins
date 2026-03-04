@@ -116,6 +116,17 @@ class IgnitionLanguageServer(LanguageServer):
                 logger.info(
                     f"Project index built: {self.project_index.script_count} scripts"
                 )
+                # Generate .pyi stubs for external type checkers
+                if self.symbol_cache is not None:
+                    try:
+                        from ignition_lsp.stub_generator import generate_project_stubs
+                        stubs_dir = generate_project_stubs(
+                            self.project_index, self.symbol_cache
+                        )
+                        if stubs_dir:
+                            logger.info(f"Generated stubs at {stubs_dir}")
+                    except Exception as e:
+                        logger.error(f"Stub generation failed: {e}", exc_info=True)
             else:
                 logger.debug(f"Not an Ignition project: {root_path}")
         except Exception as e:
