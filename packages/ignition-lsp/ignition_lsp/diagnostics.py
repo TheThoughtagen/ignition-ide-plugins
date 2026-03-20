@@ -125,7 +125,9 @@ def _issue_to_diagnostic(issue: "LintIssue", content: str) -> Diagnostic:
 # ---------------------------------------------------------------------------
 
 
-def _get_jython_diagnostics(content: str, uri: str) -> List[Diagnostic]:
+def _get_jython_diagnostics(
+    content: str, uri: str, standalone: bool = False
+) -> List[Diagnostic]:
     """Run JythonValidator on script content."""
     if not _LINT_AVAILABLE:
         return []
@@ -133,7 +135,7 @@ def _get_jython_diagnostics(content: str, uri: str) -> List[Diagnostic]:
     diagnostics = []
     try:
         validator = JythonValidator()
-        issues = validator.validate_script(content, context=uri)
+        issues = validator.validate_script(content, context=uri, standalone=standalone)
         for issue in issues:
             diagnostics.append(_issue_to_diagnostic(issue, content))
     except Exception as e:
@@ -387,13 +389,13 @@ def get_diagnostics(document: TextDocument) -> List[Diagnostic]:
     uri = document.uri
     content = document.source
 
-    # Virtual buffers ([Ignition: prefix)
+    # Virtual buffers ([Ignition: prefix or ignition-script: scheme)
     if is_virtual_buffer(uri):
         if is_expression_buffer(uri):
             logger.debug(f"Running expression diagnostics on virtual buffer: {uri}")
             return _get_expression_diagnostics(content, uri)
         logger.debug(f"Running Jython diagnostics on virtual buffer: {uri}")
-        return _get_jython_diagnostics(content, uri)
+        return _get_jython_diagnostics(content, uri, standalone=True)
 
     # JSON files → check syntax first, then if Perspective view
     if uri.endswith(".json"):

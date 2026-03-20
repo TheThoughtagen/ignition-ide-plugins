@@ -216,7 +216,7 @@ class IgnitionLanguageServer(LanguageServer):
                 pass
 
 
-server = IgnitionLanguageServer("ignition-lsp", "v0.1.0")
+server = IgnitionLanguageServer("ignition-lsp", "v0.2.0")
 
 # Initialize API loaders and symbol cache on server creation
 server.initialize_api_loader()
@@ -403,11 +403,146 @@ def workspace_symbol(
         return None
 
 
+# ── Custom Ignition Methods ──────────────────────────────────────────
+
+
+def _param(params: object, key: str, default: object = "") -> object:
+    """Extract a parameter from pygls Object or plain dict.
+
+    pygls 2.0 wraps custom method params in an attrs-based Object class,
+    not a plain dict. This helper handles both for testability.
+    """
+    if isinstance(params, dict):
+        return params.get(key, default)
+    return getattr(params, key, default)
+
+
+@server.feature("ignition/findScripts")
+def find_scripts_handler(ls: IgnitionLanguageServer, params: object) -> list:
+    """Find all embedded scripts in a JSON resource file."""
+    uri = str(_param(params, "uri", ""))
+    logger.info(f"ignition/findScripts: {uri}")
+
+    try:
+        from ignition_lsp.json_scanner import find_scripts
+
+        file_path = unquote(urlparse(uri).path)
+        scripts = find_scripts(file_path)
+        return [
+            {
+                "key": s.key,
+                "line": s.line,
+                "content": s.content,
+                "context": s.context,
+                "decodedPreview": s.decoded_preview,
+            }
+            for s in scripts
+        ]
+    except Exception as e:
+        logger.error(f"Error finding scripts: {e}", exc_info=True)
+        return []
+
+
+@server.feature("ignition/decodeScript")
+def decode_script_handler(ls: IgnitionLanguageServer, params: object) -> dict:
+    """Decode an Ignition-encoded script string.
+
+    Returns dedented content and the indent prefix that was stripped,
+    so the editor can re-add it on save.
+    """
+    encoded = str(_param(params, "encoded", ""))
+    logger.info(f"ignition/decodeScript: {len(encoded)} chars")
+
+    try:
+        from ignition_lsp.encoding import decode, dedent
+
+        decoded = decode(encoded)
+        text, indent = dedent(decoded)
+        return {"decoded": text, "indent": indent}
+    except Exception as e:
+        logger.error(f"Error decoding script: {e}", exc_info=True)
+        return {"decoded": "", "indent": ""}
+
+
+@server.feature("ignition/encodeScript")
+def encode_script_handler(ls: IgnitionLanguageServer, params: object) -> dict:
+    """Encode a Python script for storage in Ignition JSON."""
+    decoded = str(_param(params, "decoded", ""))
+    logger.info(f"ignition/encodeScript: {len(decoded)} chars")
+
+    try:
+        from ignition_lsp.encoding import encode
+
+        return {"encoded": encode(decoded)}
+    except Exception as e:
+        logger.error(f"Error encoding script: {e}", exc_info=True)
+        return {"encoded": ""}
+
+
+@server.feature("ignition/saveScript")
+def save_script_handler(ls: IgnitionLanguageServer, params: object) -> dict:
+    """Save a decoded script back into its source JSON file.
+
+    Encodes the content and writes it into the correct position in the
+    source JSON file.
+    """
+    uri = str(_param(params, "uri", ""))
+    line = int(_param(params, "line", 0))
+    key = str(_param(params, "key", ""))
+    decoded_content = str(_param(params, "decodedContent", ""))
+    indent = str(_param(params, "indent", ""))
+    logger.info(f"ignition/saveScript: {uri} line={line} key={key} indent={repr(indent)}")
+
+    try:
+        from ignition_lsp.encoding import encode, reindent
+        from ignition_lsp.json_scanner import replace_script_in_line
+
+        file_path = unquote(urlparse(uri).path)
+        path = Path(file_path)
+
+        if not path.is_file():
+            return {"success": False, "error": f"File not found: {file_path}"}
+
+        lines = path.read_text(encoding="utf-8").splitlines(True)
+        line_idx = line - 1  # Convert 1-based to 0-based
+
+        if line_idx < 0 or line_idx >= len(lines):
+            return {"success": False, "error": f"Line {line} out of range"}
+
+        # Re-indent before encoding (reverses the dedent from decodeScript)
+        full_content = reindent(decoded_content, indent) if indent else decoded_content
+        encoded = encode(full_content)
+        # splitlines(True) preserves the line ending; strip it for replacement
+        original_line = lines[line_idx]
+        trailing = ""
+        if original_line.endswith("\n"):
+            trailing = "\n"
+            original_line = original_line[:-1]
+        if original_line.endswith("\r"):
+            trailing = "\r" + trailing
+            original_line = original_line[:-1]
+
+        new_line = replace_script_in_line(original_line, key, encoded)
+
+        if new_line == original_line:
+            return {"success": False, "error": f"Key '{key}' not found on line {line}"}
+
+        lines[line_idx] = new_line + trailing
+        path.write_text("".join(lines), encoding="utf-8")
+
+        logger.info(f"Saved script to {file_path} line {line}")
+        return {"success": True}
+
+    except Exception as e:
+        logger.error(f"Error saving script: {e}", exc_info=True)
+        return {"success": False, "error": str(e)}
+
+
 def main():
     """Start the Ignition LSP server."""
     logger.info("Starting Ignition LSP Server...")
     logger.info(f"Python version: {sys.version}")
-    logger.info(f"Server version: v0.1.0")
+    logger.info(f"Server version: v0.2.0")
 
     try:
         # Start the server using stdio

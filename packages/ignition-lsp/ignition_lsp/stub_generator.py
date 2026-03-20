@@ -205,10 +205,21 @@ def _update_gitignore(root_path: str) -> None:
         gitignore_path.write_text(f"{entry}\n", encoding="utf-8")
 
 
+def get_system_stubs_path() -> str:
+    """Return the absolute path to the shipped system.* stubs directory."""
+    return str(Path(__file__).parent / "stubs")
+
+
 def _update_pyrightconfig(root_path: str) -> None:
-    """Create or update pyrightconfig.json so Pyright can find .ignition-stubs/."""
+    """Create or update pyrightconfig.json so Pyright can find stubs.
+
+    Adds two extraPaths entries:
+    - .ignition-stubs/ for project-specific stubs (generated per project)
+    - The shipped ignition_lsp/stubs/ for system.* API stubs
+    """
     config_path = Path(root_path) / "pyrightconfig.json"
     stubs_entry = f".{STUBS_DIR_NAME.lstrip('.')}"  # ".ignition-stubs"
+    system_stubs = get_system_stubs_path()
 
     if config_path.exists():
         try:
@@ -220,12 +231,25 @@ def _update_pyrightconfig(root_path: str) -> None:
         config = {}
 
     extra_paths = config.get("extraPaths", [])
+    changed = False
+
     if stubs_entry not in extra_paths:
         extra_paths.append(stubs_entry)
+        changed = True
+
+    if system_stubs not in extra_paths:
+        extra_paths.append(system_stubs)
+        changed = True
+
+    if changed:
         config["extraPaths"] = extra_paths
 
     config.setdefault("reportMissingImports", "warning")
     config.setdefault("reportMissingModuleSource", "none")
+    # Ignition injects many runtime globals (system, shared, project, self,
+    # event, currentValue, previousValue, newValue, tagPath, etc.) that
+    # Pyright cannot resolve statically. Suppress to avoid false positives.
+    config.setdefault("reportUndefinedVariable", "none")
 
     config_path.write_text(
         json.dumps(config, indent=2) + "\n", encoding="utf-8"

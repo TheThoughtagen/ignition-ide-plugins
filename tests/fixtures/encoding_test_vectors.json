@@ -1,0 +1,177 @@
+{
+  "_comment": "Shared test vectors for Ignition Flint encoding. Consumed by both Lua and Python test suites. If either diverges, CI fails.",
+  "standard_escapes": [
+    {
+      "name": "backslash",
+      "decoded": "path\\to\\file",
+      "encoded": "path\\\\to\\\\file"
+    },
+    {
+      "name": "double_quote",
+      "decoded": "print(\"hello\")",
+      "encoded": "print(\\\"hello\\\")"
+    },
+    {
+      "name": "tab",
+      "decoded": "if True:\n\treturn",
+      "encoded": "if True:\\n\\treturn"
+    },
+    {
+      "name": "newline",
+      "decoded": "line1\nline2",
+      "encoded": "line1\\nline2"
+    },
+    {
+      "name": "carriage_return",
+      "decoded": "line1\r\nline2",
+      "encoded": "line1\\r\\nline2"
+    },
+    {
+      "name": "backspace",
+      "decoded": "ab\bc",
+      "encoded": "ab\\bc"
+    },
+    {
+      "name": "form_feed",
+      "decoded": "page1\fpage2",
+      "encoded": "page1\\fpage2"
+    }
+  ],
+  "unicode_escapes": [
+    {
+      "name": "less_than",
+      "decoded": "x < 10",
+      "encoded": "x \\u003c 10"
+    },
+    {
+      "name": "greater_than",
+      "decoded": "x > 0",
+      "encoded": "x \\u003e 0"
+    },
+    {
+      "name": "ampersand",
+      "decoded": "a & b",
+      "encoded": "a \\u0026 b"
+    },
+    {
+      "name": "equals",
+      "decoded": "x = 5",
+      "encoded": "x \\u003d 5"
+    },
+    {
+      "name": "single_quote",
+      "decoded": "it's",
+      "encoded": "it\\u0027s"
+    }
+  ],
+  "round_trip": [
+    {
+      "name": "simple_script",
+      "text": "print(\"Hello\")\nx = 5\nif x < 10:\n\treturn True"
+    },
+    {
+      "name": "complex_script",
+      "text": "logger = system.util.getLogger(\"Test\")\nlogger.info(\"Value: \" + str(x))\nif x < 10 & x > 0:\n    return True\nelse:\n    return False"
+    },
+    {
+      "name": "all_unicode_chars",
+      "text": "if x < 10 & x > 0 & x = 5 & name = 'test':\n    html = '<b>bold</b>'"
+    },
+    {
+      "name": "backslash_in_string",
+      "text": "path = \"C:\\\\Users\\\\test\"\nprint(path)"
+    },
+    {
+      "name": "empty_string",
+      "text": ""
+    },
+    {
+      "name": "single_char",
+      "text": "x"
+    },
+    {
+      "name": "only_special_chars",
+      "text": "<>&='\"\\\n\t\r"
+    },
+    {
+      "name": "realistic_ignition_script",
+      "text": "# Tag change handler\nlogger = system.util.getLogger(\"TagChange\")\nold = previousValue.value\nnew = currentValue.value\n\nif new > old & new > 100:\n    logger.warn(\"Threshold exceeded: \" + str(new))\n    system.tag.writeBlocking(\n        [\"[default]Alarms/HighValue\"],\n        [True]\n    )\n\n# Update the display\nsystem.perspective.sendMessage(\n    \"valueUpdate\",\n    {\"tag\": tagPath, \"value\": new},\n    scope=\"page\"\n)"
+    }
+  ],
+  "decode_edge_cases": [
+    {
+      "name": "double_backslash_then_t",
+      "encoded": "\\\\t",
+      "decoded": "\\t",
+      "_comment": "\\\\t is escaped-backslash + literal t, NOT a tab"
+    },
+    {
+      "name": "double_backslash_then_n",
+      "encoded": "\\\\n",
+      "decoded": "\\n",
+      "_comment": "\\\\n is escaped-backslash + literal n, NOT a newline"
+    },
+    {
+      "name": "triple_backslash_then_n",
+      "encoded": "\\\\\\n",
+      "decoded": "\\\n",
+      "_comment": "\\\\\\n is escaped-backslash + escaped-newline"
+    },
+    {
+      "name": "unknown_escape",
+      "encoded": "\\x",
+      "decoded": "\\x",
+      "_comment": "Unknown escapes are kept as-is"
+    },
+    {
+      "name": "unknown_unicode",
+      "encoded": "\\u9999",
+      "decoded": "\\u9999",
+      "_comment": "Unknown unicode escapes are kept as-is"
+    },
+    {
+      "name": "truncated_unicode",
+      "encoded": "end\\u00",
+      "decoded": "end\\u00",
+      "_comment": "Truncated unicode escape at end of string"
+    },
+    {
+      "name": "backslash_at_end",
+      "encoded": "end\\",
+      "decoded": "end\\",
+      "_comment": "Trailing backslash with nothing after it"
+    }
+  ],
+  "detection": [
+    {
+      "name": "encoded_with_newlines",
+      "text": "line1\\nline2",
+      "is_encoded": true
+    },
+    {
+      "name": "encoded_with_tabs",
+      "text": "\\tindented",
+      "is_encoded": true
+    },
+    {
+      "name": "encoded_with_quotes",
+      "text": "print(\\\"hello\\\")",
+      "is_encoded": true
+    },
+    {
+      "name": "encoded_with_unicode",
+      "text": "x \\u003d 5",
+      "is_encoded": true
+    },
+    {
+      "name": "plain_text",
+      "text": "This is plain text",
+      "is_encoded": false
+    },
+    {
+      "name": "empty",
+      "text": "",
+      "is_encoded": false
+    }
+  ]
+}

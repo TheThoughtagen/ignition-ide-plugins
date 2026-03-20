@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ignition-lsp"
-version = "0.1.0"
+version = "0.2.0"
 description = "Language Server Protocol implementation for Ignition by Inductive Automation"
 readme = "README.md"
 requires-python = ">=3.8"
@@ -55,6 +55,7 @@ include = ["ignition_lsp*"]
 ignition_lsp = ["py.typed"]
 "ignition_lsp.api_db" = ["*.json"]
 "ignition_lsp.java_db" = ["*.json"]
+"ignition_lsp.stubs" = ["**/*.pyi"]
 
 [tool.black]
 line-length = 100

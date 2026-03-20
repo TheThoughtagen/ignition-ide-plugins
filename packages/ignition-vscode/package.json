@@ -1,0 +1,128 @@
+{
+  "name": "ignition-dev-tools",
+  "displayName": "Ignition Dev Tools",
+  "description": "Full IDE support for Inductive Automation's Ignition SCADA platform — completions, hover docs, diagnostics, go-to-definition, decode/encode, and CodeLens for embedded scripts.",
+  "version": "0.1.0",
+  "publisher": "whiskeyhouse",
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Programming Languages",
+    "Linters",
+    "Other"
+  ],
+  "keywords": [
+    "ignition",
+    "scada",
+    "inductive-automation",
+    "jython",
+    "python",
+    "industrial-automation"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/TheThoughtagen/ignition-dev-tools"
+  },
+  "icon": "icon.png",
+  "activationEvents": [
+    "workspaceContains:**/project.json"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "languages": [
+      {
+        "id": "ignition",
+        "extensions": [
+          ".ignition"
+        ],
+        "aliases": [
+          "Ignition Resource"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "ignition",
+        "scopeName": "source.ignition",
+        "path": "./syntaxes/ignition.tmLanguage.json"
+      }
+    ],
+    "configuration": {
+      "title": "Ignition Dev Tools",
+      "properties": {
+        "ignition.lsp.path": {
+          "type": "string",
+          "default": "",
+          "description": "Path to the ignition-lsp executable. If empty, the extension will search PATH or install into its global storage."
+        },
+        "ignition.ignitionVersion": {
+          "type": "string",
+          "default": "8.1",
+          "description": "Ignition platform version for API completions.",
+          "enum": [
+            "8.1",
+            "8.0"
+          ]
+        },
+        "ignition.codeLens.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show CodeLens 'Edit Script' actions above embedded scripts in JSON files."
+        },
+        "ignition.diagnostics.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable inline diagnostics for Python scripts."
+        },
+        "ignition.autoConvertTabs": {
+          "type": "boolean",
+          "default": true,
+          "description": "Automatically convert space indentation to tabs when opening Python files in Ignition projects."
+        }
+      }
+    },
+    "commands": [
+      {
+        "command": "ignition.convertToTabs",
+        "title": "Ignition: Convert Indentation to Tabs"
+      },
+      {
+        "command": "ignition.decodeScript",
+        "title": "Ignition: Decode Script at Cursor"
+      },
+      {
+        "command": "ignition.decodeAll",
+        "title": "Ignition: Decode All Scripts in File"
+      },
+      {
+        "command": "ignition.listScripts",
+        "title": "Ignition: List All Scripts in Workspace"
+      },
+      {
+        "command": "ignition.showInfo",
+        "title": "Ignition: Show Extension Info"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "lint": "eslint src --ext ts",
+    "test": "node ./out/test/runTest.js"
+  },
+  "dependencies": {
+    "vscode-languageclient": "^9.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/vscode": "^1.85.0",
+    "@typescript-eslint/eslint-plugin": "^7.0.0",
+    "@typescript-eslint/parser": "^7.0.0",
+    "eslint": "^8.56.0",
+    "typescript": "^5.3.0"
+  }
+}
