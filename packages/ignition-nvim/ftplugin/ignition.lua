@@ -85,6 +85,10 @@ vim.keymap.set('n', '<localleader>im', '<cmd>IgnitionViewDocs<cr>', vim.tbl_exte
   desc = 'View documentation (.md files)',
 }))
 
+vim.keymap.set('n', '<localleader>ig', '<cmd>IgnitionTagBrowser<cr>', vim.tbl_extend('force', keymap_opts, {
+  desc = 'Browse tags (ignition-git-module)',
+}))
+
 -- Add undo command for keymaps
 vim.b.undo_ftplugin = vim.b.undo_ftplugin .. '|mapclear <buffer>'
 

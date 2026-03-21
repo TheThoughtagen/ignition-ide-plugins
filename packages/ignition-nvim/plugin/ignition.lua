@@ -233,6 +233,99 @@ vim.api.nvim_create_user_command('IgnitionViewDocs', function()
   end)
 end, { desc = 'View documentation (.md files) near current resource' })
 
+vim.api.nvim_create_user_command('IgnitionTagBrowser', function(opts)
+  -- Find tags/ directory from project root
+  local project_root = vim.fs.root(0, 'project.json') or vim.fn.getcwd()
+  local tags_dir = project_root .. '/tags'
+
+  if vim.fn.isdirectory(tags_dir) ~= 1 then
+    vim.notify('No tags/ directory found at ' .. project_root, vim.log.levels.WARN, { title = 'Ignition' })
+    return
+  end
+
+  -- Build tag list by scanning the directory
+  local tags = {}
+  local function scan_dir(dir, prefix)
+    local handle = vim.loop.fs_scandir(dir)
+    if not handle then return end
+    while true do
+      local name, type = vim.loop.fs_scandir_next(handle)
+      if not name then break end
+      if name:sub(1, 1) == '.' then goto continue end
+
+      local full_path = dir .. '/' .. name
+      if type == 'directory' then
+        local label = name == '_types_' and 'UDT Definitions' or name
+        scan_dir(full_path, prefix .. label .. '/')
+      elseif name:match('%.json$') then
+        local tag_name = name:gsub('%.json$', '')
+        local tag_path = prefix .. tag_name
+        -- Read minimal metadata
+        local ok, content = pcall(vim.fn.readfile, full_path, '', 5)
+        local meta = ''
+        if ok and #content > 0 then
+          local text = table.concat(content, '\n')
+          local dt = text:match('"dataType"%s*:%s*"([^"]*)"')
+          local vs = text:match('"valueSource"%s*:%s*"([^"]*)"')
+          local tt = text:match('"tagType"%s*:%s*"([^"]*)"')
+          local parts = {}
+          if tt and tt ~= 'AtomicTag' then table.insert(parts, tt) end
+          if dt then table.insert(parts, dt) end
+          if vs then table.insert(parts, vs) end
+          meta = table.concat(parts, ' ')
+        end
+        table.insert(tags, { path = tag_path, file = full_path, meta = meta })
+      end
+      ::continue::
+    end
+  end
+
+  -- Scan providers
+  local phandle = vim.loop.fs_scandir(tags_dir)
+  if not phandle then return end
+  while true do
+    local name, type = vim.loop.fs_scandir_next(phandle)
+    if not name then break end
+    if type == 'directory' and name:sub(1, 1) ~= '.' then
+      scan_dir(tags_dir .. '/' .. name, '[' .. name .. ']')
+    end
+  end
+
+  if #tags == 0 then
+    vim.notify('No tags found', vim.log.levels.INFO, { title = 'Ignition' })
+    return
+  end
+
+  -- If an argument was passed, filter by it
+  local query = opts.args ~= '' and opts.args or nil
+
+  -- Use vim.ui.select (telescope-compatible)
+  local filtered = tags
+  if query then
+    local q = query:lower()
+    filtered = vim.tbl_filter(function(t)
+      return t.path:lower():find(q, 1, true)
+    end, tags)
+  end
+
+  vim.ui.select(filtered, {
+    prompt = 'Tag Browser (' .. #filtered .. ' tags):',
+    format_item = function(item)
+      if item.meta ~= '' then
+        return item.path .. '  (' .. item.meta .. ')'
+      end
+      return item.path
+    end,
+  }, function(choice)
+    if choice then
+      vim.cmd('edit ' .. vim.fn.fnameescape(choice.file))
+    end
+  end)
+end, {
+  nargs = '?',
+  desc = 'Browse Ignition tags (ignition-git-module format)',
+})
+
 vim.api.nvim_create_user_command('IgnitionTabify', function()
   local changed = spaces_to_tabs()
   vim.notify(

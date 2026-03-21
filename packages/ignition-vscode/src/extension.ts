@@ -15,6 +15,10 @@ import {
 } from "./projectBrowserProvider";
 import { openWithKindling } from "./kindling";
 import {
+  TagBrowserProvider,
+  registerTagBrowser,
+} from "./tagBrowserProvider";
+import {
   openScript,
   decodeScriptAtCursor,
   decodeAllScripts,
@@ -31,6 +35,7 @@ let scriptFsProvider: ScriptFileSystemProvider;
 let codeLensProvider: IgnitionCodeLensProvider;
 let componentTreeProvider: ComponentTreeProvider;
 let projectBrowserProvider: ProjectBrowserProvider;
+let tagBrowserProvider: TagBrowserProvider;
 
 export async function activate(
   context: vscode.ExtensionContext
@@ -72,6 +77,15 @@ export async function activate(
   context.subscriptions.push(projectTreeView);
   registerProjectBrowser(context, projectBrowserProvider);
 
+  // Register Tag Browser view
+  tagBrowserProvider = new TagBrowserProvider();
+  const tagTreeView = vscode.window.createTreeView("ignitionTagBrowser", {
+    treeDataProvider: tagBrowserProvider,
+    showCollapseAll: true,
+  });
+  context.subscriptions.push(tagTreeView);
+  registerTagBrowser(context, tagBrowserProvider);
+
   // Register commands
   context.subscriptions.push(
     vscode.commands.registerCommand(
@@ -107,6 +121,9 @@ export async function activate(
     ),
     vscode.commands.registerCommand("ignition.refreshProjectBrowser", () =>
       projectBrowserProvider.refresh()
+    ),
+    vscode.commands.registerCommand("ignition.refreshTagBrowser", () =>
+      tagBrowserProvider.refresh()
     )
   );
 

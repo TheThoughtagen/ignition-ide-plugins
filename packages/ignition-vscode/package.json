@@ -67,6 +67,11 @@
           "when": "workspaceFolderCount > 0"
         },
         {
+          "id": "ignitionTagBrowser",
+          "name": "Tag Browser",
+          "when": "workspaceFolderCount > 0"
+        },
+        {
           "id": "ignitionComponentTree",
           "name": "Component Tree",
           "when": "workspaceFolderCount > 0"
@@ -77,6 +82,11 @@
       {
         "view": "ignitionProjectBrowser",
         "contents": "No Ignition projects found.\n\nOpen a folder containing a project.json file.\n[Open Folder](command:vscode.openFolder)",
+        "when": "true"
+      },
+      {
+        "view": "ignitionTagBrowser",
+        "contents": "No tags/ directory found.\n\nOpen a project that uses ignition-git-module for tag storage.",
         "when": "true"
       },
       {
@@ -189,6 +199,15 @@
         "title": "Reveal Files in Explorer"
       },
       {
+        "command": "ignition.refreshTagBrowser",
+        "title": "Ignition: Refresh Tag Browser",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "ignition.tagBrowser.copyPath",
+        "title": "Copy Tag Path"
+      },
+      {
         "command": "ignition.projectBrowser.viewDocs",
         "title": "View Docs",
         "icon": "$(book)"
@@ -221,6 +240,11 @@
           "group": "navigation"
         },
         {
+          "command": "ignition.refreshTagBrowser",
+          "when": "view == ignitionTagBrowser",
+          "group": "navigation"
+        },
+        {
           "command": "ignition.refreshComponentTree",
           "when": "view == ignitionComponentTree",
           "group": "navigation"
@@ -240,6 +264,11 @@
         {
           "command": "ignition.projectBrowser.viewDocs",
           "when": "view == ignitionProjectBrowser",
+          "group": "navigation"
+        },
+        {
+          "command": "ignition.tagBrowser.copyPath",
+          "when": "view == ignitionTagBrowser",
           "group": "navigation"
         }
       ]
