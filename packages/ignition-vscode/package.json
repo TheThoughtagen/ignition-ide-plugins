@@ -50,6 +50,31 @@
         "path": "./syntaxes/ignition.tmLanguage.json"
       }
     ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "ignition",
+          "title": "Ignition",
+          "icon": "$(circuit-board)"
+        }
+      ]
+    },
+    "views": {
+      "ignition": [
+        {
+          "id": "ignitionComponentTree",
+          "name": "Component Tree",
+          "when": "workspaceFolderCount > 0"
+        }
+      ]
+    },
+    "viewsWelcome": [
+      {
+        "view": "ignitionComponentTree",
+        "contents": "Open a Perspective view.json file to see the component tree.\n[Open JSON File](command:workbench.action.quickOpen)",
+        "when": "true"
+      }
+    ],
     "configuration": {
       "title": "Ignition Dev Tools",
       "properties": {
@@ -81,6 +106,11 @@
           "type": "boolean",
           "default": true,
           "description": "Automatically convert space indentation to tabs when opening Python files in Ignition projects."
+        },
+        "ignition.kindling.path": {
+          "type": "string",
+          "default": "",
+          "description": "Path to the Kindling executable. If empty, auto-detection will be used."
         }
       }
     },
@@ -91,21 +121,76 @@
       },
       {
         "command": "ignition.decodeScript",
-        "title": "Ignition: Decode Script at Cursor"
+        "title": "Ignition: Decode Script at Cursor",
+        "icon": "$(edit)"
       },
       {
         "command": "ignition.decodeAll",
-        "title": "Ignition: Decode All Scripts in File"
+        "title": "Ignition: Decode All Scripts in File",
+        "icon": "$(files)"
       },
       {
         "command": "ignition.listScripts",
-        "title": "Ignition: List All Scripts in Workspace"
+        "title": "Ignition: List All Scripts in Workspace",
+        "icon": "$(list-unordered)"
       },
       {
         "command": "ignition.showInfo",
         "title": "Ignition: Show Extension Info"
+      },
+      {
+        "command": "ignition.formatJson",
+        "title": "Ignition: Format JSON"
+      },
+      {
+        "command": "ignition.debugLsp",
+        "title": "Ignition: Debug LSP"
+      },
+      {
+        "command": "ignition.openWithKindling",
+        "title": "Ignition: Open with Kindling"
+      },
+      {
+        "command": "ignition.refreshComponentTree",
+        "title": "Ignition: Refresh Component Tree",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "ignition.componentTree.decodeScripts",
+        "title": "Decode Scripts",
+        "icon": "$(edit)"
       }
-    ]
+    ],
+    "menus": {
+      "explorer/context": [
+        {
+          "command": "ignition.openWithKindling",
+          "when": "resourceExtname =~ /\\.(gwbk|modl|idb)$/i",
+          "group": "navigation"
+        }
+      ],
+      "editor/title": [
+        {
+          "command": "ignition.decodeScript",
+          "when": "resourceLangId == json",
+          "group": "navigation"
+        }
+      ],
+      "view/title": [
+        {
+          "command": "ignition.refreshComponentTree",
+          "when": "view == ignitionComponentTree",
+          "group": "navigation"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "ignition.componentTree.decodeScripts",
+          "when": "view == ignitionComponentTree && viewItem == componentWithScripts",
+          "group": "inline"
+        }
+      ]
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",

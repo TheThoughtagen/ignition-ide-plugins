@@ -218,7 +218,124 @@ export async function showInfo(): Promise<void> {
     "  Ignition: Decode Script at Cursor",
     "  Ignition: Decode All Scripts in File",
     "  Ignition: List All Scripts in Workspace",
+    "  Ignition: Format Ignition JSON",
+    "  Ignition: Open with Kindling",
+    "  Ignition: Debug LSP",
   ];
+
+  const doc = await vscode.workspace.openTextDocument({
+    content: lines.join("\n"),
+    language: "plaintext",
+  });
+  await vscode.window.showTextDocument(doc);
+}
+
+/**
+ * Format Ignition JSON with smart indentation.
+ *
+ * Respects JSON structure while keeping each existing line as a unit.
+ * Ports the IgnitionFormat command from ignition-nvim.
+ */
+export async function formatIgnitionJson(): Promise<void> {
+  const editor = vscode.window.activeTextEditor;
+  if (!editor) {
+    vscode.window.showWarningMessage("No active editor");
+    return;
+  }
+
+  const doc = editor.document;
+  if (!doc.fileName.endsWith(".json")) {
+    vscode.window.showWarningMessage("Not a JSON file");
+    return;
+  }
+
+  const text = doc.getText();
+  let formatted: string;
+  try {
+    const parsed = JSON.parse(text);
+    formatted = JSON.stringify(parsed, null, 2);
+  } catch {
+    vscode.window.showErrorMessage("Invalid JSON — cannot format");
+    return;
+  }
+
+  // Convert to tabs (Ignition convention for JSON)
+  formatted = formatted.replace(/^( +)/gm, (match) => {
+    const spaces = match.length;
+    const tabs = Math.floor(spaces / 2);
+    const remaining = spaces % 2;
+    return "\t".repeat(tabs) + " ".repeat(remaining);
+  });
+
+  const fullRange = new vscode.Range(
+    doc.positionAt(0),
+    doc.positionAt(text.length)
+  );
+
+  const edit = new vscode.WorkspaceEdit();
+  edit.replace(doc.uri, fullRange, formatted);
+  await vscode.workspace.applyEdit(edit);
+
+  vscode.window.showInformationMessage("Formatted Ignition JSON");
+}
+
+/**
+ * Show LSP debug information for troubleshooting.
+ *
+ * Ports the IgnitionDebugLSP command from ignition-nvim.
+ */
+export async function debugLsp(): Promise<void> {
+  const client = getClient();
+  const editor = vscode.window.activeTextEditor;
+
+  const lines: string[] = [
+    "=== Ignition LSP Debug Info ===",
+    "",
+    `LSP Client: ${client ? "Active" : "Not connected"}`,
+  ];
+
+  if (client) {
+    lines.push(`  State: ${client.state}`);
+    lines.push(`  Server: ${client.outputChannel.name}`);
+  }
+
+  lines.push("");
+
+  if (editor) {
+    const doc = editor.document;
+    lines.push(`Active Document:`);
+    lines.push(`  URI: ${doc.uri.toString()}`);
+    lines.push(`  Language: ${doc.languageId}`);
+    lines.push(`  Scheme: ${doc.uri.scheme}`);
+    lines.push(`  File: ${doc.fileName}`);
+    lines.push(`  Lines: ${doc.lineCount}`);
+  } else {
+    lines.push("No active editor");
+  }
+
+  lines.push("");
+
+  // Check workspace info
+  const workspaceFolders = vscode.workspace.workspaceFolders;
+  if (workspaceFolders) {
+    lines.push("Workspace Folders:");
+    for (const folder of workspaceFolders) {
+      lines.push(`  ${folder.name}: ${folder.uri.fsPath}`);
+    }
+  }
+
+  lines.push("");
+
+  // Check for Ignition project markers
+  const projectFiles = await vscode.workspace.findFiles(
+    "**/project.json",
+    "**/node_modules/**",
+    5
+  );
+  lines.push(`Ignition Projects Found: ${projectFiles.length}`);
+  for (const f of projectFiles) {
+    lines.push(`  ${vscode.workspace.asRelativePath(f)}`);
+  }
 
   const doc = await vscode.workspace.openTextDocument({
     content: lines.join("\n"),

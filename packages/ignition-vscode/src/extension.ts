@@ -6,15 +6,23 @@ import {
 } from "./scriptDocProvider";
 import { IgnitionCodeLensProvider } from "./codeLensProvider";
 import {
+  ComponentTreeProvider,
+  registerComponentTree,
+} from "./componentTreeProvider";
+import { openWithKindling } from "./kindling";
+import {
   openScript,
   decodeScriptAtCursor,
   decodeAllScripts,
   listScripts,
   showInfo,
+  formatIgnitionJson,
+  debugLsp,
 } from "./commands";
 
 let scriptFsProvider: ScriptFileSystemProvider;
 let codeLensProvider: IgnitionCodeLensProvider;
+let componentTreeProvider: ComponentTreeProvider;
 
 export async function activate(
   context: vscode.ExtensionContext
@@ -22,6 +30,7 @@ export async function activate(
   // Initialize providers
   scriptFsProvider = new ScriptFileSystemProvider();
   codeLensProvider = new IgnitionCodeLensProvider();
+  componentTreeProvider = new ComponentTreeProvider();
 
   // Register the virtual filesystem (editable virtual documents)
   context.subscriptions.push(
@@ -37,6 +46,14 @@ export async function activate(
       codeLensProvider
     )
   );
+
+  // Register Component Tree view
+  const treeView = vscode.window.createTreeView("ignitionComponentTree", {
+    treeDataProvider: componentTreeProvider,
+    showCollapseAll: true,
+  });
+  context.subscriptions.push(treeView);
+  registerComponentTree(context, componentTreeProvider, scriptFsProvider);
 
   // Register commands
   context.subscriptions.push(
@@ -54,7 +71,17 @@ export async function activate(
     vscode.commands.registerCommand("ignition.listScripts", () =>
       listScripts(scriptFsProvider)
     ),
-    vscode.commands.registerCommand("ignition.showInfo", () => showInfo())
+    vscode.commands.registerCommand("ignition.showInfo", () => showInfo()),
+    vscode.commands.registerCommand("ignition.formatJson", () =>
+      formatIgnitionJson()
+    ),
+    vscode.commands.registerCommand("ignition.debugLsp", () => debugLsp()),
+    vscode.commands.registerCommand("ignition.openWithKindling", (uri?: vscode.Uri) =>
+      openWithKindling(uri)
+    ),
+    vscode.commands.registerCommand("ignition.refreshComponentTree", () =>
+      componentTreeProvider.refresh()
+    )
   );
 
   // Refresh CodeLens when a virtual script is saved (source JSON changed)
