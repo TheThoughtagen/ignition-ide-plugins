@@ -1,12 +1,10 @@
 import * as vscode from "vscode";
 import * as fs from "fs";
 import * as path from "path";
-import { execFile } from "child_process";
+import { execFile, execFileSync } from "child_process";
+import { isKindlingFile } from "./lib/projectFiles.js";
 
 const KINDLING_REPO = "https://github.com/paul-griffith/kindling";
-
-/** File extensions that Kindling can open. */
-export const KINDLING_EXTENSIONS = [".gwbk", ".modl", ".idb", ".log"];
 
 /**
  * Find the Kindling executable.
@@ -42,10 +40,10 @@ function findKindling(): string | undefined {
     }
   }
 
-  // Try PATH lookup
+  // Try PATH lookup (platform-aware)
   try {
-    const { execFileSync } = require("child_process");
-    const result = execFileSync("which", ["kindling"], { timeout: 3000 })
+    const whichCmd = process.platform === "win32" ? "where" : "which";
+    const result = execFileSync(whichCmd, ["kindling"], { timeout: 3000 })
       .toString()
       .trim();
     if (result && fs.existsSync(result)) {
@@ -72,9 +70,9 @@ export async function openWithKindling(fileUri?: vscode.Uri): Promise<void> {
   }
 
   const ext = path.extname(filePath).toLowerCase();
-  if (!KINDLING_EXTENSIONS.includes(ext)) {
+  if (!isKindlingFile(ext)) {
     vscode.window.showWarningMessage(
-      `Kindling doesn't support ${ext} files. Supported: ${KINDLING_EXTENSIONS.join(", ")}`
+      `Kindling doesn't support ${ext} files. Supported: .gwbk, .modl, .idb, .log`
     );
     return;
   }
@@ -100,6 +98,9 @@ export async function openWithKindling(fileUri?: vscode.Uri): Promise<void> {
 
   // Launch Kindling as a detached process
   const child = execFile(kindlingPath, [filePath], { timeout: 0 });
+  child.on("error", (err) => {
+    vscode.window.showErrorMessage(`Failed to launch Kindling: ${err.message}`);
+  });
   child.unref();
 
   const fileName = path.basename(filePath);

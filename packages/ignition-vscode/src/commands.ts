@@ -52,37 +52,42 @@ export async function decodeScriptAtCursor(
     return;
   }
 
-  const scripts: ScriptInfo[] = await client.sendRequest(
-    "ignition/findScripts",
-    { uri: editor.document.uri.toString() }
-  );
-
-  if (scripts.length === 0) {
-    vscode.window.showInformationMessage(
-      "No embedded scripts found in this file"
+  try {
+    const scripts: ScriptInfo[] = await client.sendRequest(
+      "ignition/findScripts",
+      { uri: editor.document.uri.toString() }
     );
-    return;
-  }
 
-  // Find the script closest to the cursor
-  const cursorLine = editor.selection.active.line + 1; // 1-based
-  let closest = scripts[0];
-  let minDist = Math.abs(closest.line - cursorLine);
-
-  for (const script of scripts) {
-    const dist = Math.abs(script.line - cursorLine);
-    if (dist < minDist) {
-      closest = script;
-      minDist = dist;
+    if (scripts.length === 0) {
+      vscode.window.showInformationMessage(
+        "No embedded scripts found in this file"
+      );
+      return;
     }
-  }
 
-  await openScript(
-    provider,
-    editor.document.uri.toString(),
-    closest.key,
-    closest.line
-  );
+    // Find the script closest to the cursor
+    const cursorLine = editor.selection.active.line + 1; // 1-based
+    let closest = scripts[0];
+    let minDist = Math.abs(closest.line - cursorLine);
+
+    for (const script of scripts) {
+      const dist = Math.abs(script.line - cursorLine);
+      if (dist < minDist) {
+        closest = script;
+        minDist = dist;
+      }
+    }
+
+    await openScript(
+      provider,
+      editor.document.uri.toString(),
+      closest.key,
+      closest.line
+    );
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : String(err);
+    vscode.window.showErrorMessage(`Failed to decode script: ${message}`);
+  }
 }
 
 /**
@@ -103,30 +108,35 @@ export async function decodeAllScripts(
     return;
   }
 
-  const scripts: ScriptInfo[] = await client.sendRequest(
-    "ignition/findScripts",
-    { uri: editor.document.uri.toString() }
-  );
+  try {
+    const scripts: ScriptInfo[] = await client.sendRequest(
+      "ignition/findScripts",
+      { uri: editor.document.uri.toString() }
+    );
 
-  if (scripts.length === 0) {
+    if (scripts.length === 0) {
+      vscode.window.showInformationMessage(
+        "No embedded scripts found in this file"
+      );
+      return;
+    }
+
+    for (const script of scripts) {
+      await openScript(
+        provider,
+        editor.document.uri.toString(),
+        script.key,
+        script.line
+      );
+    }
+
     vscode.window.showInformationMessage(
-      "No embedded scripts found in this file"
+      `Opened ${scripts.length} script(s)`
     );
-    return;
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : String(err);
+    vscode.window.showErrorMessage(`Failed to decode scripts: ${message}`);
   }
-
-  for (const script of scripts) {
-    await openScript(
-      provider,
-      editor.document.uri.toString(),
-      script.key,
-      script.line
-    );
-  }
-
-  vscode.window.showInformationMessage(
-    `Opened ${scripts.length} script(s)`
-  );
 }
 
 /**
@@ -212,41 +222,45 @@ export async function searchResources(): Promise<void> {
     return;
   }
 
-  // Fetch all workspace symbols (empty query = return all)
-  const symbols: vscode.SymbolInformation[] = await client.sendRequest(
-    "workspace/symbol",
-    { query: "" }
-  );
-
-  if (!symbols || symbols.length === 0) {
-    vscode.window.showInformationMessage("No resources found. Is an Ignition project open?");
-    return;
-  }
-
-  const items = symbols.map((sym) => ({
-    label: `$(${symbolIcon(sym.kind)}) ${sym.name}`,
-    description: sym.containerName ?? "",
-    detail: sym.location.uri.fsPath,
-    symbol: sym,
-  }));
-
-  const selected = await vscode.window.showQuickPick(items, {
-    placeHolder: "Search resources (scripts, views, queries...)",
-    matchOnDescription: true,
-    matchOnDetail: true,
-  });
-
-  if (selected) {
-    const uri = selected.symbol.location.uri;
-    const line = selected.symbol.location.range.start.line;
-    const doc = await vscode.workspace.openTextDocument(uri);
-    const editor = await vscode.window.showTextDocument(doc);
-    const pos = new vscode.Position(line, 0);
-    editor.selection = new vscode.Selection(pos, pos);
-    editor.revealRange(
-      new vscode.Range(pos, pos),
-      vscode.TextEditorRevealType.InCenter
+  try {
+    const symbols: vscode.SymbolInformation[] = await client.sendRequest(
+      "workspace/symbol",
+      { query: "" }
     );
+
+    if (!symbols || symbols.length === 0) {
+      vscode.window.showInformationMessage("No resources found. Is an Ignition project open?");
+      return;
+    }
+
+    const items = symbols.map((sym) => ({
+      label: `$(${symbolIcon(sym.kind)}) ${sym.name}`,
+      description: sym.containerName ?? "",
+      detail: sym.location.uri.fsPath,
+      symbol: sym,
+    }));
+
+    const selected = await vscode.window.showQuickPick(items, {
+      placeHolder: "Search resources (scripts, views, queries...)",
+      matchOnDescription: true,
+      matchOnDetail: true,
+    });
+
+    if (selected) {
+      const uri = selected.symbol.location.uri;
+      const line = selected.symbol.location.range.start.line;
+      const doc = await vscode.workspace.openTextDocument(uri);
+      const editor = await vscode.window.showTextDocument(doc);
+      const pos = new vscode.Position(line, 0);
+      editor.selection = new vscode.Selection(pos, pos);
+      editor.revealRange(
+        new vscode.Range(pos, pos),
+        vscode.TextEditorRevealType.InCenter
+      );
+    }
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : String(err);
+    vscode.window.showErrorMessage(`Failed to search resources: ${message}`);
   }
 }
 
@@ -277,23 +291,26 @@ export async function copyQualifiedPath(): Promise<void> {
     return;
   }
 
-  const fileUri = editor.document.uri.toString();
+  try {
+    const fileUri = editor.document.uri.toString();
 
-  // Find symbols matching the current file
-  const symbols: vscode.SymbolInformation[] = await client.sendRequest(
-    "workspace/symbol",
-    { query: "" }
-  );
+    const symbols: vscode.SymbolInformation[] = await client.sendRequest(
+      "workspace/symbol",
+      { query: "" }
+    );
 
-  const match = symbols?.find((s) => s.location.uri.toString() === fileUri);
-  if (match) {
-    await vscode.env.clipboard.writeText(match.name);
-    vscode.window.showInformationMessage(`Copied: ${match.name}`);
-  } else {
-    // Fallback: derive from file path
-    const relativePath = vscode.workspace.asRelativePath(editor.document.uri);
-    await vscode.env.clipboard.writeText(relativePath);
-    vscode.window.showInformationMessage(`Copied: ${relativePath}`);
+    const match = symbols?.find((s) => s.location.uri.toString() === fileUri);
+    if (match) {
+      await vscode.env.clipboard.writeText(match.name);
+      vscode.window.showInformationMessage(`Copied: ${match.name}`);
+    } else {
+      const relativePath = vscode.workspace.asRelativePath(editor.document.uri);
+      await vscode.env.clipboard.writeText(relativePath);
+      vscode.window.showInformationMessage(`Copied: ${relativePath}`);
+    }
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : String(err);
+    vscode.window.showErrorMessage(`Failed to copy path: ${message}`);
   }
 }
 

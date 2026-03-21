@@ -278,20 +278,24 @@ def stubs_info_handler(ls: IgnitionLanguageServer, params: object) -> dict:
 
     Clients can use this to configure Pyright/Pylance extraPaths.
     """
-    from ignition_lsp.stub_generator import get_system_stubs_path
+    try:
+        from ignition_lsp.stub_generator import get_system_stubs_path
 
-    result: dict = {
-        "systemStubsPath": get_system_stubs_path(),
-        "projectStubsPath": None,
-    }
+        result: dict = {
+            "systemStubsPath": get_system_stubs_path(),
+            "projectStubsPath": None,
+        }
 
-    if ls.project_index:
-        from ignition_lsp.stub_generator import STUBS_DIR_NAME
-        project_stubs = Path(ls.project_index.root_path) / STUBS_DIR_NAME
-        if project_stubs.is_dir():
-            result["projectStubsPath"] = str(project_stubs)
+        if ls.project_index:
+            from ignition_lsp.stub_generator import STUBS_DIR_NAME
+            project_stubs = Path(ls.project_index.root_path) / STUBS_DIR_NAME
+            if project_stubs.is_dir():
+                result["projectStubsPath"] = str(project_stubs)
 
-    return result
+        return result
+    except Exception as e:
+        logger.error(f"Error getting stubs info: {e}", exc_info=True)
+        return {"systemStubsPath": None, "projectStubsPath": None}
 
 
 # ── Document Synchronization Handlers ────────────────────────────

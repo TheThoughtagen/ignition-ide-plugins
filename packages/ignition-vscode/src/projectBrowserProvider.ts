@@ -1,38 +1,25 @@
 import * as vscode from "vscode";
 import * as fs from "fs";
 import * as path from "path";
+import {
+  getResourceTypeLabel,
+  getPrimaryCandidates,
+  DEFAULT_PRIMARY,
+} from "./lib/projectFiles.js";
 
-/** Known resource type directories and their display names. */
-const RESOURCE_TYPES: Record<string, { label: string; icon: string }> = {
-  "script-python": { label: "Script Libraries", icon: "symbol-module" },
-  "perspective-views": { label: "Perspective Views", icon: "browser" },
-  "vision-windows": { label: "Vision Windows", icon: "window" },
-  "named-query": { label: "Named Queries", icon: "database" },
-  "tags": { label: "Tags", icon: "tag" },
-  "alarm-pipelines": { label: "Alarm Pipelines", icon: "bell" },
-  "sfc": { label: "Sequential Function Charts", icon: "git-merge" },
-  "reports": { label: "Reports", icon: "file-text" },
-  "global-props": { label: "Global Props", icon: "globe" },
-  "scheduled": { label: "Scheduled Scripts", icon: "clock" },
+/** Resource type display config (labels from lib, icons added here). */
+const RESOURCE_TYPE_ICONS: Record<string, string> = {
+  "script-python": "symbol-module",
+  "perspective-views": "browser",
+  "vision-windows": "window",
+  "named-query": "database",
+  "tags": "tag",
+  "alarm-pipelines": "bell",
+  "sfc": "git-merge",
+  "reports": "file-text",
+  "global-props": "globe",
+  "scheduled": "clock",
 };
-
-/**
- * Maps resource type to the primary file the user wants to edit.
- * Checked in order — first match wins.
- */
-const PRIMARY_FILES: Record<string, string[]> = {
-  "script-python": ["code.py"],
-  "perspective-views": ["view.json"],
-  "perspective-view": ["view.json"],
-  "vision-windows": ["resource.json"],
-  "vision-window": ["resource.json"],
-  "named-query": ["query.sql", "resource.json"],
-  "tags": ["tags.json"],
-  "scheduled": ["resource.json"],
-};
-
-/** Fallback order for any resource type. */
-const DEFAULT_PRIMARY = ["code.py", "view.json", "query.sql", "resource.json", "data.json", "tags.json"];
 
 export type ProjectTreeItem = ProjectItem | ResourceTypeItem | ResourceItem;
 
@@ -62,13 +49,11 @@ export class ResourceTypeItem extends vscode.TreeItem {
     public readonly dirPath: string,
     childCount: number
   ) {
-    const meta = RESOURCE_TYPES[dirName] ?? {
-      label: dirName,
-      icon: "folder",
-    };
-    super(meta.label, vscode.TreeItemCollapsibleState.Collapsed);
+    const label = getResourceTypeLabel(dirName);
+    const icon = RESOURCE_TYPE_ICONS[dirName] ?? "folder";
+    super(label, vscode.TreeItemCollapsibleState.Collapsed);
     this.contextValue = "resourceType";
-    this.iconPath = new vscode.ThemeIcon(meta.icon);
+    this.iconPath = new vscode.ThemeIcon(icon);
     this.description = `${childCount}`;
     this.tooltip = dirPath;
   }
@@ -218,7 +203,8 @@ export class ProjectBrowserProvider
           path: dir,
           title: data.title ?? path.basename(dir),
         });
-      } catch {
+      } catch (err) {
+        console.warn(`Ignition: failed to parse ${projectJson}:`, err);
         this.projects.push({ path: dir, title: path.basename(dir) });
       }
       return;
@@ -234,8 +220,8 @@ export class ProjectBrowserProvider
           this.findProjectsIn(path.join(dir, entry.name), depth + 1);
         }
       }
-    } catch {
-      // Permission denied
+    } catch (err) {
+      console.warn(`Ignition: failed to read directory ${dir}:`, err);
     }
   }
 
@@ -262,8 +248,8 @@ export class ProjectBrowserProvider
           );
         }
       }
-    } catch {
-      // Can't read directory
+    } catch (err) {
+      console.warn(`Ignition: failed to read resource types:`, err);
     }
     return items;
   }
@@ -301,8 +287,8 @@ export class ProjectBrowserProvider
           )
         );
       }
-    } catch {
-      // Can't read directory
+    } catch (err) {
+      console.warn(`Ignition: failed to read resources in ${dirPath}:`, err);
     }
     return items;
   }
@@ -315,8 +301,7 @@ export class ProjectBrowserProvider
     dirPath: string,
     resourceType: string
   ): string | undefined {
-    const candidates =
-      PRIMARY_FILES[resourceType] ?? DEFAULT_PRIMARY;
+    const candidates = getPrimaryCandidates(resourceType);
 
     for (const filename of candidates) {
       const fullPath = path.join(dirPath, filename);
@@ -334,8 +319,8 @@ export class ProjectBrowserProvider
           return path.join(dirPath, match);
         }
       }
-    } catch {
-      // ignore
+    } catch (err) {
+      console.warn(`Ignition: failed to scan ${dirPath} for files:`, err);
     }
     return undefined;
   }
@@ -347,7 +332,8 @@ export class ProjectBrowserProvider
     try {
       const entries = fs.readdirSync(dirPath, { withFileTypes: true });
       return entries.filter((e) => e.isDirectory()).length;
-    } catch {
+    } catch (err) {
+      console.warn(`Ignition: failed to count resources in ${dirPath}:`, err);
       return 0;
     }
   }
@@ -461,8 +447,8 @@ function findMarkdownFiles(dir: string, depth = 0): string[] {
         results.push(...findMarkdownFiles(fullPath, depth + 1));
       }
     }
-  } catch {
-    // ignore
+  } catch (err) {
+    console.warn(`Ignition: failed to scan ${dir} for docs:`, err);
   }
   return results;
 }

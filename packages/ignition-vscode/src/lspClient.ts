@@ -220,6 +220,9 @@ export async function configurePyrightStubs(): Promise<void> {
     }
   } catch (err) {
     console.error("Ignition: failed to configure stubs:", err);
+    vscode.window.showWarningMessage(
+      "Ignition: Could not configure Pylance stubs. Type hints for system.* APIs may be unavailable."
+    );
   }
 }
 
