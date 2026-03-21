@@ -183,6 +183,10 @@
         "command": "ignition.refreshProjectBrowser",
         "title": "Ignition: Refresh Project Browser",
         "icon": "$(refresh)"
+      },
+      {
+        "command": "ignition.projectBrowser.revealFiles",
+        "title": "Reveal Files in Explorer"
       }
     ],
     "menus": {
@@ -222,6 +226,11 @@
           "command": "ignition.componentTree.decodeScripts",
           "when": "view == ignitionComponentTree && viewItem == componentWithScripts",
           "group": "inline"
+        },
+        {
+          "command": "ignition.projectBrowser.revealFiles",
+          "when": "view == ignitionProjectBrowser && viewItem == resourceWithFile",
+          "group": "navigation"
         }
       ]
     }

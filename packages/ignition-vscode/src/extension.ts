@@ -11,6 +11,7 @@ import {
 } from "./componentTreeProvider";
 import {
   ProjectBrowserProvider,
+  registerProjectBrowser,
 } from "./projectBrowserProvider";
 import { openWithKindling } from "./kindling";
 import {
@@ -68,6 +69,7 @@ export async function activate(
     showCollapseAll: true,
   });
   context.subscriptions.push(projectTreeView);
+  registerProjectBrowser(context, projectBrowserProvider);
 
   // Register commands
   context.subscriptions.push(
