@@ -19,6 +19,21 @@ const RESOURCE_TYPE_ICONS: Record<string, string> = {
   "reports": "file-text",
   "global-props": "globe",
   "scheduled": "clock",
+  // com.inductiveautomation.* directories (ignition-git-module format)
+  "com.inductiveautomation.perspective": "browser",
+  "com.inductiveautomation.vision": "window",
+  "com.inductiveautomation.reporting": "file-text",
+  "com.inductiveautomation.alarm-notification": "bell",
+  "com.inductiveautomation.webdev": "globe",
+};
+
+/** Map com.inductiveautomation.* dir names to display labels. */
+const COM_IA_LABELS: Record<string, string> = {
+  "com.inductiveautomation.perspective": "Perspective",
+  "com.inductiveautomation.vision": "Vision",
+  "com.inductiveautomation.reporting": "Reporting",
+  "com.inductiveautomation.alarm-notification": "Alarm Notification",
+  "com.inductiveautomation.webdev": "WebDev",
 };
 
 export type ProjectTreeItem = ProjectItem | ResourceTypeItem | ResourceItem;
@@ -49,7 +64,7 @@ export class ResourceTypeItem extends vscode.TreeItem {
     public readonly dirPath: string,
     childCount: number
   ) {
-    const label = getResourceTypeLabel(dirName);
+    const label = COM_IA_LABELS[dirName] ?? getResourceTypeLabel(dirName);
     const icon = RESOURCE_TYPE_ICONS[dirName] ?? "folder";
     super(label, vscode.TreeItemCollapsibleState.Collapsed);
     this.contextValue = "resourceType";
@@ -228,19 +243,42 @@ export class ProjectBrowserProvider
   // ── Resource Type Groups ───────────────────────────────────────
 
   private getResourceTypes(projectPath: string): ResourceTypeItem[] {
+    const items: ResourceTypeItem[] = [];
+
+    // 1. Scan ignition/ subdirectory (standard Ignition project format)
     const ignitionDir = path.join(projectPath, "ignition");
-    if (!fs.existsSync(ignitionDir)) {
-      return [];
+    if (fs.existsSync(ignitionDir)) {
+      try {
+        const entries = fs.readdirSync(ignitionDir, { withFileTypes: true });
+        for (const entry of entries) {
+          if (!entry.isDirectory()) {
+            continue;
+          }
+          const dirPath = path.join(ignitionDir, entry.name);
+          const count = this.countChildResources(dirPath);
+          if (count > 0) {
+            items.push(
+              new ResourceTypeItem(projectPath, entry.name, dirPath, count)
+            );
+          }
+        }
+      } catch (err) {
+        console.warn(`Ignition: failed to read ignition/ dir:`, err);
+      }
     }
 
-    const items: ResourceTypeItem[] = [];
+    // 2. Scan com.inductiveautomation.* directories at project root
+    //    (ignition-git-module format)
     try {
-      const entries = fs.readdirSync(ignitionDir, { withFileTypes: true });
-      for (const entry of entries) {
-        if (!entry.isDirectory()) {
+      const rootEntries = fs.readdirSync(projectPath, { withFileTypes: true });
+      for (const entry of rootEntries) {
+        if (
+          !entry.isDirectory() ||
+          !entry.name.startsWith("com.inductiveautomation.")
+        ) {
           continue;
         }
-        const dirPath = path.join(ignitionDir, entry.name);
+        const dirPath = path.join(projectPath, entry.name);
         const count = this.countChildResources(dirPath);
         if (count > 0) {
           items.push(
@@ -249,8 +287,9 @@ export class ProjectBrowserProvider
         }
       }
     } catch (err) {
-      console.warn(`Ignition: failed to read resource types:`, err);
+      console.warn(`Ignition: failed to scan project root:`, err);
     }
+
     return items;
   }
 

@@ -31,6 +31,12 @@ export const PRIMARY_FILES: Record<string, string[]> = {
   "named-query": ["query.sql", "resource.json"],
   "tags": ["tags.json"],
   "scheduled": ["resource.json"],
+  // com.inductiveautomation.* directories (ignition-git-module format)
+  "com.inductiveautomation.perspective": ["view.json"],
+  "com.inductiveautomation.vision": ["resource.json"],
+  "com.inductiveautomation.reporting": ["resource.json"],
+  "com.inductiveautomation.alarm-notification": ["resource.json"],
+  "com.inductiveautomation.webdev": ["code.py", "resource.json"],
 };
 
 /** Fallback order for any resource type. */
