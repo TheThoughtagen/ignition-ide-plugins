@@ -55,7 +55,7 @@
         {
           "id": "ignition",
           "title": "Ignition",
-          "icon": "$(circuit-board)"
+          "icon": "resources/ignition-icon.svg"
         }
       ]
     },
