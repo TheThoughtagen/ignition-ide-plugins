@@ -67,6 +67,7 @@ packages/ignition-lsp/.pytest_cache/
 packages/ignition-vscode/node_modules/
 packages/ignition-vscode/out/
 packages/ignition-vscode/*.vsix
+!packages/ignition-vscode/src/lib/
 
 # Documentation
 doc/tags

@@ -25,6 +25,7 @@ import {
   searchResources,
   copyQualifiedPath,
 } from "./commands";
+import { createStatusBar } from "./statusBar";
 
 let scriptFsProvider: ScriptFileSystemProvider;
 let codeLensProvider: IgnitionCodeLensProvider;
@@ -157,6 +158,9 @@ export async function activate(
       }
     })
   );
+
+  // Status bar
+  createStatusBar(context);
 
   // Start the LSP client
   const client = await startLspClient(context);

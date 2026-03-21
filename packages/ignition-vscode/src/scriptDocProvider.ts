@@ -1,40 +1,25 @@
 import * as vscode from "vscode";
 import { getClient } from "./lspClient";
+import {
+  SCHEME,
+  buildScriptPath,
+  parseScriptPath,
+  type ScriptMetadata,
+} from "./lib/scriptUri.js";
 
-export const SCHEME = "ignition-script";
-
-interface ScriptMetadata {
-  sourceUri: string;
-  key: string;
-  line: number;
-}
+export { SCHEME };
 
 export function buildScriptUri(
   sourceUri: string,
   key: string,
   line: number
 ): vscode.Uri {
-  const encodedSource = Buffer.from(sourceUri).toString("base64url");
-  // Include timestamp in path to force VS Code to create a fresh document
-  // (VS Code caches FileSystemProvider content per URI path)
-  const ts = Date.now();
-  return vscode.Uri.parse(
-    `${SCHEME}:///${encodedSource}/${key}/${line}/${ts}`
-  );
+  const path = buildScriptPath(sourceUri, key, line);
+  return vscode.Uri.parse(`${SCHEME}://${path}`);
 }
 
 export function parseScriptUri(uri: vscode.Uri): ScriptMetadata | undefined {
-  const parts = uri.path.split("/").filter(Boolean);
-  if (parts.length < 3) {
-    return undefined;
-  }
-  const sourceUri = Buffer.from(parts[0], "base64url").toString("utf-8");
-  const key = parts[1];
-  const line = parseInt(parts[2], 10);
-  if (isNaN(line)) {
-    return undefined;
-  }
-  return { sourceUri, key, line };
+  return parseScriptPath(uri.path);
 }
 
 interface ScriptInfo {
