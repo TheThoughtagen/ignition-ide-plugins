@@ -127,6 +127,7 @@ export async function startLspClient(
     transport: TransportKind.stdio,
   };
 
+  const config = getConfig();
   const clientOptions: LanguageClientOptions = {
     documentSelector: [
       { scheme: "file", language: "python" },
@@ -137,6 +138,13 @@ export async function startLspClient(
     ],
     synchronize: {
       fileEvents: vscode.workspace.createFileSystemWatcher("**/*.{py,json}"),
+      configurationSection: "ignition",
+    },
+    initializationOptions: {
+      ignition: {
+        diagnostics: { enabled: config.diagnosticsEnabled },
+        version: config.ignitionVersion,
+      },
     },
   };
 
@@ -160,6 +168,59 @@ export async function startLspClient(
 
 export function getClient(): LanguageClient | undefined {
   return client;
+}
+
+/**
+ * Query the LSP for stubs paths and configure Pyright/Pylance.
+ *
+ * Adds the system.* stubs and project stubs to python.analysis.extraPaths
+ * so Pylance provides type hints for Ignition APIs.
+ */
+export async function configurePyrightStubs(): Promise<void> {
+  if (!client) {
+    return;
+  }
+
+  try {
+    const result: { systemStubsPath?: string; projectStubsPath?: string } =
+      await client.sendRequest("ignition/stubsInfo", {});
+
+    const extraPaths: string[] = [];
+    if (result.systemStubsPath) {
+      extraPaths.push(result.systemStubsPath);
+    }
+    if (result.projectStubsPath) {
+      extraPaths.push(result.projectStubsPath);
+    }
+
+    if (extraPaths.length === 0) {
+      return;
+    }
+
+    // Update python.analysis.extraPaths for Pylance
+    const pythonConfig = vscode.workspace.getConfiguration("python.analysis");
+    const existing = pythonConfig.get<string[]>("extraPaths", []);
+    const merged = [...existing];
+    let changed = false;
+
+    for (const p of extraPaths) {
+      if (!merged.includes(p)) {
+        merged.push(p);
+        changed = true;
+      }
+    }
+
+    if (changed) {
+      await pythonConfig.update(
+        "extraPaths",
+        merged,
+        vscode.ConfigurationTarget.Workspace
+      );
+      console.log("Ignition: configured Pylance extraPaths:", merged);
+    }
+  } catch (err) {
+    console.error("Ignition: failed to configure stubs:", err);
+  }
 }
 
 export async function stopLspClient(): Promise<void> {

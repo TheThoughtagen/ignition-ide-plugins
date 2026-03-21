@@ -10,6 +10,8 @@ from urllib.parse import unquote, urlparse
 
 import lsprotocol.types
 from lsprotocol.types import (
+    INITIALIZED,
+    WORKSPACE_DID_CHANGE_CONFIGURATION,
     TEXT_DOCUMENT_COMPLETION,
     TEXT_DOCUMENT_HOVER,
     TEXT_DOCUMENT_DEFINITION,
@@ -19,6 +21,8 @@ from lsprotocol.types import (
     TEXT_DOCUMENT_DID_CLOSE,
     TEXT_DOCUMENT_PUBLISH_DIAGNOSTICS,
     WORKSPACE_SYMBOL,
+    InitializedParams,
+    DidChangeConfigurationParams,
     CompletionItem,
     CompletionList,
     CompletionOptions,
@@ -228,7 +232,70 @@ from ignition_lsp.script_symbols import SymbolCache
 server.symbol_cache = SymbolCache()
 
 
-# Document Synchronization Handlers
+# ── Lifecycle Handlers ────────────────────────────────────────────
+
+
+@server.feature(INITIALIZED)
+def initialized(ls: IgnitionLanguageServer, params: InitializedParams):
+    """Handle initialized notification — read client settings."""
+    init_opts = getattr(ls, "initialization_options", None) or {}
+    _apply_settings(ls, init_opts)
+    logger.info(f"Client initialized (diagnostics={ls.diagnostics_enabled})")
+
+
+@server.feature(WORKSPACE_DID_CHANGE_CONFIGURATION)
+def did_change_configuration(
+    ls: IgnitionLanguageServer, params: DidChangeConfigurationParams
+):
+    """Handle workspace/didChangeConfiguration — update settings dynamically."""
+    settings = getattr(params, "settings", None) or {}
+    ignition_settings = settings.get("ignition", settings)
+    _apply_settings(ls, ignition_settings)
+    logger.info(f"Configuration updated (diagnostics={ls.diagnostics_enabled})")
+
+
+def _apply_settings(ls: IgnitionLanguageServer, settings: dict) -> None:
+    """Apply client settings to the server instance."""
+    if isinstance(settings, dict):
+        # Accept both flat and nested formats
+        ignition = settings.get("ignition", settings)
+        if isinstance(ignition, dict):
+            diag = ignition.get("diagnostics", {})
+            if isinstance(diag, dict):
+                enabled = diag.get("enabled")
+                if isinstance(enabled, bool):
+                    ls.diagnostics_enabled = enabled
+            elif isinstance(diag, bool):
+                ls.diagnostics_enabled = diag
+
+
+# ── Custom LSP Methods: Stubs Info ────────────────────────────────
+
+
+@server.feature("ignition/stubsInfo")
+def stubs_info_handler(ls: IgnitionLanguageServer, params: object) -> dict:
+    """Return paths to generated stub directories for type checker config.
+
+    Clients can use this to configure Pyright/Pylance extraPaths.
+    """
+    from ignition_lsp.stub_generator import get_system_stubs_path
+
+    result: dict = {
+        "systemStubsPath": get_system_stubs_path(),
+        "projectStubsPath": None,
+    }
+
+    if ls.project_index:
+        from ignition_lsp.stub_generator import STUBS_DIR_NAME
+        project_stubs = Path(ls.project_index.root_path) / STUBS_DIR_NAME
+        if project_stubs.is_dir():
+            result["projectStubsPath"] = str(project_stubs)
+
+    return result
+
+
+# ── Document Synchronization Handlers ────────────────────────────
+
 
 @server.feature(TEXT_DOCUMENT_DID_OPEN)
 async def did_open(ls: IgnitionLanguageServer, params: DidOpenTextDocumentParams):

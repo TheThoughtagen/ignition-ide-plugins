@@ -1,5 +1,5 @@
 import * as vscode from "vscode";
-import { startLspClient, stopLspClient } from "./lspClient";
+import { startLspClient, stopLspClient, configurePyrightStubs } from "./lspClient";
 import {
   ScriptFileSystemProvider,
   SCHEME,
@@ -169,6 +169,11 @@ export async function activate(
 
     // Refresh CodeLens once LSP is ready (for JSON files already open)
     codeLensProvider.refresh();
+
+    // Configure Pylance with stubs paths (non-blocking)
+    configurePyrightStubs().catch((err) => {
+      console.error("Ignition: stubs configuration failed:", err);
+    });
   }
 }
 
