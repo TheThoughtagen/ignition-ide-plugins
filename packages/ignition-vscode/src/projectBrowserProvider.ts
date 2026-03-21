@@ -379,6 +379,57 @@ export function registerProjectBrowser(
     )
   );
 
+  // View docs — find and open .md files in or near the resource directory
+  context.subscriptions.push(
+    vscode.commands.registerCommand(
+      "ignition.projectBrowser.viewDocs",
+      async (item: ProjectItem | ResourceTypeItem | ResourceItem) => {
+        let searchDir: string;
+        if (item instanceof ProjectItem) {
+          searchDir = item.projectPath;
+        } else if (item instanceof ResourceTypeItem) {
+          searchDir = item.dirPath;
+        } else if (item instanceof ResourceItem) {
+          searchDir = item.resourcePath;
+        } else {
+          return;
+        }
+
+        const mdFiles = findMarkdownFiles(searchDir);
+        if (mdFiles.length === 0) {
+          vscode.window.showInformationMessage("No documentation files found");
+          return;
+        }
+
+        if (mdFiles.length === 1) {
+          const doc = await vscode.workspace.openTextDocument(
+            vscode.Uri.file(mdFiles[0])
+          );
+          await vscode.window.showTextDocument(doc);
+          return;
+        }
+
+        // Multiple docs — show picker
+        const items = mdFiles.map((f) => ({
+          label: path.basename(f),
+          description: path.relative(searchDir, f),
+          filePath: f,
+        }));
+
+        const selected = await vscode.window.showQuickPick(items, {
+          placeHolder: "Select documentation to view",
+        });
+
+        if (selected) {
+          const doc = await vscode.workspace.openTextDocument(
+            vscode.Uri.file(selected.filePath)
+          );
+          await vscode.window.showTextDocument(doc);
+        }
+      }
+    )
+  );
+
   // Watch filesystem for changes and refresh
   const watcher = vscode.workspace.createFileSystemWatcher(
     "**/{resource.json,view.json,code.py,project.json}"
@@ -386,4 +437,32 @@ export function registerProjectBrowser(
   watcher.onDidCreate(() => provider.refresh());
   watcher.onDidDelete(() => provider.refresh());
   context.subscriptions.push(watcher);
+}
+
+/**
+ * Find .md files in a directory (non-recursive, max 2 levels deep).
+ */
+function findMarkdownFiles(dir: string, depth = 0): string[] {
+  const results: string[] = [];
+  if (depth > 2) {
+    return results;
+  }
+  try {
+    const entries = fs.readdirSync(dir, { withFileTypes: true });
+    for (const entry of entries) {
+      const fullPath = path.join(dir, entry.name);
+      if (entry.isFile() && entry.name.endsWith(".md")) {
+        results.push(fullPath);
+      } else if (
+        entry.isDirectory() &&
+        !entry.name.startsWith(".") &&
+        entry.name !== "node_modules"
+      ) {
+        results.push(...findMarkdownFiles(fullPath, depth + 1));
+      }
+    }
+  } catch {
+    // ignore
+  }
+  return results;
 }

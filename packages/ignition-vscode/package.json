@@ -187,6 +187,11 @@
       {
         "command": "ignition.projectBrowser.revealFiles",
         "title": "Reveal Files in Explorer"
+      },
+      {
+        "command": "ignition.projectBrowser.viewDocs",
+        "title": "View Docs",
+        "icon": "$(book)"
       }
     ],
     "menus": {
@@ -230,6 +235,11 @@
         {
           "command": "ignition.projectBrowser.revealFiles",
           "when": "view == ignitionProjectBrowser && viewItem == resourceWithFile",
+          "group": "navigation"
+        },
+        {
+          "command": "ignition.projectBrowser.viewDocs",
+          "when": "view == ignitionProjectBrowser",
           "group": "navigation"
         }
       ]

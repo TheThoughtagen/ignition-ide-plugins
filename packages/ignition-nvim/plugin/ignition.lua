@@ -182,6 +182,57 @@ local function spaces_to_tabs(bufnr)
   return changed
 end
 
+vim.api.nvim_create_user_command('IgnitionViewDocs', function()
+  -- Find .md files near the current buffer's directory or project root
+  local buf_dir = vim.fn.expand('%:p:h')
+  local project_root = vim.fs.root(0, 'project.json') or buf_dir
+
+  local md_files = {}
+  -- Search current dir, parent, and project root (up to 2 levels deep)
+  local search_dirs = { buf_dir }
+  if buf_dir ~= project_root then
+    table.insert(search_dirs, project_root)
+  end
+
+  for _, dir in ipairs(search_dirs) do
+    for name, type in vim.fs.dir(dir, { depth = 2 }) do
+      if type == 'file' and name:match('%.md$') then
+        local full = dir .. '/' .. name
+        -- Deduplicate
+        local found = false
+        for _, existing in ipairs(md_files) do
+          if existing == full then found = true; break end
+        end
+        if not found then
+          table.insert(md_files, full)
+        end
+      end
+    end
+  end
+
+  if #md_files == 0 then
+    vim.notify('No documentation files found', vim.log.levels.INFO, { title = 'Ignition' })
+    return
+  end
+
+  if #md_files == 1 then
+    vim.cmd('edit ' .. vim.fn.fnameescape(md_files[1]))
+    return
+  end
+
+  -- Multiple docs — show picker
+  vim.ui.select(md_files, {
+    prompt = 'Select documentation:',
+    format_item = function(item)
+      return vim.fn.fnamemodify(item, ':~:.')
+    end,
+  }, function(choice)
+    if choice then
+      vim.cmd('edit ' .. vim.fn.fnameescape(choice))
+    end
+  end)
+end, { desc = 'View documentation (.md files) near current resource' })
+
 vim.api.nvim_create_user_command('IgnitionTabify', function()
   local changed = spaces_to_tabs()
   vim.notify(

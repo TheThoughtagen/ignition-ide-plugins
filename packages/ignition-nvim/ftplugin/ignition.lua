@@ -81,6 +81,10 @@ if vim.fn.expand('%:e') == 'gwbk' then
   }))
 end
 
+vim.keymap.set('n', '<localleader>im', '<cmd>IgnitionViewDocs<cr>', vim.tbl_extend('force', keymap_opts, {
+  desc = 'View documentation (.md files)',
+}))
+
 -- Add undo command for keymaps
 vim.b.undo_ftplugin = vim.b.undo_ftplugin .. '|mapclear <buffer>'
 
