@@ -9,6 +9,9 @@ import {
   ComponentTreeProvider,
   registerComponentTree,
 } from "./componentTreeProvider";
+import {
+  ProjectBrowserProvider,
+} from "./projectBrowserProvider";
 import { openWithKindling } from "./kindling";
 import {
   openScript,
@@ -18,11 +21,14 @@ import {
   showInfo,
   formatIgnitionJson,
   debugLsp,
+  searchResources,
+  copyQualifiedPath,
 } from "./commands";
 
 let scriptFsProvider: ScriptFileSystemProvider;
 let codeLensProvider: IgnitionCodeLensProvider;
 let componentTreeProvider: ComponentTreeProvider;
+let projectBrowserProvider: ProjectBrowserProvider;
 
 export async function activate(
   context: vscode.ExtensionContext
@@ -55,6 +61,14 @@ export async function activate(
   context.subscriptions.push(treeView);
   registerComponentTree(context, componentTreeProvider, scriptFsProvider);
 
+  // Register Project Browser view
+  projectBrowserProvider = new ProjectBrowserProvider();
+  const projectTreeView = vscode.window.createTreeView("ignitionProjectBrowser", {
+    treeDataProvider: projectBrowserProvider,
+    showCollapseAll: true,
+  });
+  context.subscriptions.push(projectTreeView);
+
   // Register commands
   context.subscriptions.push(
     vscode.commands.registerCommand(
@@ -81,6 +95,15 @@ export async function activate(
     ),
     vscode.commands.registerCommand("ignition.refreshComponentTree", () =>
       componentTreeProvider.refresh()
+    ),
+    vscode.commands.registerCommand("ignition.searchResources", () =>
+      searchResources()
+    ),
+    vscode.commands.registerCommand("ignition.copyQualifiedPath", () =>
+      copyQualifiedPath()
+    ),
+    vscode.commands.registerCommand("ignition.refreshProjectBrowser", () =>
+      projectBrowserProvider.refresh()
     )
   );
 

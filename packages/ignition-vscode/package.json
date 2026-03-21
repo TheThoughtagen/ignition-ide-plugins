@@ -62,6 +62,11 @@
     "views": {
       "ignition": [
         {
+          "id": "ignitionProjectBrowser",
+          "name": "Project Browser",
+          "when": "workspaceFolderCount > 0"
+        },
+        {
           "id": "ignitionComponentTree",
           "name": "Component Tree",
           "when": "workspaceFolderCount > 0"
@@ -69,6 +74,11 @@
       ]
     },
     "viewsWelcome": [
+      {
+        "view": "ignitionProjectBrowser",
+        "contents": "No Ignition projects found.\n\nOpen a folder containing a project.json file.\n[Open Folder](command:vscode.openFolder)",
+        "when": "true"
+      },
       {
         "view": "ignitionComponentTree",
         "contents": "Open a Perspective view.json file to see the component tree.\n[Open JSON File](command:workbench.action.quickOpen)",
@@ -159,6 +169,20 @@
         "command": "ignition.componentTree.decodeScripts",
         "title": "Decode Scripts",
         "icon": "$(edit)"
+      },
+      {
+        "command": "ignition.searchResources",
+        "title": "Ignition: Search Resources",
+        "icon": "$(search)"
+      },
+      {
+        "command": "ignition.copyQualifiedPath",
+        "title": "Ignition: Copy Qualified Script Path"
+      },
+      {
+        "command": "ignition.refreshProjectBrowser",
+        "title": "Ignition: Refresh Project Browser",
+        "icon": "$(refresh)"
       }
     ],
     "menus": {
@@ -177,6 +201,16 @@
         }
       ],
       "view/title": [
+        {
+          "command": "ignition.refreshProjectBrowser",
+          "when": "view == ignitionProjectBrowser",
+          "group": "navigation"
+        },
+        {
+          "command": "ignition.searchResources",
+          "when": "view == ignitionProjectBrowser",
+          "group": "navigation"
+        },
         {
           "command": "ignition.refreshComponentTree",
           "when": "view == ignitionComponentTree",

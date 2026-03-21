@@ -203,6 +203,101 @@ export async function listScripts(
 }
 
 /**
+ * Search all resources across the workspace using LSP workspace symbols.
+ */
+export async function searchResources(): Promise<void> {
+  const client = getClient();
+  if (!client) {
+    vscode.window.showWarningMessage("LSP client not connected");
+    return;
+  }
+
+  // Fetch all workspace symbols (empty query = return all)
+  const symbols: vscode.SymbolInformation[] = await client.sendRequest(
+    "workspace/symbol",
+    { query: "" }
+  );
+
+  if (!symbols || symbols.length === 0) {
+    vscode.window.showInformationMessage("No resources found. Is an Ignition project open?");
+    return;
+  }
+
+  const items = symbols.map((sym) => ({
+    label: `$(${symbolIcon(sym.kind)}) ${sym.name}`,
+    description: sym.containerName ?? "",
+    detail: sym.location.uri.fsPath,
+    symbol: sym,
+  }));
+
+  const selected = await vscode.window.showQuickPick(items, {
+    placeHolder: "Search resources (scripts, views, queries...)",
+    matchOnDescription: true,
+    matchOnDetail: true,
+  });
+
+  if (selected) {
+    const uri = selected.symbol.location.uri;
+    const line = selected.symbol.location.range.start.line;
+    const doc = await vscode.workspace.openTextDocument(uri);
+    const editor = await vscode.window.showTextDocument(doc);
+    const pos = new vscode.Position(line, 0);
+    editor.selection = new vscode.Selection(pos, pos);
+    editor.revealRange(
+      new vscode.Range(pos, pos),
+      vscode.TextEditorRevealType.InCenter
+    );
+  }
+}
+
+function symbolIcon(kind: vscode.SymbolKind): string {
+  switch (kind) {
+    case vscode.SymbolKind.Module: return "symbol-module";
+    case vscode.SymbolKind.Function: return "symbol-function";
+    case vscode.SymbolKind.Event: return "symbol-event";
+    default: return "symbol-misc";
+  }
+}
+
+/**
+ * Copy the qualified script path for the current symbol.
+ *
+ * Uses LSP workspace symbols to find the module path for the current file.
+ */
+export async function copyQualifiedPath(): Promise<void> {
+  const editor = vscode.window.activeTextEditor;
+  if (!editor) {
+    vscode.window.showWarningMessage("No active editor");
+    return;
+  }
+
+  const client = getClient();
+  if (!client) {
+    vscode.window.showWarningMessage("LSP client not connected");
+    return;
+  }
+
+  const fileUri = editor.document.uri.toString();
+
+  // Find symbols matching the current file
+  const symbols: vscode.SymbolInformation[] = await client.sendRequest(
+    "workspace/symbol",
+    { query: "" }
+  );
+
+  const match = symbols?.find((s) => s.location.uri.toString() === fileUri);
+  if (match) {
+    await vscode.env.clipboard.writeText(match.name);
+    vscode.window.showInformationMessage(`Copied: ${match.name}`);
+  } else {
+    // Fallback: derive from file path
+    const relativePath = vscode.workspace.asRelativePath(editor.document.uri);
+    await vscode.env.clipboard.writeText(relativePath);
+    vscode.window.showInformationMessage(`Copied: ${relativePath}`);
+  }
+}
+
+/**
  * Show extension info and LSP status.
  */
 export async function showInfo(): Promise<void> {
