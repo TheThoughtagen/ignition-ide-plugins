@@ -30,7 +30,7 @@ try:
     _LINT_AVAILABLE = True
 except ImportError:
     # Fallback: sibling repo checkout (dev only)
-    _SIBLING_PATH = Path(__file__).parent.parent.parent.parent / "ignition-lint" / "src"
+    _SIBLING_PATH = Path(__file__).parent.parent.parent.parent.parent / "ignition-lint" / "src"
     if _SIBLING_PATH.exists():
         sys.path.insert(0, str(_SIBLING_PATH))
         try:

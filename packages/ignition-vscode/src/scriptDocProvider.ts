@@ -138,10 +138,15 @@ export class ScriptFileSystemProvider implements vscode.FileSystemProvider {
         };
       }
 
-      const result: { decoded: string; indent?: string } =
+      const result: { decoded: string; indent?: string; error?: string } =
         await client.sendRequest("ignition/decodeScript", {
           encoded: target.content,
         });
+
+      if (result.error) {
+        vscode.window.showErrorMessage(`Failed to decode script: ${result.error}`);
+        return { text: `# Error decoding script: ${result.error}`, indent: "" };
+      }
 
       return { text: result.decoded, indent: result.indent ?? "" };
     } catch (err: unknown) {

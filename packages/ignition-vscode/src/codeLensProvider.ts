@@ -56,7 +56,8 @@ export class IgnitionCodeLensProvider implements vscode.CodeLensProvider {
           tooltip: script.decodedPreview || "Open decoded script",
         });
       });
-    } catch {
+    } catch (err) {
+      console.error("Ignition CodeLens: failed to find scripts:", err);
       return [];
     }
   }

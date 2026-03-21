@@ -4,12 +4,15 @@ Port of lua/ignition/json_parser.lua. Reads files from disk (not editor
 buffers), making it usable from any editor via LSP custom methods.
 """
 
+import logging
 import re
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import List, Optional
 
 from ignition_lsp.encoding import decode, is_encoded_script
+
+logger = logging.getLogger(__name__)
 
 # JSON keys that contain embedded scripts in Ignition resources.
 # Must stay in sync with lua/ignition/json_parser.lua SCRIPT_KEYS.
@@ -61,6 +64,7 @@ def find_scripts(file_path: str) -> List[ScriptLocation]:
     """
     path = Path(file_path)
     if not path.is_file():
+        logger.warning(f"File not found for script scanning: {file_path}")
         return []
 
     lines = path.read_text(encoding="utf-8").splitlines()

@@ -88,7 +88,9 @@ export async function activate(
         .getConfiguration("ignition")
         .get<boolean>("autoConvertTabs", true);
       if (autoConvert && doc.languageId === "python" && doc.uri.scheme === "file") {
-        convertIndentationToTabs(doc);
+        convertIndentationToTabs(doc).catch((err) => {
+          console.error("Ignition: tab conversion failed:", err);
+        });
       }
     })
   );

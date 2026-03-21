@@ -9,7 +9,7 @@ from pathlib import Path
 
 import pytest
 
-from ignition_lsp.encoding import decode, encode, is_encoded_script
+from ignition_lsp.encoding import decode, dedent, encode, is_encoded_script, reindent
 
 # Load shared test vectors (path relative to repo root)
 _VECTORS_PATH = Path(__file__).resolve().parent.parent.parent.parent / "tests" / "fixtures" / "encoding_test_vectors.json"
@@ -125,3 +125,110 @@ class TestIsEncodedScript:
     )
     def test_detection(self, case: dict) -> None:
         assert is_encoded_script(case["text"]) == case["is_encoded"]
+
+
+class TestDedent:
+    """Strip common leading tabs from embedded scripts."""
+
+    def test_single_tab_level(self) -> None:
+        text = "\tline1\n\tline2"
+        result, indent = dedent(text)
+        assert result == "line1\nline2"
+        assert indent == "\t"
+
+    def test_two_tab_levels(self) -> None:
+        text = "\t\tline1\n\t\tline2"
+        result, indent = dedent(text)
+        assert result == "line1\nline2"
+        assert indent == "\t\t"
+
+    def test_varying_indent_depths(self) -> None:
+        """Min tabs is used — deeper lines keep their extra indentation."""
+        text = "\tline1\n\t\tindented\n\tline3"
+        result, indent = dedent(text)
+        assert result == "line1\n\tindented\nline3"
+        assert indent == "\t"
+
+    def test_empty_lines_preserved(self) -> None:
+        text = "\tline1\n\n\tline2"
+        result, indent = dedent(text)
+        assert result == "line1\n\nline2"
+        assert indent == "\t"
+
+    def test_no_tabs_returns_original(self) -> None:
+        text = "line1\nline2"
+        result, indent = dedent(text)
+        assert result == text
+        assert indent == ""
+
+    def test_empty_string(self) -> None:
+        result, indent = dedent("")
+        assert result == ""
+        assert indent == ""
+
+    def test_mixed_spaces_and_tabs(self) -> None:
+        """Stray spaces alongside tabs should not prevent dedent."""
+        text = " \tline1\n \tline2"
+        result, indent = dedent(text)
+        assert result == "line1\nline2"
+        assert indent == "\t"
+
+    def test_all_empty_lines(self) -> None:
+        """All-whitespace lines should not affect min_tabs calculation."""
+        text = "\t\n\tline1\n\t\n\tline2"
+        result, indent = dedent(text)
+        assert result == "\nline1\n\nline2"
+        assert indent == "\t"
+
+    def test_single_line_with_tab(self) -> None:
+        text = "\thello"
+        result, indent = dedent(text)
+        assert result == "hello"
+        assert indent == "\t"
+
+
+class TestReindent:
+    """Re-add indentation stripped by dedent."""
+
+    def test_adds_tabs(self) -> None:
+        text = "line1\nline2"
+        assert reindent(text, "\t") == "\tline1\n\tline2"
+
+    def test_empty_indent_is_noop(self) -> None:
+        text = "line1\nline2"
+        assert reindent(text, "") == text
+
+    def test_empty_lines_stay_empty(self) -> None:
+        text = "line1\n\nline2"
+        assert reindent(text, "\t") == "\tline1\n\n\tline2"
+
+    def test_two_tab_indent(self) -> None:
+        text = "line1\n\tindented"
+        assert reindent(text, "\t\t") == "\t\tline1\n\t\t\tindented"
+
+
+class TestDedentReindentRoundTrip:
+    """Round-trip: reindent(dedent(text)) == text for well-formed scripts."""
+
+    def test_single_tab(self) -> None:
+        original = "\tprint('hello')\n\tprint('world')"
+        text, indent = dedent(original)
+        assert reindent(text, indent) == original
+
+    def test_two_tabs(self) -> None:
+        original = "\t\tif True:\n\t\t\tpass"
+        text, indent = dedent(original)
+        assert reindent(text, indent) == original
+
+    def test_with_empty_lines(self) -> None:
+        original = "\tdef foo():\n\n\t\treturn 1"
+        text, indent = dedent(original)
+        restored = reindent(text, indent)
+        # Empty lines lose their tab in dedent, so round-trip normalizes them
+        # This is acceptable — empty lines have no semantic meaning
+        assert restored.replace("\t\n", "\n") == original.replace("\t\n", "\n")
+
+    def test_no_indent(self) -> None:
+        original = "no indent here"
+        text, indent = dedent(original)
+        assert reindent(text, indent) == original

@@ -167,8 +167,8 @@ export async function listScripts(
           fileName: vscode.workspace.asRelativePath(file),
         });
       }
-    } catch {
-      // Skip files that can't be scanned
+    } catch (err) {
+      console.warn(`Ignition: failed to scan ${file.toString()}:`, err);
     }
   }
 

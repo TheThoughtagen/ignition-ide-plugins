@@ -30,10 +30,11 @@ async function findLspBinary(
   }
 
   // 2. Extension global storage venv
+  const binDir = process.platform === "win32" ? "Scripts" : "bin";
   const venvBin = path.join(
     context.globalStorageUri.fsPath,
     "venv",
-    "bin",
+    binDir,
     "ignition-lsp"
   );
   if (fs.existsSync(venvBin)) {
@@ -87,10 +88,11 @@ async function installLsp(
         execFileSync("python3", ["-m", "venv", venvDir], { timeout: 30000 });
 
         // Install ignition-lsp
-        const pipPath = path.join(venvDir, "bin", "pip");
+        const installBinDir = process.platform === "win32" ? "Scripts" : "bin";
+        const pipPath = path.join(venvDir, installBinDir, "pip");
         execFileSync(pipPath, ["install", "ignition-lsp"], { timeout: 120000 });
 
-        const binary = path.join(venvDir, "bin", "ignition-lsp");
+        const binary = path.join(venvDir, installBinDir, "ignition-lsp");
         if (fs.existsSync(binary)) {
           vscode.window.showInformationMessage(
             "ignition-lsp installed successfully!"
@@ -145,7 +147,14 @@ export async function startLspClient(
     clientOptions
   );
 
-  await client.start();
+  try {
+    await client.start();
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    vscode.window.showErrorMessage(`Failed to start ignition-lsp: ${message}`);
+    client = undefined;
+    return undefined;
+  }
   return client;
 }
 

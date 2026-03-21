@@ -3,6 +3,7 @@
 import asyncio
 import logging
 import sys
+import tempfile
 from pathlib import Path
 from typing import List, Optional
 from urllib.parse import unquote, urlparse
@@ -52,7 +53,7 @@ logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     handlers=[
-        logging.FileHandler('/tmp/ignition-lsp.log'),
+        logging.FileHandler(str(Path(tempfile.gettempdir()) / 'ignition-lsp.log')),
         logging.StreamHandler(sys.stderr)
     ]
 )
@@ -319,8 +320,8 @@ async def run_diagnostics(ls: IgnitionLanguageServer, uri: str):
                     diagnostics=[],
                 )
             )
-        except:
-            pass
+        except Exception as e:
+            logger.warning(f"Failed to clear diagnostics for {uri}: {e}")
 
 
 # LSP Feature Handlers
@@ -330,7 +331,6 @@ def completion(ls: IgnitionLanguageServer, params: CompletionParams) -> Optional
     """Provide completion items for Ignition APIs."""
     logger.info(f"Completion requested at {params.position}")
 
-    # Use API loader if available
     if ls.api_loader:
         try:
             from ignition_lsp.completion import get_completions
@@ -338,17 +338,17 @@ def completion(ls: IgnitionLanguageServer, params: CompletionParams) -> Optional
             return get_completions(doc, params.position, ls.api_loader, ls.project_index, ls.java_loader, ls.symbol_cache, ls.pylib_loader)
         except Exception as e:
             logger.error(f"Error getting completions: {e}", exc_info=True)
+            return CompletionList(is_incomplete=False, items=[])
 
-    # Fallback to basic completions
-    items = [
+    # API loader not initialized — provide a minimal hint
+    logger.warning("Completion requested but API loader is not initialized")
+    return CompletionList(is_incomplete=False, items=[
         CompletionItem(
             label="system",
             detail="Ignition system functions",
             documentation="Ignition platform system functions",
         ),
-    ]
-
-    return CompletionList(is_incomplete=False, items=items)
+    ])
 
 
 @server.feature(TEXT_DOCUMENT_HOVER)
@@ -356,7 +356,6 @@ def hover(ls: IgnitionLanguageServer, params: HoverParams) -> Optional[Hover]:
     """Provide hover information for Ignition functions."""
     logger.info(f"Hover requested at {params.position}")
 
-    # Use API loader if available
     if ls.api_loader:
         try:
             from ignition_lsp.hover import get_hover_info
@@ -364,8 +363,9 @@ def hover(ls: IgnitionLanguageServer, params: HoverParams) -> Optional[Hover]:
             return get_hover_info(doc, params.position, ls.api_loader, ls.java_loader, ls.project_index, ls.symbol_cache, ls.pylib_loader)
         except Exception as e:
             logger.error(f"Error getting hover info: {e}", exc_info=True)
+            return None
 
-    # Fallback
+    # API loader not initialized
     return Hover(
         contents=MarkupContent(
             kind=MarkupKind.Markdown,
@@ -461,7 +461,7 @@ def decode_script_handler(ls: IgnitionLanguageServer, params: object) -> dict:
         return {"decoded": text, "indent": indent}
     except Exception as e:
         logger.error(f"Error decoding script: {e}", exc_info=True)
-        return {"decoded": "", "indent": ""}
+        return {"decoded": "", "indent": "", "error": str(e)}
 
 
 @server.feature("ignition/encodeScript")
@@ -476,7 +476,7 @@ def encode_script_handler(ls: IgnitionLanguageServer, params: object) -> dict:
         return {"encoded": encode(decoded)}
     except Exception as e:
         logger.error(f"Error encoding script: {e}", exc_info=True)
-        return {"encoded": ""}
+        return {"encoded": "", "error": str(e)}
 
 
 @server.feature("ignition/saveScript")
