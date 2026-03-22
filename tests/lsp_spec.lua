@@ -145,8 +145,16 @@ describe('start_lsp_for_buffer', function()
     vim.api.nvim_buf_set_name(buf, '/tmp/lsp_test_no_attach.json')
 
     -- No ignition_lsp clients should be attached to a fresh buffer
-    local clients = vim.lsp.get_clients({ bufnr = buf, name = 'ignition_lsp' })
-    eq(0, #clients)
+    -- vim.lsp.get_clients (0.10+) or vim.lsp.get_active_clients (older)
+    local get_clients = vim.lsp.get_clients or vim.lsp.get_active_clients
+    local all_clients = get_clients({ bufnr = buf })
+    local ignition_clients = {}
+    for _, c in ipairs(all_clients) do
+      if c.name == 'ignition_lsp' then
+        table.insert(ignition_clients, c)
+      end
+    end
+    eq(0, #ignition_clients)
 
     wipe(buf)
   end)
