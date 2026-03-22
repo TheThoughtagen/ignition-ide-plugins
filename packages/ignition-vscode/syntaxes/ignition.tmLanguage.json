@@ -1,0 +1,30 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "Ignition Resource",
+  "scopeName": "source.ignition",
+  "patterns": [
+    { "include": "source.json" },
+    { "include": "#ignition-keywords" },
+    { "include": "#ignition-scopes" },
+    { "include": "#ignition-module-ids" },
+    { "include": "#ignition-system-calls" }
+  ],
+  "repository": {
+    "ignition-keywords": {
+      "match": "\"(scope|moduleId|resourceType|typeId|componentType|eventScripts|params|props|meta|custom|root)\"",
+      "name": "keyword.other.ignition"
+    },
+    "ignition-scopes": {
+      "match": "\"(Gateway|Application|Session)\"",
+      "name": "entity.name.type.ignition"
+    },
+    "ignition-module-ids": {
+      "match": "\"com\\.inductiveautomation\\.[^\"]*\"",
+      "name": "entity.name.namespace.ignition"
+    },
+    "ignition-system-calls": {
+      "match": "\\bsystem\\.\\w+\\b",
+      "name": "entity.name.function.ignition"
+    }
+  }
+}

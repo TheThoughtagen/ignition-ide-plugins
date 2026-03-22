@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+  <!-- Ignition spark: dot at bottom, two strokes fanning upward -->
+  <!-- Dot at bottom center -->
+  <circle cx="8" cy="21" r="2.3"/>
+  <!-- Left stroke — goes up and to the left -->
+  <rect width="2.8" height="13" rx="1.4" transform="translate(2.5,5) rotate(-20 1.4 13)"/>
+  <!-- Right stroke — goes up and to the right, longer -->
+  <rect width="3.2" height="17" rx="1.6" transform="translate(8.5,1) rotate(25 1.6 17)"/>
+</svg>
