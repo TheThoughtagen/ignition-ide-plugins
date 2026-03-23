@@ -12,6 +12,9 @@ from ignition_lsp.definition import (
     _get_word_at_position,
     _resolve_api_function,
     _resolve_project_script,
+    _resolve_import,
+    _parse_import_line,
+    _find_module_in_index,
     _find_function_line,
     _api_function_location,
 )
@@ -304,3 +307,150 @@ class TestSymbolLevelDefinition:
         loc = get_definition(doc, position(0, 10), None, index)  # no symbol_cache
         assert loc is not None
         assert loc.range.start.line == 0
+
+    def test_from_import_resolves_module(self, mock_document, position):
+        """go-to-definition on module in 'from X import Y' resolves the module."""
+        index = _make_index([
+            _make_loc(module_path="core.util.secrets", file_path="/p/secrets.py"),
+        ])
+        doc = mock_document("from core.util.secrets import get_secret")
+        # Cursor on "core" in the module path
+        loc = get_definition(doc, position(0, 7), None, index)
+        assert loc is not None
+        assert loc.uri == "file:///p/secrets.py"
+
+    def test_from_import_resolves_imported_name(self, tmp_path, mock_document, position, symbol_cache):
+        """go-to-definition on imported name jumps to the symbol in the module."""
+        path = _write_py(tmp_path, '''\
+            DEFAULT_PROVIDER = "default"
+
+            def get_secret(name, default=None):
+                pass
+
+            def get_service_config(service):
+                pass
+        ''')
+        index = _make_index([
+            _make_loc(module_path="core.util.secrets", file_path=path),
+        ])
+        doc = mock_document("from core.util.secrets import get_secret")
+        # Cursor on "get_secret" (the imported name)
+        loc = get_definition(doc, position(0, 35), None, index, symbol_cache)
+        assert loc is not None
+        assert loc.uri == f"file://{path}"
+        # get_secret is on line 3 (1-based) -> line 2 (0-based)
+        assert loc.range.start.line == 2
+
+    def test_bare_import_resolves(self, mock_document, position):
+        """go-to-definition on 'import X' resolves the module."""
+        index = _make_index([
+            _make_loc(module_path="testing.decorators", file_path="/p/decorators.py"),
+        ])
+        doc = mock_document("import testing.decorators")
+        # Cursor on "testing"
+        loc = get_definition(doc, position(0, 10), None, index)
+        assert loc is not None
+        assert loc.uri == "file:///p/decorators.py"
+
+
+# ── Import Line Parsing ──────────────────────────────────────────────
+
+
+class TestParseImportLine:
+    def test_from_import_single(self):
+        result = _parse_import_line("from core.util.secrets import get_secret")
+        assert result == ("core.util.secrets", ["get_secret"])
+
+    def test_from_import_multiple(self):
+        result = _parse_import_line("from core.util.secrets import get_secret, get_service_config, DEFAULT_PROVIDER")
+        assert result is not None
+        module, names = result
+        assert module == "core.util.secrets"
+        assert "get_secret" in names
+        assert "get_service_config" in names
+        assert "DEFAULT_PROVIDER" in names
+
+    def test_from_import_with_parens(self):
+        result = _parse_import_line("from core.util.secrets import (get_secret, get_service_config)")
+        assert result is not None
+        module, names = result
+        assert module == "core.util.secrets"
+        assert "get_secret" in names
+        assert "get_service_config" in names
+
+    def test_from_import_with_alias(self):
+        result = _parse_import_line("from core.util.secrets import get_secret as gs")
+        assert result is not None
+        module, names = result
+        assert module == "core.util.secrets"
+        assert names == ["get_secret"]
+
+    def test_plain_import(self):
+        result = _parse_import_line("import testing.decorators")
+        assert result == ("testing.decorators", [])
+
+    def test_not_import_line(self):
+        assert _parse_import_line("x = testing.decorators.test()") is None
+
+    def test_comment_line(self):
+        assert _parse_import_line("# from testing import stuff") is None
+
+    def test_indented_import(self):
+        result = _parse_import_line("    from testing.decorators import test")
+        assert result is not None
+        assert result[0] == "testing.decorators"
+
+
+# ── Import-Aware Definition (Integration) ────────────────────────────
+
+
+class TestResolveImport:
+    def test_cursor_on_imported_name_without_cache(self, mock_document, position):
+        """Without symbol cache, falls back to the module file."""
+        index = _make_index([
+            _make_loc(module_path="testing.decorators", file_path="/p/decorators.py"),
+        ])
+        doc = mock_document("from testing.decorators import test")
+        # Cursor on "test"
+        loc = _resolve_import(doc, position(0, 32), "test", index)
+        assert loc is not None
+        assert loc.uri == "file:///p/decorators.py"
+
+    def test_no_match_returns_none(self, mock_document, position):
+        index = _make_index([])
+        doc = mock_document("from nonexistent.module import thing")
+        loc = _resolve_import(doc, position(0, 32), "thing", index)
+        assert loc is None
+
+    def test_non_import_line_returns_none(self, mock_document, position):
+        index = _make_index([
+            _make_loc(module_path="testing.decorators", file_path="/p/decorators.py"),
+        ])
+        doc = mock_document("result = testing.decorators.test()")
+        loc = _resolve_import(doc, position(0, 30), "test", index)
+        assert loc is None
+
+
+# ── Find Module in Index ─────────────────────────────────────────────
+
+
+class TestFindModuleInIndex:
+    def test_exact_match(self):
+        index = _make_index([
+            _make_loc(module_path="testing.decorators", file_path="/p/decorators.py"),
+        ])
+        loc = _find_module_in_index("testing.decorators", index)
+        assert loc is not None
+        assert loc.file_path == "/p/decorators.py"
+
+    def test_prefix_unique_match(self):
+        index = _make_index([
+            _make_loc(module_path="testing.decorators", file_path="/p/decorators.py"),
+        ])
+        loc = _find_module_in_index("testing", index)
+        assert loc is not None
+
+    def test_no_match(self):
+        index = _make_index([])
+        loc = _find_module_in_index("nonexistent.module", index)
+        assert loc is None

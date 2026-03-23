@@ -3,12 +3,13 @@
 Resolves go-to-definition requests for:
 1. system.* API functions -> jump to the function entry in the api_db/ JSON file
 2. project.*/shared.* references -> jump to the script source file via ProjectIndex
+3. Python imports -> parse from/import statements and resolve via ProjectIndex
 """
 
-import json
 import logging
+import re
 from pathlib import Path
-from typing import Optional
+from typing import Optional, Tuple
 
 from lsprotocol.types import Location, Position, Range
 from pygls.workspace import TextDocument
@@ -46,6 +47,12 @@ def get_definition(
     # 2. Try project/shared script definition
     if project_index is not None:
         loc = _resolve_project_script(word, project_index, symbol_cache)
+        if loc is not None:
+            return loc
+
+    # 3. Try Python import resolution (from X import Y / import X)
+    if project_index is not None:
+        loc = _resolve_import(document, position, word, project_index, symbol_cache)
         if loc is not None:
             return loc
 
@@ -234,6 +241,103 @@ def _resolve_symbol_in_file(
                     end=Position(line=var.line_number - 1, character=0),
                 ),
             )
+
+    return None
+
+
+# Regex patterns for Python import statements
+_FROM_IMPORT_RE = re.compile(
+    r"^\s*from\s+([\w.]+)\s+import\s+(.+)$"
+)
+_IMPORT_RE = re.compile(
+    r"^\s*import\s+([\w.]+)"
+)
+
+
+def _resolve_import(
+    document: TextDocument,
+    position: Position,
+    word: str,
+    project_index: ProjectIndex,
+    symbol_cache: Optional[SymbolCache] = None,
+) -> Optional[Location]:
+    """Resolve a go-to-definition request via Python import statements.
+
+    Handles two cases:
+    1. Cursor on module in 'from <module> import ...' or 'import <module>' -> jump to module
+    2. Cursor on imported name in 'from <module> import <name>' -> jump to symbol in module
+    """
+    line = document.lines[position.line]
+    parsed = _parse_import_line(line)
+    if parsed is None:
+        return None
+
+    module_path, imported_names = parsed
+
+    # Check if the word under cursor is one of the imported names
+    if imported_names and word in imported_names:
+        # Cursor is on an imported name — resolve module, then find symbol
+        loc = _find_module_in_index(module_path, project_index)
+        if loc is not None and symbol_cache is not None and loc.script_key == "__file__":
+            symbol_loc = _resolve_symbol_in_file(loc, word, symbol_cache)
+            if symbol_loc is not None:
+                return symbol_loc
+        # Fall back to the module file itself
+        if loc is not None:
+            return _script_location_to_lsp(loc)
+    else:
+        # Cursor is on the module path — resolve directly
+        loc = _find_module_in_index(module_path, project_index)
+        if loc is not None:
+            return _script_location_to_lsp(loc)
+
+    return None
+
+
+def _parse_import_line(line: str) -> Optional[Tuple[str, list]]:
+    """Parse a Python import line and return (module_path, [imported_names]).
+
+    Returns None if the line is not an import statement.
+    For 'from X import a, b, c' returns ('X', ['a', 'b', 'c']).
+    For 'import X' returns ('X', []).
+    """
+    # Try "from X import ..."
+    m = _FROM_IMPORT_RE.match(line)
+    if m:
+        module = m.group(1)
+        names_str = m.group(2)
+        # Handle "from X import (a, b, c)" with parens
+        names_str = names_str.strip().strip("()")
+        names = [n.strip().split(" as ")[0].strip() for n in names_str.split(",") if n.strip()]
+        return (module, names)
+
+    # Try "import X"
+    m = _IMPORT_RE.match(line)
+    if m:
+        return (m.group(1), [])
+
+    return None
+
+
+def _find_module_in_index(
+    module_path: str, project_index: ProjectIndex
+) -> Optional[ScriptLocation]:
+    """Find a module in the project index, trying progressively shorter prefixes."""
+    candidate = module_path
+    while candidate:
+        loc = project_index.find_by_module_path(candidate)
+        if loc is not None:
+            return loc
+
+        # Try prefix match — unique match is good enough
+        matches = project_index.search_module_paths(candidate)
+        if len(matches) == 1:
+            return matches[0]
+
+        if "." in candidate:
+            candidate = candidate.rsplit(".", 1)[0]
+        else:
+            break
 
     return None
 
