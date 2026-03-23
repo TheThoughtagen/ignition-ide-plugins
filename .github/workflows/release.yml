@@ -7,6 +7,7 @@ on:
 
 jobs:
   ci:
+    if: "!startsWith(github.ref_name, 'vscode/')"
     uses: ./.github/workflows/ci.yml
 
   build:
@@ -49,7 +50,7 @@ jobs:
         run: |
           VERSION="${GITHUB_REF#refs/tags/}"
           mkdir -p ignition-nvim
-          cp -r lua plugin ftdetect ftplugin syntax README.md LICENSE lazy.lua ignition-nvim/
+          cp -r lua plugin ftdetect ftplugin syntax doc queries README.md LICENSE lazy.lua ignition-nvim/
           zip -r "ignition-nvim-${VERSION}.zip" ignition-nvim/
           tar czf "ignition-nvim-${VERSION}.tar.gz" ignition-nvim/
 
