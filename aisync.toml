@@ -1,0 +1,7 @@
+schema_version = 1
+
+[defaults]
+sync_strategy = "symlink"
+
+[tools.claude-code]
+enabled = true

@@ -6,18 +6,22 @@ if vim.b.ignition_python_ftplugin then
   return
 end
 
--- Check if this file is inside an Ignition project (has project.json ancestor)
-local function in_ignition_project()
+-- Find the Ignition project root (directory containing project.json)
+local function find_ignition_root()
   local path = vim.api.nvim_buf_get_name(0)
   if path == '' then
-    return false
+    return nil
   end
   local dir = vim.fn.fnamemodify(path, ':h')
-  local root = vim.fs.find('project.json', { path = dir, upward = true, type = 'file' })[1]
-  return root ~= nil
+  local project_json = vim.fs.find('project.json', { path = dir, upward = true, type = 'file' })[1]
+  if project_json then
+    return vim.fn.fnamemodify(project_json, ':h')
+  end
+  return nil
 end
 
-if not in_ignition_project() then
+local project_root = find_ignition_root()
+if not project_root then
   return
 end
 
@@ -28,6 +32,9 @@ vim.bo.expandtab = false
 vim.bo.tabstop = 4
 vim.bo.shiftwidth = 4
 vim.bo.softtabstop = 4
+
+-- NOTE: includeexpr for gf is set in plugin/ignition.lua's FileType autocmd
+-- (deferred via vim.schedule to override the built-in Python ftplugin).
 
 -- Convert leading spaces to tabs in the current buffer
 -- Only touches indentation, leaves spaces inside code untouched

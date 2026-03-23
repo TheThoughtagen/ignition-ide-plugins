@@ -363,6 +363,20 @@ vim.api.nvim_create_autocmd('FileType', {
     vim.bo[args.buf].tabstop = 4
     vim.bo[args.buf].shiftwidth = 4
     vim.bo[args.buf].softtabstop = 4
+
+    -- Map gf to Ignition-aware import navigation.
+    -- The built-in gf + includeexpr chain has quirks with absolute paths,
+    -- so we use an explicit keymap that resolves and opens directly.
+    vim.keymap.set('n', 'gf', function()
+      local fname = vim.fn.expand('<cfile>')
+      local resolved = require('ignition').python_includeexpr(fname)
+      if resolved ~= fname and vim.fn.filereadable(resolved) == 1 then
+        vim.cmd('edit ' .. vim.fn.fnameescape(resolved))
+      else
+        -- Fall back to built-in gf (normal! bypasses mappings, no recursion)
+        vim.cmd('normal! gf')
+      end
+    end, { buffer = args.buf, desc = 'Ignition: go to import file' })
   end,
 })
 

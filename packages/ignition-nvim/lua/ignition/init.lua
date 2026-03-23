@@ -110,4 +110,55 @@ function M.json_indent(lnum)
   end
 end
 
+--- Resolve a Python import to an absolute Ignition script-python file path.
+--- Used as includeexpr so gf can resolve imports like "from testing.decorators import test".
+--- Parses the full import line to extract the module path, then resolves it
+--- against the project's script-python directory to return an absolute path.
+---@param fname string The text under cursor (may already be dot-converted by built-in ftplugin)
+---@return string The resolved file path (absolute if found, otherwise fname unchanged)
+function M.python_includeexpr(fname)
+  -- Parse the full line to get the module path from the import statement
+  local line = vim.fn.getline('.')
+  local module = line:match('^%s*from%s+([%w_.]+)%s+import')
+               or line:match('^%s*import%s+([%w_.]+)')
+
+  -- If not on an import line, try treating fname itself as a dotted module
+  -- (handles cases like gf on a bare "testing.decorators" reference)
+  if not module then
+    if fname:find('%.') then
+      module = fname
+    else
+      return fname
+    end
+  end
+
+  -- Find the project root from the current buffer
+  local buf_path = vim.api.nvim_buf_get_name(0)
+  if buf_path == '' then
+    return fname
+  end
+  local project_json = vim.fs.find('project.json', {
+    path = vim.fn.fnamemodify(buf_path, ':h'),
+    upward = true,
+    type = 'file',
+  })[1]
+  if not project_json then
+    return fname
+  end
+
+  local project_root = vim.fn.fnamemodify(project_json, ':h')
+  local script_python = project_root .. '/ignition/script-python'
+
+  -- Convert dots to path separators: "testing.decorators" -> "testing/decorators"
+  local rel_path = module:gsub('%.', '/')
+  -- Ignition stores script modules as <package>/<module>/code.py
+  local abs_path = script_python .. '/' .. rel_path .. '/code.py'
+
+  if vim.fn.filereadable(abs_path) == 1 then
+    return abs_path
+  end
+
+  return fname
+end
+
 return M
