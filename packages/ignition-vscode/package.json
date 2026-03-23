@@ -3,7 +3,7 @@
   "displayName": "Ignition Dev Tools",
   "description": "Full IDE support for Inductive Automation's Ignition SCADA platform — completions, hover docs, diagnostics, go-to-definition, decode/encode, and CodeLens for embedded scripts.",
   "version": "0.1.0",
-  "publisher": "whiskeyhouse",
+  "publisher": "WhiskeyHouse",
   "license": "MIT",
   "engines": {
     "vscode": "^1.85.0"
