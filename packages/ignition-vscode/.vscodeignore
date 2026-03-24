@@ -2,7 +2,11 @@
 .vscode-test/**
 src/**
 test/**
-node_modules/**
+node_modules/@types/**
+node_modules/@typescript-eslint/**
+node_modules/eslint/**
+node_modules/typescript/**
+node_modules/vitest/**
 .gitignore
 tsconfig.json
 .eslintrc.json
