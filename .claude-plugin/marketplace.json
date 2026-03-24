@@ -1,0 +1,24 @@
+{
+  "name": "ignition-tools",
+  "owner": {
+    "name": "Whiskey House"
+  },
+  "metadata": {
+    "description": "Development tools for Inductive Automation's Ignition SCADA platform"
+  },
+  "plugins": [
+    {
+      "name": "ignition-scada",
+      "source": "./claude-code-plugin",
+      "description": "Ignition SCADA development — API reference, expression language, auto-linting, test scaffolding, and automated testing for Ignition projects",
+      "version": "0.2.0",
+      "author": {
+        "name": "Whiskey House"
+      },
+      "homepage": "https://github.com/TheThoughtagen/ignition-ide-plugins",
+      "repository": "https://github.com/TheThoughtagen/ignition-ide-plugins",
+      "license": "MIT",
+      "keywords": ["ignition", "scada", "ics", "inductive-automation", "jython", "testing", "playwright"]
+    }
+  ]
+}
