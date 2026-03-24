@@ -21,12 +21,18 @@ Scaffold a complete Jython test framework into the current Ignition project. Thi
    - Gateway URL and reachability
    - Tag providers (if detected)
    - Any existing test infrastructure
+   - **Parent project** (if this project inherits from another)
 
 3. Ask the user to confirm or provide their tag provider name.
 
-4. If `existing_testing.jython_framework` or `existing_testing.webdev_endpoints` is true, warn the user and ask if they want to overwrite (`--force`).
+4. **Check for project inheritance.** If `parent` is not null:
+   - Tell the user: "This project inherits from *{parent.name}*."
+   - If `parent.has_jython_framework` is true: "The parent project already has the Jython test framework — your project inherits `testing.*` scripts automatically. I'll skip scaffolding scripts and only create the WebDev endpoints and type stubs."
+   - If parent not found on disk (`parent.root` is null): ask the user for the parent project path, or offer to scaffold everything locally.
 
-5. Run the scaffold script:
+5. If `existing_testing.jython_framework` or `existing_testing.webdev_endpoints` is true, warn the user and ask if they want to overwrite (`--force`).
+
+6. Run the scaffold script:
    ```bash
    ${CLAUDE_PLUGIN_ROOT}/scripts/scaffold-testing.sh \
      --project-root <detected> \
@@ -34,6 +40,7 @@ Scaffold a complete Jython test framework into the current Ignition project. Thi
      --gateway-url <detected> \
      --tag-provider <confirmed>
    ```
+   Add `--skip-scripts` if the parent already has the Jython framework.
    Add `--force` if user confirmed overwrite.
 
 6. Report what was created (list the files).

@@ -19,7 +19,7 @@ set -euo pipefail
 # ---------------------------------------------------------------------------
 
 PROJECT_ROOT="" PROJECT_NAME="" GATEWAY_URL="" TAG_PROVIDER=""
-FORCE=false DRY_RUN=false
+FORCE=false DRY_RUN=false SKIP_SCRIPTS=false
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -29,6 +29,7 @@ while [[ $# -gt 0 ]]; do
     --tag-provider)  TAG_PROVIDER="$2";  shift 2 ;;
     --force)         FORCE=true;         shift ;;
     --dry-run)       DRY_RUN=true;       shift ;;
+    --skip-scripts)  SKIP_SCRIPTS=true;  shift ;;
     -h|--help)
       sed -n '2,14s/^# //p' "$0"
       exit 0
@@ -183,6 +184,9 @@ echo ""
 # 1. Jython Test Framework — ignition/script-python/testing/
 # ===================================================================
 
+if [[ "$SKIP_SCRIPTS" = true ]]; then
+  echo "--- Jython Test Framework (skipped — inherited from parent project) ---"
+else
 echo "--- Jython Test Framework ---"
 
 # --- runner/code.py (genericized) ---
@@ -1069,6 +1073,8 @@ write_file "ignition/script-python/testing/reporter/resource.json" "$RESOURCE_JS
 
 
 # ===================================================================
+fi  # end SKIP_SCRIPTS guard
+
 # 2. WebDev Test Endpoints — com.inductiveautomation.webdev/resources/testing/
 # ===================================================================
 

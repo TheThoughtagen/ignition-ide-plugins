@@ -28,6 +28,22 @@ PROJECT_ROOT=$(find_project_root "$TARGET") || {
 PROJECT_NAME=$(basename "$PROJECT_ROOT")
 PROJECT_TITLE=$(jq -r '.title // ""' "$PROJECT_ROOT/project.json" 2>/dev/null || echo "")
 
+# Check for parent project (Ignition project inheritance)
+PARENT_NAME=$(jq -r '.parent // ""' "$PROJECT_ROOT/project.json" 2>/dev/null || echo "")
+PARENT_ROOT=""
+PARENT_HAS_JYTHON_FRAMEWORK=false
+PARENT_HAS_WEBDEV_ENDPOINTS=false
+
+if [ -n "$PARENT_NAME" ]; then
+  # Parent projects are typically siblings in the same directory
+  CANDIDATE="$(dirname "$PROJECT_ROOT")/$PARENT_NAME"
+  if [ -f "$CANDIDATE/project.json" ]; then
+    PARENT_ROOT="$CANDIDATE"
+    [ -d "$PARENT_ROOT/ignition/script-python/testing/runner" ] && PARENT_HAS_JYTHON_FRAMEWORK=true
+    [ -d "$PARENT_ROOT/com.inductiveautomation.webdev/resources/testing/run" ] && PARENT_HAS_WEBDEV_ENDPOINTS=true
+  fi
+fi
+
 # Probe gateway
 GATEWAY_URL=""
 GATEWAY_REACHABLE=false
@@ -74,6 +90,10 @@ jq -n \
   --arg project_root "$PROJECT_ROOT" \
   --arg project_title "$PROJECT_TITLE" \
   --arg project_name "$PROJECT_NAME" \
+  --arg parent_name "$PARENT_NAME" \
+  --arg parent_root "$PARENT_ROOT" \
+  --argjson parent_has_jython_framework "$PARENT_HAS_JYTHON_FRAMEWORK" \
+  --argjson parent_has_webdev_endpoints "$PARENT_HAS_WEBDEV_ENDPOINTS" \
   --arg gateway_url "$GATEWAY_URL" \
   --argjson gateway_reachable "$GATEWAY_REACHABLE" \
   --argjson has_perspective "$HAS_PERSPECTIVE" \
@@ -88,6 +108,12 @@ jq -n \
     project_root: $project_root,
     project_title: $project_title,
     project_name: $project_name,
+    parent: (if $parent_name == "" then null else {
+      name: $parent_name,
+      root: (if $parent_root == "" then null else $parent_root end),
+      has_jython_framework: $parent_has_jython_framework,
+      has_webdev_endpoints: $parent_has_webdev_endpoints
+    } end),
     gateway_url: $gateway_url,
     gateway_reachable: $gateway_reachable,
     has_perspective: $has_perspective,
