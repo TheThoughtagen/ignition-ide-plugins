@@ -7,6 +7,80 @@ user-invocable: false
 
 You are writing code for **Ignition SCADA** by Inductive Automation. Scripts run in **Jython 2.7** (Python 2.7 on JVM). The scripting API is `system.*`.
 
+## CRITICAL: resource.json Required for EVERY Ignition Resource
+
+**Every file or directory you create inside an Ignition project MUST have a `resource.json`.** Without it, the gateway silently ignores the resource — no error, no warning, it simply doesn't exist at runtime. This is the #1 cause of "not found" errors when managing Ignition projects via git.
+
+This applies to ALL resource types:
+
+| Resource type | Where | resource.json goes |
+|---------------|-------|--------------------|
+| **Script modules** | `ignition/script-python/my_package/` | Next to `code.py` in every directory in the path |
+| **Script sub-packages** | `ignition/script-python/my_package/sub/` | In `sub/` too — every level needs one |
+| **Test modules** | `ignition/script-python/pkg/__tests__/` | In both `pkg/` AND `__tests__/` |
+| **Perspective views** | `com.inductiveautomation.perspective/views/MyView/` | Next to `view.json` |
+| **Named queries** | `com.inductiveautomation.naming/queries/MyQuery/` | Next to `query.json` |
+| **Vision windows** | `com.inductiveautomation.vision/windows/MyWindow/` | Next to `window.json` |
+| **WebDev endpoints** | `com.inductiveautomation.webdev/resources/my-endpoint/` | Next to `doGet.py`, `config.json`, etc. |
+| **Alarm pipelines** | `com.inductiveautomation.alarm-notification/pipelines/` | Next to pipeline resource files |
+| **Tag configs** | `tags/` | Alongside tag JSON exports |
+
+**Template for script resources** (scope `A` = script module):
+```json
+{
+  "scope": "A",
+  "version": 1,
+  "restricted": false,
+  "overridable": true,
+  "files": ["code.py"],
+  "attributes": {
+    "lastModification": {
+      "actor": "external",
+      "timestamp": "2026-01-01T00:00:00Z"
+    }
+  }
+}
+```
+
+**Template for Perspective views** (scope `G` = general):
+```json
+{
+  "scope": "G",
+  "version": 1,
+  "restricted": false,
+  "overridable": true,
+  "files": ["view.json", "thumbnail.png"],
+  "attributes": {
+    "lastModification": {
+      "actor": "external",
+      "timestamp": "2026-01-01T00:00:00Z"
+    },
+    "lastModificationSignature": "unknown"
+  }
+}
+```
+
+**Template for WebDev endpoints**:
+```json
+{
+  "scope": "G",
+  "version": 1,
+  "restricted": false,
+  "overridable": true,
+  "files": ["config.json", "doGet.py", "doPost.py"],
+  "attributes": {
+    "lastModification": {
+      "actor": "external",
+      "timestamp": "2026-01-01T00:00:00Z"
+    }
+  }
+}
+```
+
+**The `files` array must list every file in the directory that Ignition should load.** If you add a file but don't list it in `files`, Ignition ignores it.
+
+**When creating any new resource in an Ignition project: ALWAYS create the `resource.json` at the same time.** Never create a `code.py`, `view.json`, or any other Ignition resource file without its accompanying `resource.json`.
+
 ## Jython Conventions
 - Use `print()` function form (not `print x`)
 - Java classes are directly importable: `from java.util import ArrayList`

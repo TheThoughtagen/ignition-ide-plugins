@@ -199,39 +199,22 @@ ignition/script-python/core/mes/changeover/__tests__/code.py
 → module path: core.mes.changeover.__tests__
 ```
 
-## CRITICAL: resource.json Required for Every Package
+## CRITICAL: resource.json Required for Test Modules
 
-**Every directory** in `ignition/script-python/` MUST have a `resource.json` alongside `code.py`. Without it, Ignition does not load the module and imports will fail with `No module named ...`.
+**Every directory** in `ignition/script-python/` MUST have a `resource.json` alongside `code.py` — see the full `resource.json` reference in the `ignition-api` skill. Without it, Ignition silently ignores the module and imports fail with `No module named ...`.
 
-When creating a new test module, you must create `resource.json` for BOTH the package directory AND the `__tests__` directory:
+When creating a new test module, create `resource.json` for BOTH the package AND `__tests__`:
 
 ```
 ignition/script-python/my_package/
 ├── code.py           # Package code
-├── resource.json     # ← REQUIRED
+├── resource.json     # ← REQUIRED — use scope "A" template
 └── __tests__/
     ├── code.py       # Test code
-    └── resource.json # ← REQUIRED
+    └── resource.json # ← REQUIRED — use scope "A" template
 ```
 
-The `resource.json` content is always the same:
-```json
-{
-  "scope": "A",
-  "version": 1,
-  "restricted": false,
-  "overridable": true,
-  "files": ["code.py"],
-  "attributes": {
-    "lastModification": {
-      "actor": "external",
-      "timestamp": "2026-01-01T00:00:00Z"
-    }
-  }
-}
-```
-
-**If a test module import fails with `No module named ...`**, the first thing to check is whether `resource.json` exists in every directory in the module path. This is the most common cause of "module not found" errors in Ignition projects managed via git.
+**If a test module import fails with `No module named ...`**, check `resource.json` exists in every directory in the module path first. This is the #1 cause of test discovery failures.
 
 ## Project Inheritance
 
