@@ -143,6 +143,21 @@ When `resource.json` exists without `code.py`, Ignition recognizes the directory
 }
 ```
 
+## Linting
+
+This project uses [`ignition-lint`](https://pypi.org/project/ignition-lint-toolkit/) to catch Ignition-specific issues. The auto-lint hook runs on every file write, but you should also be aware of what it checks so you write clean code from the start:
+
+- **JYTHON_PRINT_STATEMENT** — Use `print()` function form, not `print x`
+- **JYTHON_IMPORT_STAR** — Never use `from module import *`
+- **IGNITION_UNKNOWN_SYSTEM_CALL** — Verify `system.*` function names are correct
+- **IGNITION_SYSTEM_OVERRIDE** — Never shadow `system.*` with local variables
+- **LONG_LINE** — Keep lines under 120 characters
+- **MISSING_DOCSTRING** — Add docstrings to public functions
+- **EXPR_NOW_DEFAULT_POLLING** — Expression `now()` defaults to 1-second polling; use `now(5000)` or higher
+- **EMPTY_COMPONENT_NAME / GENERIC_COMPONENT_NAME** — Perspective components need meaningful names
+
+If `ignition-lint` is installed, the plugin's auto-lint hook catches these automatically after every file edit. If it's not installed, the hook silently exits — nothing breaks, but you lose automatic feedback.
+
 ## Jython Conventions
 - Use `print()` function form (not `print x`)
 - Java classes are directly importable: `from java.util import ArrayList`
