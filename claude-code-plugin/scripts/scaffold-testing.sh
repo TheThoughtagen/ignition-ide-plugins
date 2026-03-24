@@ -1246,6 +1246,30 @@ write_file "com.inductiveautomation.webdev/resources/testing/run/doPost.py" "$RU
 
 write_file "com.inductiveautomation.webdev/resources/testing/run/config.json" "$WEBDEV_CONFIG_JSON"
 
+# --- run/resource.json (Ignition resource descriptor — required for WebDev to discover the endpoint) ---
+
+WEBDEV_RUN_RESOURCE=$(cat <<'JSONEOF'
+{
+  "scope": "G",
+  "version": 1,
+  "restricted": false,
+  "overridable": true,
+  "files": [
+    "config.json",
+    "doPost.py",
+    "doGet.py"
+  ],
+  "attributes": {
+    "lastModification": {
+      "actor": "external",
+      "timestamp": "2026-01-01T00:00:00Z"
+    }
+  }
+}
+JSONEOF
+)
+write_file "com.inductiveautomation.webdev/resources/testing/run/resource.json" "$WEBDEV_RUN_RESOURCE"
+
 # --- tags/doGet.py (genericized tag provider + CSV filename) ---
 
 TAGS_DOGET=$(cat <<'PYEOF'
@@ -1531,6 +1555,30 @@ write_file "com.inductiveautomation.webdev/resources/testing/tags/doPost.py" "$T
 # --- tags/config.json ---
 
 write_file "com.inductiveautomation.webdev/resources/testing/tags/config.json" "$WEBDEV_CONFIG_JSON"
+
+# --- tags/resource.json ---
+
+WEBDEV_TAGS_RESOURCE=$(cat <<'JSONEOF'
+{
+  "scope": "G",
+  "version": 1,
+  "restricted": false,
+  "overridable": true,
+  "files": [
+    "config.json",
+    "doPost.py",
+    "doGet.py"
+  ],
+  "attributes": {
+    "lastModification": {
+      "actor": "external",
+      "timestamp": "2026-01-01T00:00:00Z"
+    }
+  }
+}
+JSONEOF
+)
+write_file "com.inductiveautomation.webdev/resources/testing/tags/resource.json" "$WEBDEV_TAGS_RESOURCE"
 
 
 # ===================================================================
