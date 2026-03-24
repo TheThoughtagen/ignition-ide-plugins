@@ -81,6 +81,68 @@ This applies to ALL resource types:
 
 **When creating any new resource in an Ignition project: ALWAYS create the `resource.json` at the same time.** Never create a `code.py`, `view.json`, or any other Ignition resource file without its accompanying `resource.json`.
 
+## Ignition Script Library Structure
+
+Ignition's script library (`ignition/script-python/`) has a strict structure. Each directory is either a **leaf module** or a **package node** — never both.
+
+**Leaf module** — has `code.py` with real code, NO child directories with code:
+```
+core/util/secrets/
+├── code.py          ← actual functions live here
+└── resource.json
+```
+
+**Package node** — has child directories, NO `code.py` (or only an empty placeholder):
+```
+core/util/
+├── secrets/         ← child module
+│   ├── code.py
+│   └── resource.json
+├── csv/             ← child module
+│   ├── code.py
+│   └── resource.json
+└── resource.json    ← resource.json still required, but NO code.py
+```
+
+**NEVER put a `code.py` in a directory that also contains child packages.** Ignition treats a directory with `code.py` as a leaf module. If you also put subdirectories in it, the behavior is undefined and the child modules may not be importable.
+
+```
+WRONG:
+my_package/
+├── code.py          ← has real code
+├── resource.json
+└── __tests__/       ← child directory — conflicts with code.py above
+    ├── code.py
+    └── resource.json
+
+CORRECT:
+my_package/
+├── resource.json    ← package node, no code.py
+├── logic/
+│   ├── code.py      ← real code lives in a leaf
+│   └── resource.json
+└── __tests__/
+    ├── code.py      ← tests live in a leaf
+    └── resource.json
+```
+
+When `resource.json` exists without `code.py`, Ignition recognizes the directory as a package node. The `files` array in `resource.json` should be empty or omit `code.py`:
+```json
+{
+  "scope": "A",
+  "version": 1,
+  "restricted": false,
+  "overridable": true,
+  "files": [],
+  "attributes": {
+    "lastModification": {
+      "actor": "external",
+      "timestamp": "2026-01-01T00:00:00Z"
+    }
+  }
+}
+```
+
 ## Jython Conventions
 - Use `print()` function form (not `print x`)
 - Java classes are directly importable: `from java.util import ArrayList`
