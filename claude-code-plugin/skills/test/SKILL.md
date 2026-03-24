@@ -12,14 +12,19 @@ Run tests for the current Ignition project. Routes to gateway tests (Jython) or 
 
 ## Routing
 
+**Default is always gateway (Jython) tests.** Only route to Playwright when explicitly asked with `ui` or `e2e`.
+
 | Argument | Action |
 |----------|--------|
 | *(empty)* | Run all gateway Jython tests |
-| `<short-name>` (e.g. `changeover`) | Translate to module path and run: try `<name>.__tests__` first, search for matching module |
-| `<dotted.path>` (contains `.`) | Run as module or package filter |
-| `ui` or `e2e` | Run all Playwright tests |
+| `<short-name>` (e.g. `changeover`) | Translate to module path and run gateway test: try `<name>.__tests__` first, search for matching module |
+| `<dotted.path>` (contains `.`) | Run as gateway module or package filter |
+| `ui` or `e2e` | Run all Playwright browser tests |
 | `ui <area>` | Run Playwright tests in `e2e/tests/<area>/` |
-| `smoke` | Run `e2e/tests/smoke/` |
+| `ui smoke` | Run Playwright smoke tests (`e2e/tests/smoke/`) |
+| `smoke` | Run gateway Jython tests — NOT Playwright. "Smoke test" without `ui` prefix means gateway tests. |
+
+**Ambiguity rule:** If the user says "smoke test", "run tests", "test it", or any unqualified test request — **always default to gateway Jython tests**, not Playwright. Only use Playwright when the user explicitly says "ui", "e2e", "browser", or "playwright".
 
 ## Gateway Tests
 
