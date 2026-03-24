@@ -3,8 +3,8 @@ import type {Config} from '@docusaurus/types';
 import type * as Preset from '@docusaurus/preset-classic';
 
 const config: Config = {
-  title: 'ignition-nvim',
-  tagline: 'Neovim plugin for Ignition SCADA development',
+  title: 'Ignition Dev Tools',
+  tagline: 'Multi-editor IDE support for Ignition SCADA',
   favicon: 'img/favicon.ico',
 
   future: {
@@ -56,7 +56,7 @@ const config: Config = {
       respectPrefersColorScheme: false,
     },
     navbar: {
-      title: 'ignition-nvim',
+      title: 'Ignition Dev Tools',
       items: [
         {
           type: 'docSidebar',
@@ -91,6 +91,14 @@ const config: Config = {
           ],
         },
         {
+          title: 'Claude Code Plugin',
+          items: [
+            {label: 'Overview', to: '/docs/claude-code-plugin/overview'},
+            {label: 'Testing', to: '/docs/claude-code-plugin/testing'},
+            {label: 'Skills Reference', to: '/docs/claude-code-plugin/skills-reference'},
+          ],
+        },
+        {
           title: 'More',
           items: [
             {
@@ -113,7 +121,7 @@ const config: Config = {
     prism: {
       theme: prismThemes.github,
       darkTheme: prismThemes.dracula,
-      additionalLanguages: ['bash', 'json', 'yaml', 'python', 'lua'],
+      additionalLanguages: ['bash', 'json', 'yaml', 'python', 'lua', 'typescript'],
     },
   } satisfies Preset.ThemeConfig,
 };

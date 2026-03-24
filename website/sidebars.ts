@@ -28,6 +28,15 @@ const sidebars: SidebarsConfig = {
         'configuration/options',
       ],
     },
+    {
+      type: 'category',
+      label: 'Claude Code Plugin',
+      items: [
+        'claude-code-plugin/overview',
+        'claude-code-plugin/testing',
+        'claude-code-plugin/skills-reference',
+      ],
+    },
     'credits',
   ],
 };
