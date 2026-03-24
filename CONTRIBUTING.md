@@ -1,4 +1,4 @@
-# Contributing to ignition-nvim
+# Contributing to Ignition Dev Tools
 
 Thank you for your interest in contributing! This guide will help you get started.
 
@@ -6,82 +6,135 @@ Thank you for your interest in contributing! This guide will help you get starte
 
 ### Prerequisites
 
-- Neovim >= 0.11.0
-- Python >= 3.8
-- Git
-- luacheck (for Lua linting)
+- **Neovim** >= 0.11.0 (for Neovim plugin development)
+- **Python** >= 3.8 (for LSP server)
+- **Node.js** >= 20 (for VS Code extension development)
+- **Git**
+- **luacheck** (for Lua linting)
 
 ### Development Setup
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/whiskeyhouse/ignition-nvim.git
+   git clone https://github.com/TheThoughtagen/ignition-nvim.git
    cd ignition-nvim
    ```
 
-2. **Set up Python LSP server:**
+2. **Set up the Python LSP server:**
    ```bash
-   cd lsp
+   cd packages/ignition-lsp
    python3 -m venv venv
    source venv/bin/activate  # On Windows: venv\Scripts\activate
    pip install -e ".[dev]"
    ```
 
-3. **Install test dependencies:**
+3. **Set up the VS Code extension:**
+   ```bash
+   cd packages/ignition-vscode
+   npm ci
+   npm run compile
+   ```
+
+4. **Install test dependencies:**
    - [plenary.nvim](https://github.com/nvim-lua/plenary.nvim) for Lua tests
    - pytest for Python tests (installed with `[dev]` extras above)
+   - Vitest for VS Code tests (installed with `npm ci` above)
 
 ## Project Structure
 
 ```
-ignition-nvim/
-├── lua/ignition/              # Neovim plugin (Lua)
-│   ├── init.lua              # Entry point, setup()
-│   ├── config.lua            # Configuration schema
-│   ├── encoding.lua          # Encode/decode scripts
-│   ├── decoder.lua           # Interactive decode workflow
-│   ├── virtual_doc.lua       # Virtual buffer system
-│   ├── lsp.lua               # LSP client
-│   └── kindling.lua          # Kindling integration
+ignition-nvim/                    # Monorepo root
+├── packages/
+│   ├── ignition-lsp/            # Python LSP server (shared by both editors)
+│   │   ├── ignition_lsp/        # Server source
+│   │   │   ├── server.py        # Main server, request routing
+│   │   │   ├── completion.py    # Completions
+│   │   │   ├── hover.py         # Hover documentation
+│   │   │   ├── diagnostics.py   # ignition-lint integration
+│   │   │   ├── definition.py    # Go-to-definition
+│   │   │   ├── api_loader.py    # API database loader
+│   │   │   ├── project_scanner.py # Project indexing
+│   │   │   ├── api_db/          # API definitions (14 modules, JSON)
+│   │   │   ├── java_db/         # Java class definitions (JSON)
+│   │   │   └── stubs/           # Pyright/Pylance type stubs
+│   │   ├── tests/               # Python tests (pytest)
+│   │   └── pyproject.toml
+│   │
+│   ├── ignition-nvim/           # Neovim plugin (Lua)
+│   │   ├── lua/ignition/        # Plugin source
+│   │   │   ├── init.lua         # Entry point, setup()
+│   │   │   ├── config.lua       # Configuration schema
+│   │   │   ├── encoding.lua     # Encode/decode scripts
+│   │   │   ├── decoder.lua      # Interactive decode workflow
+│   │   │   ├── virtual_doc.lua  # Virtual buffer system
+│   │   │   ├── lsp.lua          # LSP client
+│   │   │   └── kindling.lua     # Kindling integration
+│   │   ├── ftdetect/            # Filetype detection
+│   │   ├── ftplugin/            # Filetype settings
+│   │   ├── syntax/              # Syntax highlighting
+│   │   ├── plugin/              # Plugin autoload
+│   │   ├── doc/                 # Vim help files
+│   │   └── lazy.lua             # lazy.nvim plugin spec
+│   │
+│   └── ignition-vscode/         # VS Code extension (TypeScript)
+│       ├── src/                 # Extension source
+│       │   ├── extension.ts     # Entry point
+│       │   ├── lsp/             # LSP client management
+│       │   ├── encoding/        # Decode/encode, CodeLens
+│       │   └── views/           # Project Browser, Tag Browser, etc.
+│       ├── test/                # Vitest tests
+│       ├── syntaxes/            # TextMate grammars
+│       ├── resources/           # Icons and static assets
+│       └── package.json
 │
-├── lsp/ignition_lsp/         # Python LSP server (pygls 2.0)
-│   ├── server.py             # Main server, request routing
-│   ├── completion.py         # Completions
-│   ├── hover.py              # Hover documentation
-│   ├── diagnostics.py        # ignition-lint integration
-│   ├── definition.py         # Go-to-definition
-│   ├── api_loader.py         # API database loader
-│   ├── project_scanner.py    # Project indexing
-│   └── api_db/               # API definitions (JSON)
-│       ├── schema.json       # JSON schema for API modules
-│       ├── tag.json          # system.tag functions
-│       ├── db.json           # system.db functions
-│       └── ...               # 14 modules total
+├── tests/                       # Lua tests (plenary.nvim)
+│   ├── minimal_init.lua         # Test harness
+│   └── *_spec.lua               # 7 spec files
 │
-├── tests/                     # Lua tests (plenary.nvim)
-│   ├── minimal_init.lua      # Test harness
-│   ├── encoding_spec.lua     # Encoding tests
-│   └── ...                   # 7 spec files total
+├── docs/                        # User documentation (Docusaurus)
+├── website/                     # Docusaurus site
+├── claude-code-plugin/          # Claude Code integration
+├── templates/                   # Per-project Claude Code templates
 │
-├── lsp/tests/                # Python tests (pytest)
-│   ├── test_completion.py   # Completion tests
-│   ├── test_hover.py        # Hover tests
-│   └── ...                  # 7 test files total
+├── lua/ -> packages/ignition-nvim/lua       # Symlinks for Neovim runtimepath
+├── lsp/ -> packages/ignition-lsp
+├── ftdetect/ -> packages/ignition-nvim/ftdetect
+├── ftplugin/ -> packages/ignition-nvim/ftplugin
+├── plugin/ -> packages/ignition-nvim/plugin
+├── syntax/ -> packages/ignition-nvim/syntax
+├── queries/ -> packages/ignition-nvim/queries
+├── doc/ -> packages/ignition-nvim/doc
+├── lazy.lua -> packages/ignition-nvim/lazy.lua
 │
-├── docs/                     # User documentation (Docusaurus)
-│   ├── intro.md
-│   ├── getting-started/
-│   ├── guides/
-│   └── configuration/
-│
-└── .github/workflows/        # CI/CD pipelines
-    ├── ci.yml               # Test and lint
-    ├── beta.yml             # PyPI beta releases
-    ├── release.yml          # PyPI releases
-    └── deploy-docs.yml      # Docusaurus deployment
+└── .github/workflows/           # CI/CD pipelines
+    ├── ci.yml                   # Test and lint (all packages)
+    ├── beta.yml                 # PyPI beta releases
+    ├── release.yml              # PyPI releases
+    ├── release-vscode.yml       # VS Code Marketplace releases
+    └── deploy-docs.yml          # Docusaurus deployment
 ```
 
 ## Running Tests
+
+### Python Tests (pytest)
+
+**All tests (162 tests across 7 test files):**
+```bash
+cd packages/ignition-lsp
+venv/bin/python -m pytest tests/ -v
+```
+
+**With coverage:**
+```bash
+cd packages/ignition-lsp
+venv/bin/python -m pytest tests/ -v --cov=ignition_lsp
+```
+
+**Single file:**
+```bash
+cd packages/ignition-lsp
+venv/bin/python -m pytest tests/test_completion.py -v
+```
 
 ### Lua Tests (plenary.nvim)
 
@@ -95,38 +148,19 @@ nvim --headless -u tests/minimal_init.lua -c "PlenaryBustedDirectory tests/ {min
 nvim --headless -u tests/minimal_init.lua -c "PlenaryBustedFile tests/encoding_spec.lua"
 ```
 
-### Python Tests (pytest)
+### VS Code Extension Tests (Vitest)
 
-**All tests (162 tests across 7 test files):**
 ```bash
-cd lsp
-venv/bin/python -m pytest tests/ -v
-```
-
-**With coverage:**
-```bash
-cd lsp
-venv/bin/python -m pytest tests/ -v --cov=ignition_lsp
-```
-
-**Single file:**
-```bash
-cd lsp
-venv/bin/python -m pytest tests/test_completion.py -v
+cd packages/ignition-vscode
+npm test
 ```
 
 ## Linting
 
-### Lua
-
-```bash
-luacheck lua/ --config .luacheckrc
-```
-
 ### Python
 
 ```bash
-cd lsp
+cd packages/ignition-lsp
 venv/bin/ruff check ignition_lsp/
 venv/bin/mypy ignition_lsp/
 venv/bin/black --check ignition_lsp/
@@ -134,8 +168,21 @@ venv/bin/black --check ignition_lsp/
 
 **Auto-fix with Black:**
 ```bash
-cd lsp
+cd packages/ignition-lsp
 venv/bin/black ignition_lsp/
+```
+
+### Lua
+
+```bash
+luacheck lua/ --config .luacheckrc
+```
+
+### TypeScript
+
+```bash
+cd packages/ignition-vscode
+npx eslint src/ --ext .ts
 ```
 
 ## Contribution Guidelines
@@ -149,29 +196,37 @@ venv/bin/black ignition_lsp/
 - Prefer explicit over implicit
 
 **Python:**
-- Black formatting (line length 88)
+- Black formatting (line length 100)
 - Type hints for all function signatures
 - Follow PEP 8
 - Docstrings for public functions
 
+**TypeScript:**
+- ESLint rules in `packages/ignition-vscode/.eslintrc.json`
+- Strict TypeScript (`strict: true`)
+- Prefer `async`/`await` over raw Promises
+
 ### Commit Messages
 
-Use [Conventional Commits](https://www.conventionalcommits.org/) format:
+Use [Conventional Commits](https://www.conventionalcommits.org/) format with optional scope:
 
-- `feat:` — New feature
-- `fix:` — Bug fix
-- `refactor:` — Code refactoring (no behavior change)
+- `feat:` / `feat(vscode):` — New feature
+- `fix:` / `fix(lsp):` — Bug fix
+- `refactor:` / `refactor(nvim):` — Code refactoring (no behavior change)
 - `test:` — Adding/updating tests
 - `docs:` — Documentation changes
 - `chore:` — Maintenance tasks (CI, deps, etc.)
 
+**Scopes:** `lsp`, `nvim`, `vscode` for package-specific changes. Omit scope for cross-cutting changes.
+
 **Examples:**
 ```
-feat: add system.alarm completions
-fix: prevent duplicate LSP client instances
-refactor: extract common encoding logic
+feat(vscode): add Tag Browser for ignition-git-module format
+fix(lsp): prevent duplicate completions for overloaded functions
+refactor(nvim): extract common encoding logic
+feat: diagnostics toggle and Pyright/Pylance stubs integration
 test: add round-trip encoding tests
-docs: update installation instructions
+docs: update installation instructions for monorepo
 chore: bump pygls to 2.0.1
 ```
 
@@ -193,16 +248,20 @@ chore: bump pygls to 2.0.1
    luacheck lua/
 
    # Python
-   cd lsp
+   cd packages/ignition-lsp
    venv/bin/ruff check ignition_lsp/
    venv/bin/mypy ignition_lsp/
    venv/bin/black --check ignition_lsp/
+
+   # TypeScript
+   cd packages/ignition-vscode
+   npx eslint src/ --ext .ts
    ```
 
 4. **Commit with conventional commit messages:**
    ```bash
    git add .
-   git commit -m "feat: add workspace symbols support"
+   git commit -m "feat(vscode): add workspace symbols support"
    ```
 
 5. **Push and open a pull request:**
@@ -219,17 +278,17 @@ chore: bump pygls to 2.0.1
 
 **Always open an issue or discussion before modifying:**
 
-- **Encoding/decoding logic** (`lua/ignition/encoding.lua`) — Round-trip fidelity is the most fragile part of the system. Any changes must preserve `encode(decode(x)) == x`.
+- **Encoding/decoding logic** (`packages/ignition-nvim/lua/ignition/encoding.lua`, `packages/ignition-vscode/src/encoding/`) — Round-trip fidelity is the most fragile part of the system. Any changes must preserve `encode(decode(x)) == x`.
 
-- **LSP protocol handlers** (`lsp/ignition_lsp/server.py`) — These affect every user's editor experience. Changes to request handlers, capabilities, or the LSP protocol require careful review.
+- **LSP protocol handlers** (`packages/ignition-lsp/ignition_lsp/server.py`) — These affect every user's editor experience. Changes to request handlers, capabilities, or the LSP protocol require careful review.
 
-- **API database schema** (`lsp/ignition_lsp/api_db/schema.json`) — All 14 module files depend on this schema. Schema changes require updating all modules and tests.
+- **API database schema** (`packages/ignition-lsp/ignition_lsp/api_db/schema.json`) — All 14 module files depend on this schema. Schema changes require updating all modules and tests.
 
-- **Breaking configuration changes** — Anything that changes the `setup(opts)` interface or default behavior affects all users.
+- **Breaking configuration changes** — Anything that changes the Neovim `setup(opts)` interface, VS Code `package.json` contributes, or default behavior.
 
-- **CI/CD pipeline modifications** (`.github/workflows/*.yml`) — These control releases and PyPI publishing. Errors can break deployments.
+- **CI/CD pipeline modifications** (`.github/workflows/*.yml`) — These control releases and publishing to PyPI and VS Code Marketplace. Errors can break deployments.
 
-- **Package metadata** (`lsp/pyproject.toml`) — Version numbers, dependencies, and publish config must be handled carefully.
+- **Package metadata** (`packages/ignition-lsp/pyproject.toml`, `packages/ignition-vscode/package.json`) — Version numbers, dependencies, and publish config must be handled carefully.
 
 - **Git operations** — Never force-push to main. Never amend published commits. Always use feature branches.
 
@@ -247,7 +306,7 @@ chore: bump pygls to 2.0.1
 
 To add new functions to the LSP server's knowledge base:
 
-1. **Find or create the module JSON** in `lsp/ignition_lsp/api_db/`
+1. **Find or create the module JSON** in `packages/ignition-lsp/ignition_lsp/api_db/`
    - Use existing modules as templates
    - Follow the exact structure in `schema.json`
 
@@ -279,25 +338,11 @@ To add new functions to the LSP server's knowledge base:
    }
    ```
 
-3. **Required fields:**
-   - `name`: Function name (e.g., "readBlocking")
-   - `signature`: Full signature with defaults (e.g., "readBlocking(tagPaths, timeout=45000)")
-   - `description`: Brief summary
-   - `parameters`: Array of parameter objects
-   - `returns`: Return type and description
-   - `scope`: "client", "gateway", or "both"
-   - `docs`: Link to official Ignition documentation
+3. **Add tests** in `packages/ignition-lsp/tests/test_completion.py`
 
-4. **Add tests** in `lsp/tests/test_completion.py`:
-   ```python
-   def test_tag_read_blocking_completion(lsp_server):
-       """Test completion for system.tag.readBlocking"""
-       # Test setup and assertions
-   ```
-
-5. **Verify:**
+4. **Verify:**
    ```bash
-   cd lsp
+   cd packages/ignition-lsp
    venv/bin/python -m pytest tests/test_completion.py -v -k readBlocking
    ```
 
@@ -305,8 +350,8 @@ To add new functions to the LSP server's knowledge base:
 
 - **All new features require tests** — No exceptions
 - **Maintain or improve coverage** — Run with `--cov` to check
-- **Test both Lua and Python components** — Integration tests for cross-component features
-- **Use fixtures** — `tests/fixtures/` (Lua) and `lsp/tests/fixtures/` (Python)
+- **Test all affected packages** — LSP changes may need both Python and editor-specific tests
+- **Use fixtures** — `tests/fixtures/` (Lua) and `packages/ignition-lsp/tests/fixtures/` (Python)
 - **Test edge cases** — Empty inputs, special characters, error conditions
 - **Test round-trip operations** — Especially for encoding/decoding
 
@@ -321,7 +366,7 @@ To add new functions to the LSP server's knowledge base:
 - `kindling_spec.lua` — Kindling integration
 - `config_spec.lua` — Configuration validation
 
-**Python tests (`lsp/tests/test_*.py`):**
+**Python tests (`packages/ignition-lsp/tests/test_*.py`):**
 - `test_completion.py` — Completion provider
 - `test_hover.py` — Hover documentation
 - `test_diagnostics.py` — Diagnostic integration
@@ -330,6 +375,9 @@ To add new functions to the LSP server's knowledge base:
 - `test_project_scanner.py` — Project indexing
 - `test_workspace_symbols.py` — Workspace symbols
 
+**VS Code tests (`packages/ignition-vscode/test/`):**
+- Vitest suite for extension functionality
+
 ## Documentation
 
 When making changes, update relevant documentation:
@@ -337,40 +385,23 @@ When making changes, update relevant documentation:
 ### User-Facing Changes
 
 - Update `docs/` (Docusaurus site) for new features or changed behavior
-- Update `README.md` if installation or quick start changes
+- Update the root `README.md` if installation or quick start changes
+- Update per-package READMEs for package-specific changes
 - Update `CHANGELOG.md` following [Keep a Changelog](https://keepachangelog.com/) format
-- Add examples to relevant guides
 
 ### Developer Documentation
 
 - Add docstrings to Python functions (Google style)
 - Add comments for complex Lua logic
-- Update `CLAUDE.md` if architecture changes
+- Update `CLAUDE.md` (`.ai/instructions.md`) if architecture changes
 - Update this file (`CONTRIBUTING.md`) if contribution process changes
-
-### Changelog Format
-
-Add entries to `CHANGELOG.md` under `[Unreleased]`:
-
-```markdown
-## [Unreleased]
-
-### Added
-- New feature descriptions
-
-### Changed
-- Modified behavior descriptions
-
-### Fixed
-- Bug fix descriptions
-```
 
 ## Questions?
 
 - **Architecture details**: Review [CLAUDE.md](CLAUDE.md)
 - **Common issues**: Check [TROUBLESHOOTING.md](TROUBLESHOOTING.md)
-- **Design questions**: Open a [GitHub Discussion](https://github.com/whiskeyhouse/ignition-nvim/discussions)
-- **Bug reports**: Open a [GitHub Issue](https://github.com/whiskeyhouse/ignition-nvim/issues)
+- **Design questions**: Open a [GitHub Discussion](https://github.com/TheThoughtagen/ignition-nvim/discussions)
+- **Bug reports**: Open a [GitHub Issue](https://github.com/TheThoughtagen/ignition-nvim/issues)
 
 ## License
 

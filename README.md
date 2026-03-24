@@ -1,43 +1,40 @@
-# ignition.nvim
-[![Release](https://github.com/TheThoughtagen/ignition-nvim/actions/workflows/release.yml/badge.svg)](https://github.com/TheThoughtagen/ignition-nvim/actions/workflows/release.yml)
+# Ignition Dev Tools
 
-A comprehensive Neovim plugin providing development support for **Ignition by Inductive Automation** projects.
+[![CI](https://github.com/TheThoughtagen/ignition-nvim/actions/workflows/ci.yml/badge.svg)](https://github.com/TheThoughtagen/ignition-nvim/actions/workflows/ci.yml)
+[![VS Code Marketplace](https://img.shields.io/visual-studio-marketplace/v/WhiskeyHouse.ignition-dev-tools)](https://marketplace.visualstudio.com/items?itemName=WhiskeyHouse.ignition-dev-tools)
+[![PyPI](https://img.shields.io/pypi/v/ignition-lsp)](https://pypi.org/project/ignition-lsp/)
+
+Full IDE support for **[Ignition by Inductive Automation](https://inductiveautomation.com/)** — available for both **Neovim** and **VS Code**.
 
 ## Features
 
-- **Automatic Script Decoding/Encoding**: Seamlessly work with Python scripts embedded in JSON configurations
-- **Comprehensive LSP Integration**: Full code intelligence for Ignition development
-  - **System API completions** — All 14 `system.*` modules (239+ functions)
-  - **Java/Jython completions** — 26 packages (146 classes) covering standard Java libraries and Ignition SDK
-  - **Project script completions** — `project.*` and `shared.*` modules with inheritance support
-  - **Perspective JSON completions** — Component types, props, and event handlers for view.json files
-  - **Hover documentation** — Inline docs for system APIs, Java classes, and project scripts
-  - **Go-to-definition** — Navigate to API definitions and cross-file script references
-  - **Diagnostics** — Integration with ignition-lint for code quality checks
-- **Gateway Backup Management**: Direct integration with Kindling for `.gwbk` file handling
-- **Project Navigation**: Workspace symbols and efficient navigation through Ignition project hierarchies
-- **File Type Detection**: Automatic recognition of Ignition file formats
+- **System API completions** — All 14 `system.*` modules (239+ functions) with parameter signatures
+- **Java/Jython completions** — 26 packages (146 classes) covering standard Java libraries and Ignition SDK
+- **Project script completions** — `project.*` and `shared.*` modules with inheritance support
+- **Hover documentation** — Inline docs for system APIs, Java classes, and project scripts
+- **Go-to-definition** — Navigate to API definitions and cross-file script references
+- **Diagnostics** — Integration with `ignition-lint` for code quality checks
+- **Script decode/encode** — Extract embedded Python scripts from JSON into editable buffers with full LSP support, then save them back
+- **Project navigation** — Workspace symbols and efficient navigation through Ignition project hierarchies
+- **Kindling integration** — Direct support for `.gwbk` gateway backup files
 
-## Architecture
+### VS Code Extras
 
-This plugin uses a hybrid approach:
-- **Lua Plugin**: Core functionality, file handlers, commands, and UI integration
-- **Python LSP Server**: Advanced code intelligence and project analysis
-
-## Documentation
-
-- **User Guide**: See `docs/` directory or [online documentation](https://whiskeyhouse.github.io/ignition-nvim)
-- **Vim Help**: `:help ignition-nvim`
-- **Developer Guide**: [CLAUDE.md](CLAUDE.md)
-- **Claude Code Plugin**: [claude-code-plugin/README.md](claude-code-plugin/README.md)
-- **Claude Code Templates**: [templates/README.md](templates/README.md)
-- **Contributing**: [CONTRIBUTING.md](CONTRIBUTING.md)
-- **Troubleshooting**: [TROUBLESHOOTING.md](TROUBLESHOOTING.md)
-- **Changelog**: [CHANGELOG.md](CHANGELOG.md)
+- **CodeLens** — "Edit Script" actions above embedded Python in JSON resource files
+- **Project Browser** — Designer-style sidebar with resource types and navigation
+- **Tag Browser** — Browse tags from `ignition-git-module` tag exports
+- **Component Tree** — Inspect Perspective view component hierarchies
+- **Pyright/Pylance stubs** — Type stubs for Ignition APIs
 
 ## Installation
 
-### Using [lazy.nvim](https://github.com/folke/lazy.nvim)
+### VS Code
+
+Install **[Ignition Dev Tools](https://marketplace.visualstudio.com/items?itemName=WhiskeyHouse.ignition-dev-tools)** from the VS Code Marketplace.
+
+The language server is installed automatically on first activation. No manual setup required.
+
+### Neovim (lazy.nvim)
 
 Minimal (uses defaults from `lazy.lua` — lazy-loads on filetype + commands, auto-installs LSP):
 
@@ -56,13 +53,12 @@ With custom options:
       auto_start = true,
       settings = {
         ignition = {
-          version = "8.1", -- Your Ignition version
+          version = "8.1",
         },
       },
     },
     kindling = {
       enabled = true,
-      -- path = '/path/to/kindling', -- Optional: specify Kindling path
     },
     decoder = {
       auto_decode = true,
@@ -72,155 +68,57 @@ With custom options:
 }
 ```
 
-### Using [packer.nvim](https://github.com/wbthomason/packer.nvim)
+### LSP Server (manual)
 
-```lua
-use {
-  'whiskeyhouse/ignition-nvim',
-  requires = { 'neovim/nvim-lspconfig' },
-  config = function()
-    require('ignition').setup()
-  end,
-}
-```
-
-## LSP Server Installation
-
-The Python LSP server provides advanced code intelligence features. With lazy.nvim, it is
-installed automatically via the `build` step. To install manually:
+Both editors auto-install the LSP, but you can also install it manually:
 
 ```bash
-# Install from PyPI (uses TestPyPI for ignition-lint-toolkit beta)
 pip install --extra-index-url https://test.pypi.org/simple/ ignition-lsp
-
-# Or install from source (inside the plugin directory)
-cd lsp
-pip install -e .
 ```
+
+## Monorepo Structure
+
+```
+packages/
+├── ignition-lsp/        # Python LSP server (shared by both editors)
+├── ignition-nvim/       # Neovim plugin (Lua)
+└── ignition-vscode/     # VS Code extension (TypeScript)
+```
+
+Top-level symlinks (`lua/`, `lsp/`, `ftdetect/`, etc.) allow the repo to work directly as a Neovim plugin when installed via lazy.nvim.
 
 ## Commands
 
-### Script Management
-- `:IgnitionDecode` - Decode embedded Python scripts (interactive selection if multiple)
-- `:IgnitionDecodeAll` - Decode all scripts in current buffer
-- `:IgnitionEncode` - Encode scripts back to JSON format (from virtual buffer)
-- `:IgnitionListScripts` - Show all scripts in current buffer in floating window
+### Neovim
 
-### Integration
-- `:IgnitionOpenKindling [file]` - Open `.gwbk` file with Kindling
-- `:IgnitionInfo` - Show plugin information and status
+| Command | Keymap | Description |
+|---------|--------|-------------|
+| `:IgnitionDecode` | `<localleader>id` | Decode embedded Python scripts (interactive selection) |
+| `:IgnitionDecodeAll` | `<localleader>ia` | Decode all scripts in current buffer |
+| `:IgnitionEncode` | `<localleader>ie` | Encode scripts back to JSON format |
+| `:IgnitionListScripts` | `<localleader>il` | Show all scripts in floating window |
+| `:IgnitionOpenKindling` | `<localleader>ik` | Open `.gwbk` file with Kindling |
+| `:IgnitionInfo` | `<localleader>ii` | Show plugin information and status |
 
-### Default Keymaps (in Ignition files)
-- `<localleader>id` - Decode scripts
-- `<localleader>ia` - Decode all scripts
-- `<localleader>il` - List all scripts
-- `<localleader>ie` - Encode scripts back to JSON
-- `<localleader>ii` - Show plugin info
-- `<localleader>ik` - Open in Kindling (`.gwbk` files only)
+### VS Code
 
-## Usage
+Open the Command Palette (`Cmd+Shift+P` / `Ctrl+Shift+P`) and type "Ignition":
 
-### Decoding Scripts
+- **Decode Script at Cursor** / **Decode All Scripts in File**
+- **List All Scripts in Workspace**
+- **Search Resources** / **Copy Qualified Script Path**
+- **Format JSON** / **Convert Indentation to Tabs**
+- **Open with Kindling**
 
-When you open an Ignition JSON file containing embedded Python scripts, the plugin will automatically detect them and notify you.
+## Documentation
 
-**Single Script:**
-```
-:IgnitionDecode
-```
-or press `<localleader>id` to decode the script into a new split window with full Python syntax highlighting and editing capabilities.
-
-**Multiple Scripts:**
-If the file contains multiple scripts, you'll be presented with an interactive selection menu showing a preview of each script.
-
-**All Scripts:**
-```
-:IgnitionDecodeAll
-```
-or press `<localleader>ia` to decode all scripts at once.
-
-### Editing and Saving
-
-1. Edit the decoded Python script in the virtual buffer with full LSP support
-2. Save the buffer (`:w` or `<leader>w`) to automatically encode and update the original JSON file
-3. The source JSON file will be marked as modified - save it to persist changes
-
-### Script Encoding Method
-
-The plugin uses the same encoding method as Ignition Flint:
-- Standard JSON string escaping (`\"`, `\\n`, `\\t`, etc.)
-- Unicode escapes for special characters (`<` → `\u003c`, `>` → `\u003e`, `&` → `\u0026`, `=` → `\u003d`, `'` → `\u0027`)
-- **Not base64** - scripts remain partially human-readable in JSON
-
-Reference: [ignition-flint encoding](https://github.com/keith-gamble/ignition-flint/blob/master/src/utils/textEncoding.ts)
-
-## Configuration
-
-Default configuration:
-
-```lua
-{
-  lsp = {
-    enabled = true,
-    auto_start = true,
-    cmd = nil, -- Auto-detected
-    settings = {
-      ignition = {
-        version = "8.1",
-        sdk_path = nil,
-      },
-    },
-  },
-  kindling = {
-    enabled = true,
-    path = nil, -- Auto-detected
-  },
-  decoder = {
-    auto_decode = true,
-    auto_encode = true,
-    create_scratch_buffer = true,
-  },
-  ui = {
-    show_notifications = true,
-    show_statusline = true,
-  },
-}
-```
-
-## Supported File Types
-
-- `.gwbk` - Gateway Backup files
-- `.proj` - Ignition Project files
-- `resource.json` - Resource definitions with embedded scripts
-- `tags.json` - Tag configurations
-- `data.json` - Data structures
-
-## Requirements
-
-- Neovim >= 0.8.0
-- Python >= 3.8 (for LSP server)
-- [nvim-lspconfig](https://github.com/neovim/nvim-lspconfig) (optional, for LSP features)
-- [Kindling](https://github.com/paul-griffith/kindling) (optional, for `.gwbk` support)
-
-## Development Status
-
-This plugin is under active development. See our [Linear project](https://linear.app/whiskey-house-eandt/project/ignition-neovim-plugin-8b7522ece7b1) for current progress.
-
-### Roadmap
-
-- [x] Basic project structure
-- [x] File type detection for Ignition files
-- [x] Script decoder/encoder implementation
-- [x] Virtual document system for editing scripts
-- [x] Auto-detection of embedded scripts
-- [x] Interactive script selection
-- [x] LSP server with Ignition API completion (14 modules, 239 functions)
-- [x] Project indexing and navigation (workspace symbols, cross-file completions)
-- [x] Go-to-definition for system.* and project scripts
-- [x] Kindling integration for .gwbk files
-- [x] Comprehensive testing suite (162 Python + 107 Lua tests)
-- [x] Full documentation (Docusaurus, Vim help, guides)
-- [x] CI workflow (GitHub Actions)
+- **User Guide**: [online documentation](https://whiskeyhouse.github.io/ignition-nvim)
+- **Vim Help**: `:help ignition-nvim`
+- **VS Code README**: [packages/ignition-vscode/README.md](packages/ignition-vscode/README.md)
+- **LSP Server README**: [packages/ignition-lsp/README.md](packages/ignition-lsp/README.md)
+- **Contributing**: [CONTRIBUTING.md](CONTRIBUTING.md)
+- **Troubleshooting**: [TROUBLESHOOTING.md](TROUBLESHOOTING.md)
+- **Changelog**: [CHANGELOG.md](CHANGELOG.md)
 
 ## Claude Code Integration
 
@@ -235,26 +133,21 @@ claude plugin add --from whiskeyhouse/ignition-nvim --path claude-code-plugin
 **Option B: Templates** (per-project, check into your repo)
 
 ```bash
-# From your Ignition project root
 curl -sL https://raw.githubusercontent.com/whiskeyhouse/ignition-nvim/main/templates/setup.sh | bash
 ```
 
-Both include auto-lint hooks and the full `system.*` + expression function reference. See [claude-code-plugin/README.md](claude-code-plugin/README.md) and [templates/README.md](templates/README.md) for details.
+See [claude-code-plugin/README.md](claude-code-plugin/README.md) and [templates/README.md](templates/README.md) for details.
+
+## Part of the Whiskey House Ignition Developer Toolkit
+
+- **[Ignition Dev Tools](https://github.com/TheThoughtagen/ignition-dev-tools)** — Neovim + VS Code IDE support (this repo)
+- **[ignition-lint](https://github.com/TheThoughtagen/ignition-lint)** — Static analysis for Ignition Python scripts
+- **[ignition-git-module](https://github.com/bmusson/ignition-git-module)** — Native Git inside Ignition Designer
 
 ## Contributing
 
-Contributions are welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for:
-- Development setup
-- Testing guidelines
-- Code style requirements
-- Pull request process
-
-For current tasks and priorities, check the [GitHub issues](https://github.com/whiskeyhouse/ignition-nvim/issues).
+Contributions are welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for development setup, testing, and guidelines.
 
 ## License
 
-MIT License - see LICENSE file for details
-
-## Acknowledgments
-
-Inspired by [Ignition Flint](https://marketplace.visualstudio.com/items?itemName=Keith-gamble.ignition-flint) for VS Code.
+MIT License - see [LICENSE](LICENSE) for details.
