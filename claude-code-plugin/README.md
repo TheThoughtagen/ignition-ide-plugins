@@ -54,16 +54,18 @@ Files outside Ignition projects are ignored. The hook is safe for global install
 
 ### Skills
 
-Six skills are bundled:
+Eight skills are bundled:
 
 | Skill | Invocable? | Purpose |
 |-------|-----------|---------|
-| `ignition-api` | Claude-only | Loaded automatically when Claude writes Ignition scripts. Provides Jython conventions, all `system.*` modules, common patterns, and anti-patterns. |
-| `ignition-expressions` | Claude-only | Loaded automatically when Claude writes expression bindings. All 104 functions with signatures, descriptions, and usage tips. |
-| `ignition-lint` | User + Claude | Run `/ignition-scada:ignition-lint` to lint files or the project. Claude explains diagnostics and applies fixes. |
-| `init-testing` | User + Claude | Run `/ignition-scada:init-testing` to scaffold the Jython test framework, WebDev endpoints, and type stubs. Use `--all` to also scaffold e2e tests. |
-| `init-e2e` | User + Claude | Run `/ignition-scada:init-e2e` to scaffold Playwright browser tests for Perspective views. |
-| `test` | User + Claude | Run `/ignition-scada:test` to run gateway or e2e tests. Routes based on arguments. |
+| `ignition-api` | Claude-only | Jython conventions, all `system.*` modules, Ignition resource structure (`resource.json`), script library rules. |
+| `ignition-expressions` | Claude-only | Expression language syntax and all 104 built-in functions. |
+| `ignition-testing` | Claude-only | Test framework reference — `testing.*` modules, decorators, assertions, WebDev endpoints, discovery conventions. |
+| `ignition-e2e` | Claude-only | Playwright reference — Perspective DOM conventions, PerspectivePage, component wrappers, gateway API helper. |
+| `ignition-lint` | User + Claude | `/ignition-scada:ignition-lint` — lint files or the whole project on demand. |
+| `init-testing` | User + Claude | `/ignition-scada:init-testing` — scaffold Jython test framework + WebDev endpoints + type stubs. |
+| `init-e2e` | User + Claude | `/ignition-scada:init-e2e` — scaffold Playwright browser tests for Perspective views. |
+| `test` | User + Claude | `/ignition-scada:test` — run gateway Jython tests or Playwright browser tests. |
 
 Claude-only skills are never shown in the `/` menu — they're background knowledge that Claude draws on when relevant.
 
@@ -82,57 +84,115 @@ Both approaches include the same lint hook and the same domain knowledge. The pl
 
 ## Quick Start — Testing
 
+Two commands to go from zero to a full test suite:
+
+```
+/ignition-scada:init-testing    # Gateway Jython tests
+/ignition-scada:init-e2e        # Playwright browser tests (Perspective)
+```
+
+### What happens when you run `/ignition-scada:init-testing`
+
+The plugin auto-detects your project — name, gateway, tag providers, parent project inheritance — and scaffolds everything you need:
+
+```
+❯ /ignition-scada:init-testing
+
+⏺ Here's what I found:
+
+  ┌────────────┬──────────────────────────────────────────────┐
+  │  Property  │                    Value                     │
+  ├────────────┼──────────────────────────────────────────────┤
+  │ Project    │ My Site HMI (MySite01)                       │
+  ├────────────┼──────────────────────────────────────────────┤
+  │ Gateway    │ https://localhost:9043 (reachable)            │
+  ├────────────┼──────────────────────────────────────────────┤
+  │ Parent     │ Global (has Jython framework + WebDev)        │
+  ├────────────┼──────────────────────────────────────────────┤
+  │ Tag provs  │ SITE01, default, QSI_UDTs                    │
+  └────────────┴──────────────────────────────────────────────┘
+
+  Inherited from parent (NOT created here):
+  The Jython test framework lives in Global and is inherited
+  automatically. Any __tests__ modules you write will be
+  discovered alongside the parent's tests.
+
+  Created here (project-scoped, NOT inherited):
+  - WebDev endpoints (testing/run, testing/tags)
+  - Type stubs (.ignition-stubs/testing/)
+
+⏺ Which tag provider? → SITE01
+
+⏺ Scaffold complete: 14 created, 0 skipped.
+
+⏺ Gateway discovered 11 test modules:
+  core.mes.changeover.__tests__, core.util.__tests__, ...
+
+  Writing your first test:
+  ignition/script-python/<package>/__tests__/code.py
+```
+
+It understands Ignition project inheritance — if your parent project already has the test framework, it skips duplicating scripts and only creates what each project actually needs (WebDev endpoints are project-scoped in Ignition).
+
+### What happens when you run `/ignition-scada:init-e2e`
+
+Scaffolds Playwright browser tests with Perspective-aware page objects, then authenticates and runs smoke tests:
+
+```
+❯ /ignition-scada:init-e2e
+
+⏺ Perspective module found. Parent project has e2e/.env — copying
+  credentials and updating project name.
+
+⏺ Scaffold done: 13 files created.
+
+⏺ Installing dependencies...
+  npm install ✓
+  playwright install chromium ✓
+
+❯ Yes, run the auth setup and smoke tests
+
+⏺ ✓ authenticate (4.6s)
+  ✓ session loads and docks render (2.8s)
+  ✓ page content renders (2.7s)
+  ✓ navigation exists in DOM (3.9s)
+
+  4 passed, 0 failed (19s total)
+```
+
+### Running tests
+
 ```bash
-# Scaffold the Jython test framework + WebDev endpoints
-/ignition-scada:init-testing
-
-# Also scaffold Playwright e2e tests (requires Perspective module)
-/ignition-scada:init-testing --all
-
-# Run tests
 /ignition-scada:test                    # All gateway Jython tests
 /ignition-scada:test changeover         # Specific module
-/ignition-scada:test ui                 # All Playwright tests
-/ignition-scada:test smoke              # Smoke tests only
+/ignition-scada:test core.mes           # By package prefix
+/ignition-scada:test ui                 # All Playwright browser tests
+/ignition-scada:test ui smoke           # Playwright smoke tests only
 ```
 
-### Deterministic Mode
-
-The scaffolding scripts can be run directly without Claude:
-
-```bash
-# Detect project
-./scripts/detect-project.sh /path/to/project
-
-# Scaffold testing
-./scripts/scaffold-testing.sh \
-  --project-root /path/to/project \
-  --project-name MyProject \
-  --gateway-url https://localhost:9043 \
-  --tag-provider MYP01
-
-# Scaffold e2e
-./scripts/scaffold-e2e.sh \
-  --project-root /path/to/project \
-  --project-name MyProject \
-  --gateway-url https://localhost:9043 \
-  --tag-provider MYP01 \
-  --perspective-project QSI_MyProject
-```
-
-Both scripts support `--dry-run` to preview and `--force` to overwrite existing files.
-
-### What Gets Scaffolded
+### What gets scaffolded
 
 **`/ignition-scada:init-testing`** creates:
-- `ignition/script-python/testing/` — 5 modules (runner, assertions, decorators, helpers, reporter)
-- `com.inductiveautomation.webdev/resources/testing/` — 2 endpoints (run, tags)
+- `ignition/script-python/testing/` — 5 modules (runner, assertions, decorators, helpers, reporter) — *skipped if inherited from parent*
+- `com.inductiveautomation.webdev/resources/testing/` — 2 endpoints (run, tags) — *always created, not inherited*
 - `.ignition-stubs/testing/` — type stubs for IDE completion
 
 **`/ignition-scada:init-e2e`** creates:
-- `e2e/` — Playwright config, auth fixtures, gateway API helper, page objects, component wrappers, smoke tests
+- `e2e/` — Playwright config, auth fixtures, gateway API helper, PerspectivePage page object, component wrappers (Button, Table), smoke tests
 
-### Testing Prerequisites
+### Deterministic mode (no Claude)
+
+The scaffolding scripts can be run directly:
+
+```bash
+./scripts/detect-project.sh /path/to/project
+./scripts/scaffold-testing.sh --project-root /path/to/project --project-name MySite --tag-provider SITE01
+./scripts/scaffold-e2e.sh --project-root /path/to/project --project-name MySite --tag-provider SITE01 --perspective-project MySite01
+```
+
+Both support `--dry-run` to preview and `--force` to overwrite. Use `--skip-scripts` if the parent project has the Jython framework.
+
+### Prerequisites
 
 - **Gateway tests:** A running Ignition gateway (local or Docker)
 - **E2E tests:** Node.js, Chromium (installed automatically by Playwright)
@@ -154,8 +214,10 @@ claude-code-plugin/
     run-tests.sh              # Post-commit gateway test hook
     run-ui-tests.sh           # Post-edit Playwright test hook
   skills/
-    ignition-api/SKILL.md         # system.* API reference (Claude-only)
+    ignition-api/SKILL.md         # system.* API + resource structure (Claude-only)
     ignition-expressions/SKILL.md # Expression language reference (Claude-only)
+    ignition-testing/SKILL.md     # Test framework reference (Claude-only)
+    ignition-e2e/SKILL.md         # Playwright/Perspective reference (Claude-only)
     ignition-lint/SKILL.md        # Manual lint skill (user-invocable)
     init-testing/SKILL.md         # Test framework scaffolding (user-invocable)
     init-e2e/SKILL.md             # E2E test scaffolding (user-invocable)
