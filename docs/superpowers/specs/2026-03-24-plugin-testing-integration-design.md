@@ -124,7 +124,7 @@ com.inductiveautomation.webdev/resources/testing/
 e2e/
 ├── package.json              # @playwright/test, dotenv
 ├── tsconfig.json             # ES2022, NodeNext, path aliases
-├── playwright.config.ts      # Projects: setup, chromium, api
+├── playwright.config.ts      # Projects: setup, chromium
 ├── .env.example              # Template with all config vars
 ├── .gitignore                # node_modules, test-results, .auth, .env
 ├── fixtures/
@@ -177,10 +177,10 @@ Supports `--all` flag: after scaffolding testing, automatically runs `init-e2e` 
 
 1. Run `detect-project.sh`
 2. Check `has_perspective` — if false, warn: "No Perspective module found. E2E tests require Perspective views. Continue anyway?"
-3. Check `existing_testing.jython_framework` — if false, inform the user and automatically call `scaffold-testing.sh` with the already-confirmed parameters (no second interactive confirmation — the tag provider was already confirmed in step 4). The e2e tests depend on the WebDev `testing/tags` endpoint for tag operations.
-4. Present findings, ask user to confirm tag provider
-5. Auto-detect Perspective project name: check for `com.inductiveautomation.perspective/` views, or if gateway reachable, query for running Perspective projects
-6. Ask user to confirm Perspective project name
+3. Present findings, ask user to confirm tag provider
+4. Auto-detect Perspective project name: check for `com.inductiveautomation.perspective/` views, or if gateway reachable, query for running Perspective projects
+5. Ask user to confirm Perspective project name
+6. Check `existing_testing.jython_framework` — if false, inform the user and automatically call `scaffold-testing.sh` with the confirmed parameters from step 3 (no second interactive confirmation). The e2e tests depend on the WebDev `testing/tags` endpoint for tag operations.
 7. Call `scaffold-e2e.sh` with confirmed parameters
 8. Run `cd e2e && npm install && npx playwright install chromium`
 9. Prompt user to set credentials: "Copy `e2e/.env.example` to `e2e/.env` and fill in `IGNITION_USER` and `IGNITION_PASSWORD`"
@@ -201,7 +201,7 @@ Routes based on arguments. Detects project context automatically.
 
 All test invocations:
 1. Trigger a gateway project scan first (to pick up recent file changes)
-2. Poll for scan completion: hit `StatusPing` up to 5 times at 1-second intervals (max 5s wait). This replaces the hardcoded 3-second sleep — faster for small projects, more reliable for large ones. If polling times out, proceed anyway (tests may use stale scripts but won't fail to run)
+2. Wait for scan propagation: poll up to 5 times at 1-second intervals (max 5s). This is a best-effort delay — Ignition has no scan-completion endpoint, so we use a simple timed wait that's more responsive than a hardcoded sleep. If the wait times out, proceed anyway (tests may use stale scripts but won't fail to run)
 3. Run the tests
 4. Parse and present results (summary + failure details)
 5. On missing infrastructure, suggest the appropriate init skill
@@ -213,7 +213,7 @@ Two new hook scripts in `scripts/`, plus the existing `ignition-lint.sh`:
 #### `scripts/run-tests.sh` — Post-commit gateway tests
 
 - **Trigger:** `PostToolUse` on `Bash` — filters for `git commit` commands
-- **Command matching:** Reads `tool_input.command` from hook JSON. Matches if the command string contains `git commit` (simple substring match via `[[ "$COMMAND" =~ "git commit" ]]`). This intentionally matches `git commit -m`, `git commit --amend`, etc. Also checks `tool_result.stdout` for commit success indicators (`file changed`, `insertions`, `deletions`, or branch ref like `[main abc1234]`) to avoid running tests on failed commits.
+- **Command matching:** Reads `tool_input.command` from hook JSON. Matches via bash regex `[[ "$COMMAND" =~ git\ commit($|\ ) ]]` — this matches `git commit`, `git commit -m "..."`, `git commit --amend`, etc. but not false positives like `git committed`. Also checks `tool_result.stdout` for commit success indicators (`file changed`, `insertions`, `deletions`, or branch ref like `[main abc1234]`) to avoid running tests on failed commits.
 - **Detection:** Walks up from cwd to find `project.json`, derives project name from directory
 - **Gateway URL:** Reads from `$IGNITION_GATEWAY_URL` env var, or `.env` in project root, or falls back to `https://localhost:9043`
 - **API token:** Reads from `$IGNITION_API_TOKEN_FILE` env var (no hardcoded path). Used for project scan trigger only. If no token file is set, scan trigger is skipped (tests still run against whatever scripts the gateway has loaded).
@@ -226,7 +226,7 @@ Two new hook scripts in `scripts/`, plus the existing `ignition-lint.sh`:
 - **Detection:** Finds `e2e/` relative to project root (not hardcoded path)
 - **Scoping:** Extracts view area from path (`views/{Area}/...`) → maps to `e2e/tests/{area}/`
 - **Fallback:** If no matching test directory, runs `e2e/tests/smoke/`
-- **Concurrency guard:** Uses a lockfile (`e2e/.playwright-running.lock`) with `flock` to prevent concurrent Playwright runs. If another test run is in progress, the hook silently exits. The lockfile is removed on completion (or by trap on exit).
+- **Concurrency guard:** Uses a lockfile directory (`e2e/.playwright-running.lock`) with `mkdir` as an atomic lock (portable across macOS and Linux — `flock` is Linux-only). If `mkdir` fails (lock exists), the hook silently exits. The lock directory is removed on completion via `trap ... EXIT`.
 - **Silent exit if:** `e2e/node_modules` doesn't exist, `.auth/user.json` doesn't exist, another test run is in progress, not a Perspective view.json
 
 **Performance note:** The self-gating check for `run-ui-tests.sh` is cheap — it reads `tool_input.file_path` from stdin, does a string match on `view.json`, checks two filesystem paths, and exits. This runs on every `Edit|Write` alongside `ignition-lint.sh`, but the early-exit path is ~5ms. The Playwright launch only happens for actual Perspective view edits.
