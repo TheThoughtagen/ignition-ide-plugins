@@ -44,6 +44,14 @@ if [ -n "$PARENT_NAME" ]; then
   fi
 fi
 
+# Check for parent e2e .env (can be reused/copied for child projects)
+PARENT_HAS_E2E_ENV=false
+PARENT_E2E_ENV_PATH=""
+if [ -n "$PARENT_ROOT" ] && [ -f "$PARENT_ROOT/e2e/.env" ]; then
+  PARENT_HAS_E2E_ENV=true
+  PARENT_E2E_ENV_PATH="$PARENT_ROOT/e2e/.env"
+fi
+
 # Probe gateway
 GATEWAY_URL=""
 GATEWAY_REACHABLE=false
@@ -106,6 +114,8 @@ jq -n \
   --arg parent_root "$PARENT_ROOT" \
   --argjson parent_has_jython_framework "$PARENT_HAS_JYTHON_FRAMEWORK" \
   --argjson parent_has_webdev_endpoints "$PARENT_HAS_WEBDEV_ENDPOINTS" \
+  --argjson parent_has_e2e_env "$PARENT_HAS_E2E_ENV" \
+  --arg parent_e2e_env_path "$PARENT_E2E_ENV_PATH" \
   --arg gateway_url "$GATEWAY_URL" \
   --argjson gateway_reachable "$GATEWAY_REACHABLE" \
   --argjson has_perspective "$HAS_PERSPECTIVE" \
@@ -124,7 +134,9 @@ jq -n \
       name: $parent_name,
       root: (if $parent_root == "" then null else $parent_root end),
       has_jython_framework: $parent_has_jython_framework,
-      has_webdev_endpoints: $parent_has_webdev_endpoints
+      has_webdev_endpoints: $parent_has_webdev_endpoints,
+      has_e2e_env: $parent_has_e2e_env,
+      e2e_env_path: (if $parent_e2e_env_path == "" then null else $parent_e2e_env_path end)
     } end),
     gateway_url: $gateway_url,
     gateway_reachable: $gateway_reachable,

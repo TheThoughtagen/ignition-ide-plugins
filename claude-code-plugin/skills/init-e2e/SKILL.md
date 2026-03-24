@@ -54,9 +54,16 @@ Scaffold a complete Playwright e2e test setup for Perspective views. This create
    cd <project-root>/e2e && npm install && npx playwright install chromium
    ```
 
-9. Tell the user to set up credentials:
-   - Copy `e2e/.env.example` to `e2e/.env`
-   - Fill in `IGNITION_USER` and `IGNITION_PASSWORD`
+9. Set up the `.env` file:
+   - Check detection output for `parent.has_e2e_env`. If the parent project has an existing `e2e/.env`:
+     - Tell the user: "Your parent project *{parent.name}* already has an `e2e/.env` at `{parent.e2e_env_path}`. Since both projects share the same gateway, I can copy it and just update the `PERSPECTIVE_PROJECT` name."
+     - Copy the parent's `.env` to `<project-root>/e2e/.env`
+     - Update `PERSPECTIVE_PROJECT` to the confirmed value for this project
+     - Show the user what was set and ask them to verify credentials are still correct
+   - If no parent `.env` exists:
+     - Copy `e2e/.env.example` to `e2e/.env`
+     - Tell the user to fill in `IGNITION_USER` and `IGNITION_PASSWORD`
+   - **Never commit `.env`** — it's in the scaffolded `.gitignore`
 
 10. Explain auth setup:
     - Run `cd e2e && npx playwright test --project=setup` to authenticate
