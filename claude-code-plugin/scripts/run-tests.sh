@@ -5,6 +5,8 @@
 
 set -euo pipefail
 
+source "$(dirname "$0")/lib/common.sh"
+
 INPUT=$(cat)
 
 # Only trigger on git commit
@@ -13,21 +15,11 @@ if [[ ! "$COMMAND" =~ git\ commit($|\ ) ]]; then
   exit 0
 fi
 
-# Check commit succeeded
-STDOUT=$(echo "$INPUT" | jq -r '.tool_result.stdout // empty')
-if [[ ! "$STDOUT" =~ create\ mode|file\ changed|files\ changed|insertions|deletions ]] && [[ ! "$STDOUT" =~ \[[a-z]+\ [a-f0-9] ]]; then
+# Check commit succeeded (exit code 0 = success)
+EXIT_CODE=$(echo "$INPUT" | jq -r '.tool_result.exit_code // 1')
+if [ "$EXIT_CODE" -ne 0 ]; then
   exit 0
 fi
-
-# Find project root
-find_project_root() {
-  local dir="$1"
-  while [ "$dir" != "/" ]; do
-    if [ -f "$dir/project.json" ]; then echo "$dir"; return 0; fi
-    dir=$(dirname "$dir")
-  done
-  return 1
-}
 
 PROJECT_ROOT=$(find_project_root "$PWD") || exit 0
 PROJECT_NAME=$(basename "$PROJECT_ROOT")
@@ -46,6 +38,7 @@ GATEWAY_URL="${GATEWAY_URL:-https://localhost:9043}"
 
 # Check gateway reachable
 if ! curl -k -s --connect-timeout 3 "$GATEWAY_URL/StatusPing" > /dev/null 2>&1; then
+  echo "Ignition gateway not reachable at $GATEWAY_URL — skipping post-commit tests" >&2
   exit 0
 fi
 
@@ -53,8 +46,10 @@ fi
 TOKEN_FILE="${IGNITION_API_TOKEN_FILE:-}"
 if [ -n "$TOKEN_FILE" ] && [ -f "$TOKEN_FILE" ]; then
   TOKEN=$(cat "$TOKEN_FILE")
-  curl -k -s -X POST -H "X-Ignition-API-Token: $TOKEN" \
-    "$GATEWAY_URL/data/project-scan-endpoint/scan?updateDesigners=true" > /dev/null 2>&1 || true
+  if ! curl -k -s -X POST -H "X-Ignition-API-Token: $TOKEN" \
+    "$GATEWAY_URL/data/project-scan-endpoint/scan?updateDesigners=true" > /dev/null 2>&1; then
+    echo "Warning: project scan request failed — tests may run against stale state" >&2
+  fi
 fi
 
 # Wait for scan propagation (best-effort delay — Ignition has no scan-completion endpoint)
@@ -62,18 +57,26 @@ sleep 3
 
 # Run tests
 ENDPOINT="$GATEWAY_URL/system/webdev/$PROJECT_NAME/testing/run"
-RESULT=$(curl -k -s -X POST "$ENDPOINT" 2>/dev/null) || exit 0
+RESULT=$(curl -k -s --fail -X POST "$ENDPOINT" 2>/dev/null) || {
+  echo "Test endpoint unreachable or returned error: $ENDPOINT" >&2
+  exit 1
+}
 
-# Parse results
-PASSED=$(echo "$RESULT" | jq -r '.passed // 0')
-FAILED=$(echo "$RESULT" | jq -r '.failed // 0')
-ERRORS=$(echo "$RESULT" | jq -r '.errors // 0')
-SKIPPED=$(echo "$RESULT" | jq -r '.skipped // 0')
-TOTAL=$(echo "$RESULT" | jq -r '.total // 0')
-DURATION=$(echo "$RESULT" | jq -r '.duration_ms // 0')
+# Validate response structure
+if ! echo "$RESULT" | jq -e '.total' > /dev/null 2>&1; then
+  echo "Unexpected response from test endpoint:" >&2
+  echo "$RESULT" | head -5 >&2
+  exit 1
+fi
+
+# Parse results (single jq call)
+read -r PASSED FAILED ERRORS SKIPPED TOTAL DURATION < <(
+  echo "$RESULT" | jq -r '[.passed // 0, .failed // 0, .errors // 0, .skipped // 0, .total // 0, .duration_ms // 0] | @tsv'
+)
 
 if [ "$FAILED" -eq 0 ] && [ "$ERRORS" -eq 0 ]; then
   echo "Tests: $PASSED passed, $SKIPPED skipped ($TOTAL total, ${DURATION}ms)" >&2
+  exit 0
 else
   echo "TESTS FAILED: $PASSED passed, $FAILED failed, $ERRORS errors ($TOTAL total, ${DURATION}ms)" >&2
   echo "$RESULT" | jq -r '
@@ -81,6 +84,5 @@ else
     select(.status == "failed" or .status == "error") |
     "  \(.status | ascii_upcase): \(.name) — \(.message)"
   ' 2>/dev/null >&2 || true
+  exit 1
 fi
-
-exit 0

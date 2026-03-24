@@ -14,6 +14,8 @@
 
 set -euo pipefail
 
+source "$(dirname "$0")/lib/common.sh"
+
 # ---------------------------------------------------------------------------
 # Argument parsing
 # ---------------------------------------------------------------------------
@@ -50,32 +52,6 @@ TAG_PROVIDER="${TAG_PROVIDER:-default}"
 CREATED=0 SKIPPED=0
 
 # ---------------------------------------------------------------------------
-# Helper: write a file with existence check
-# ---------------------------------------------------------------------------
-
-write_file() {
-  local filepath="$1"
-  local content="$2"
-  local full_path="$PROJECT_ROOT/$filepath"
-
-  if [[ "$DRY_RUN" = true ]]; then
-    echo "  Would create: $filepath"
-    return
-  fi
-
-  if [[ -f "$full_path" ]] && [[ "$FORCE" != true ]]; then
-    echo "  Skipped (exists): $filepath"
-    SKIPPED=$((SKIPPED + 1))
-    return
-  fi
-
-  mkdir -p "$(dirname "$full_path")"
-  printf '%s' "$content" > "$full_path"
-  CREATED=$((CREATED + 1))
-  echo "  Created: $filepath"
-}
-
-# ---------------------------------------------------------------------------
 # Shared resource.json (identical for all 5 script modules)
 # ---------------------------------------------------------------------------
 
@@ -91,12 +67,29 @@ RESOURCE_JSON=$(cat <<'RJEOF'
   "attributes": {
     "lastModification": {
       "actor": "external",
-      "timestamp": "2026-02-20T00:00:00Z"
-    },
-    "hintScope": 2
+      "timestamp": "2026-01-01T00:00:00Z"
+    }
   }
 }
 RJEOF
+)
+
+# Package node resource.json (no code.py — this is a namespace package)
+PACKAGE_RESOURCE_JSON=$(cat <<'PRJEOF'
+{
+  "scope": "A",
+  "version": 1,
+  "restricted": false,
+  "overridable": true,
+  "files": [],
+  "attributes": {
+    "lastModification": {
+      "actor": "external",
+      "timestamp": "2026-02-20T00:00:00Z"
+    }
+  }
+}
+PRJEOF
 )
 
 # ---------------------------------------------------------------------------
@@ -188,6 +181,9 @@ if [[ "$SKIP_SCRIPTS" = true ]]; then
   echo "--- Jython Test Framework (skipped — inherited from parent project) ---"
 else
 echo "--- Jython Test Framework ---"
+
+# Package node for testing/ (required by Ignition — without it, child modules are invisible)
+write_file "ignition/script-python/testing/resource.json" "$PACKAGE_RESOURCE_JSON"
 
 # --- runner/code.py (genericized) ---
 
@@ -879,7 +875,7 @@ def write_dataset_tag(tag_path, columns, types, rows):
 			"rowCount": ds.getRowCount(),
 			"error": None if success else str(results[0]),
 		}
-	except:
+	except Exception:
 		import traceback
 		return {
 			"success": False,
@@ -1178,7 +1174,7 @@ def doPost(request, session):
 				package = body_data.get("package", package)
 				fmt = body_data.get("format", fmt)
 		except Exception:
-			pass
+			pass  # Fall through to query string params if body is not valid JSON
 
 	try:
 		if module:
@@ -1211,6 +1207,7 @@ def doPost(request, session):
 
 		# Default JSON
 		status = 200 if results["failed"] == 0 and results["errors"] == 0 else 207
+		request['servletResponse'].setStatus(status)
 		return {"json": results}
 
 	except Exception as e:
@@ -1286,20 +1283,19 @@ TAGS_DOGET=$(cat <<'PYEOF'
 def doGet(request, session):
 	params = request.get('params', {})
 
-	# Simulator CSV download
-	simulatorCsv = params.get('simulatorCsv', None)
-	if simulatorCsv is not None:
-		csv_qv = system.tag.readBlocking(['[PLACEHOLDER_TAG_PROVIDER]WH/Systems/Simulation/DeviceCSV'])[0]
-		if csv_qv.quality.isGood() and csv_qv.value:
-			# Write CSV directly to servlet response for proper Content-Type
-			response = request['servletResponse']
-			response.setContentType('text/csv')
-			response.setHeader('Content-Disposition', 'attachment; filename="PLACEHOLDER_PROJECT_NAME_Sim_program.csv"')
-			writer = response.getWriter()
-			writer.print(csv_qv.value)
-			writer.flush()
-			return
-		return {'json': {'error': 'No CSV generated. Run controller.enable(mode="device") first.'}}
+	# Simulator CSV download (customize the tag path for your project)
+	# simulatorCsv = params.get('simulatorCsv', None)
+	# if simulatorCsv is not None:
+	# 	csv_qv = system.tag.readBlocking(['[PLACEHOLDER_TAG_PROVIDER]YourPath/To/DeviceCSV'])[0]
+	# 	if csv_qv.quality.isGood() and csv_qv.value:
+	# 		response = request['servletResponse']
+	# 		response.setContentType('text/csv')
+	# 		response.setHeader('Content-Disposition', 'attachment; filename="sim_program.csv"')
+	# 		writer = response.getWriter()
+	# 		writer.print(csv_qv.value)
+	# 		writer.flush()
+	# 		return
+	# 	return {'json': {'error': 'No CSV generated.'}}
 
 	# Browse mode: list tag providers or browse a path
 	browse = params.get('browse', None)
@@ -1393,7 +1389,7 @@ def doPost(request, session):
 				"Implement one in your script library and update this endpoint."
 			)
 			response['mirror'] = {'success': True, 'dest': dest}
-		except:
+		except Exception:
 			import traceback
 			response['mirror'] = {'success': False, 'error': traceback.format_exc()}
 
@@ -1403,8 +1399,9 @@ def doPost(request, session):
 		try:
 			system.tag.deleteTags([delPath])
 			response['deleteTags'] = {'success': True}
-		except:
-			response['deleteTags'] = {'success': False}
+		except Exception:
+			import traceback
+			response['deleteTags'] = {'success': False, 'error': traceback.format_exc()}
 
 	# Handle script — call a gateway script function by dotted path
 	if 'script' in data:
@@ -1424,7 +1421,7 @@ def doPost(request, session):
 			func = getattr(mod, funcName)
 			result = func(*scriptArgs, **scriptKwargs)
 			response['script'] = {'success': True, 'result': result}
-		except:
+		except Exception:
 			import traceback
 			response['script'] = {'success': False, 'error': traceback.format_exc()}
 
@@ -1493,7 +1490,7 @@ def doPost(request, session):
 				tagObj['name'] = tagName
 			results = system.tag.configure(basePath, [tagObj], collisionPolicy)
 			response['importTags'] = {'success': True, 'results': str(results)}
-		except:
+		except Exception:
 			import traceback
 			response['importTags'] = {'success': False, 'error': traceback.format_exc()}
 

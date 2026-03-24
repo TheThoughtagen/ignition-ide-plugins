@@ -106,16 +106,26 @@ core/util/
 
 **NEVER put a `code.py` in a directory that also contains child packages.** Ignition treats a directory with `code.py` as a leaf module. If you also put subdirectories in it, the behavior is undefined and the child modules may not be importable.
 
+**Exception:** `__tests__/` directories are special — Ignition's script runtime ignores directories whose names start with `__`, so they do not conflict with a sibling `code.py`. The testing framework relies on this convention.
+
 ```
 WRONG:
 my_package/
 ├── code.py          ← has real code
 ├── resource.json
-└── __tests__/       ← child directory — conflicts with code.py above
+└── utils/           ← real child package — conflicts with code.py above
     ├── code.py
     └── resource.json
 
-CORRECT:
+OK (special case):
+my_package/
+├── code.py          ← has real code
+├── resource.json
+└── __tests__/       ← ignored by Ignition runtime, used by test framework
+    ├── code.py
+    └── resource.json
+
+CORRECT (general pattern):
 my_package/
 ├── resource.json    ← package node, no code.py
 ├── logic/

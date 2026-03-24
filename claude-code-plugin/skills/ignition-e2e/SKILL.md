@@ -43,7 +43,7 @@ The component type attribute: `data-component="ia.display.label"`, `data-compone
 
 ### Key rules
 
-1. **Never use `page.goto()` after initial session open** — it creates a new WebSocket session. Use `PerspectivePage.openPage(route)` instead.
+1. **Never use `page.goto()` after initial session open** — it creates a new WebSocket session. Use `PerspectivePage.openPage(route)` instead. Exception: the very first navigation to the session root (e.g., for dock-only tests) may use `page.goto()`.
 2. **Page content is scoped by `C` prefix** — use `perspective.pageContent()` to exclude docks.
 3. **Docks render independently** — top dock (`T[0]`) may be visible before page content (`C`).
 4. **Embedded views reset the path counter** — `$` marks the boundary, child indices restart from 0.

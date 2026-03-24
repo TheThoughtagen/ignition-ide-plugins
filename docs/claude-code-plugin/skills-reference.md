@@ -143,12 +143,14 @@ Scaffolds Playwright browser tests for Perspective views.
 | Auth fixture | `e2e/fixtures/auth.setup.ts` |
 | Perspective fixture | `e2e/fixtures/perspective.ts` |
 | PerspectivePage | `e2e/pages/PerspectivePage.ts` |
+| Component base class | `e2e/components/PerspectiveComponent.ts` |
 | Button wrapper | `e2e/components/Button.ts` |
 | Table wrapper | `e2e/components/Table.ts` |
 | Gateway API helper | `e2e/helpers/gateway-api.ts` |
 | Smoke tests | `e2e/tests/smoke/*.spec.ts` |
 | Environment template | `e2e/.env.example` |
 | Package config | `e2e/package.json`, `e2e/tsconfig.json` |
+| Git ignore | `e2e/.gitignore` |
 
 **Flags:**
 - `--force` — Overwrite existing files

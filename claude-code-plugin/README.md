@@ -226,7 +226,7 @@ claude-code-plugin/
 
 ## Diagnostic Codes
 
-The hook and lint skill report issues using these codes. See the [ignition-lint docs](https://pypi.org/project/ignition-lint-toolkit/) for full details.
+Common codes reported by the hook and lint skill. See the [ignition-lint docs](https://pypi.org/project/ignition-lint-toolkit/) and the [skills reference](../docs/claude-code-plugin/skills-reference.md) for the full list.
 
 **Script:** `JYTHON_SYNTAX_ERROR`, `JYTHON_PRINT_STATEMENT`, `JYTHON_IMPORT_STAR`, `IGNITION_UNKNOWN_SYSTEM_CALL`, `IGNITION_SYSTEM_OVERRIDE`, `LONG_LINE`, `MISSING_DOCSTRING`
 

@@ -4,29 +4,16 @@
 
 set -euo pipefail
 
+source "$(dirname "$0")/lib/common.sh"
+
 INPUT=$(cat)
 FILE_PATH=$(echo "$INPUT" | jq -r '.tool_input.file_path // empty')
 
-# Only trigger on view.json edits
+# Only trigger on Perspective view.json edits
 case "$FILE_PATH" in
-  */view.json) ;;
+  *com.inductiveautomation.perspective/views/*/view.json) ;;
   *) exit 0 ;;
 esac
-
-# Must be a Perspective view
-if [[ "$FILE_PATH" != *"com.inductiveautomation.perspective/views/"* ]]; then
-  exit 0
-fi
-
-# Find project root
-find_project_root() {
-  local dir="$1"
-  while [ "$dir" != "/" ]; do
-    if [ -f "$dir/project.json" ]; then echo "$dir"; return 0; fi
-    dir=$(dirname "$dir")
-  done
-  return 1
-}
 
 PROJECT_ROOT=$(find_project_root "$(dirname "$FILE_PATH")") || exit 0
 E2E_DIR="$PROJECT_ROOT/e2e"
@@ -35,24 +22,40 @@ E2E_DIR="$PROJECT_ROOT/e2e"
 [ -d "$E2E_DIR/node_modules" ] || exit 0
 [ -f "$E2E_DIR/.auth/user.json" ] || exit 0
 
-# Concurrency guard (portable mkdir lock)
+# Concurrency guard (portable mkdir lock with stale detection)
 LOCK_DIR="$E2E_DIR/.playwright-running.lock"
 if ! mkdir "$LOCK_DIR" 2>/dev/null; then
-  exit 0
+  # Check for stale lock (older than 10 minutes)
+  if [ -d "$LOCK_DIR" ]; then
+    LOCK_AGE=$(( $(date +%s) - $(stat -f %m "$LOCK_DIR" 2>/dev/null || echo 0) ))
+    if [ "$LOCK_AGE" -gt 600 ]; then
+      echo "Removing stale Playwright lock (${LOCK_AGE}s old)" >&2
+      rm -rf "$LOCK_DIR"
+      mkdir "$LOCK_DIR" 2>/dev/null || exit 0
+    else
+      echo "Playwright tests already running — skipping" >&2
+      exit 0
+    fi
+  else
+    exit 0
+  fi
 fi
-trap 'rmdir "$LOCK_DIR" 2>/dev/null || true' EXIT
+trap 'rm -rf "$LOCK_DIR" 2>/dev/null || true' EXIT
 
 # Extract view area for scoped testing
 VIEW_AREA=$(echo "$FILE_PATH" | sed -n 's|.*views/\([^/]*\)/.*|\1|p')
 VIEW_AREA_LOWER=$(echo "$VIEW_AREA" | tr '[:upper:]' '[:lower:]')
 
-TEST_DIR="$E2E_DIR/tests/$VIEW_AREA_LOWER"
-
 cd "$E2E_DIR"
-if [ -d "$TEST_DIR" ]; then
-  npx playwright test "$TEST_DIR" --reporter=list 2>&1 | tail -5 >&2 || true
+if [ -n "$VIEW_AREA_LOWER" ] && [ -d "$E2E_DIR/tests/$VIEW_AREA_LOWER" ]; then
+  npx playwright test "tests/$VIEW_AREA_LOWER" --reporter=list 2>&1 | tail -20 >&2
+  TEST_EXIT=${PIPESTATUS[0]}
 else
-  npx playwright test tests/smoke/ --reporter=list 2>&1 | tail -5 >&2 || true
+  npx playwright test tests/smoke/ --reporter=list 2>&1 | tail -20 >&2
+  TEST_EXIT=${PIPESTATUS[0]}
 fi
 
-exit 0
+if [ "$TEST_EXIT" -ne 0 ]; then
+  echo "Playwright tests failed for view: ${VIEW_AREA:-unknown}" >&2
+  exit 1
+fi

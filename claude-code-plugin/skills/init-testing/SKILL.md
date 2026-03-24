@@ -51,15 +51,15 @@ Scaffold a complete Jython test framework into the current Ignition project. Thi
    Add `--skip-scripts` if the parent already has the Jython framework.
    Add `--force` if user confirmed overwrite.
 
-6. Report what was created (list the files).
+7. Report what was created (list the files).
 
-7. If the gateway is reachable, verify the setup by hitting the test discovery endpoint:
+8. If the gateway is reachable, verify the setup by hitting the test discovery endpoint:
    ```bash
    curl -k -s "<gateway>/system/webdev/<project>/testing/run?discover=true"
    ```
    Note: This requires a gateway project scan first. Tell the user to scan from Designer or commit + push if using ignition-git-module.
 
-8. Explain how to write a first test:
+9. Explain how to write a first test:
    - Create `ignition/script-python/<package>/__tests__/code.py`
    - Import `from testing.decorators import test` and `from testing.assertions import assert_equal`
    - Write `@test` decorated functions

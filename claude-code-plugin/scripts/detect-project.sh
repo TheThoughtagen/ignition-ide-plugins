@@ -5,23 +5,12 @@
 
 set -euo pipefail
 
+source "$(dirname "$0")/lib/common.sh"
+
 TARGET="${1:-$PWD}"
 
-# Walk up to find project.json
-find_project_root() {
-  local dir="$1"
-  while [ "$dir" != "/" ]; do
-    if [ -f "$dir/project.json" ]; then
-      echo "$dir"
-      return 0
-    fi
-    dir=$(dirname "$dir")
-  done
-  return 1
-}
-
 PROJECT_ROOT=$(find_project_root "$TARGET") || {
-  echo '{"error": "No project.json found walking up from '"$TARGET"'"}' >&2
+  jq -n --arg target "$TARGET" '{"error": ("No project.json found walking up from " + $target)}' >&2
   exit 1
 }
 
@@ -69,23 +58,23 @@ GATEWAY_URL="${GATEWAY_URL:-https://localhost:9043}"
 # Detect tag providers from the tags/ directory on disk.
 # Each .json file or subdirectory in tags/ is a provider.
 # Filter out system providers (System, Gateway) — users want their own.
-TAG_PROVIDERS="[]"
-if [ -d "$PROJECT_ROOT/tags" ]; then
-  TAG_PROVIDERS=$(
-    (ls "$PROJECT_ROOT/tags" 2>/dev/null || true) | \
+# Detect tag providers from a tags/ directory
+detect_tag_providers() {
+  local dir="$1"
+  if [ -d "$dir/tags" ]; then
+    (ls "$dir/tags" 2>/dev/null || true) | \
     sed 's/\.json$//' | \
-    grep -v -E '^(System|Gateway)$' | \
+    (grep -v -E '^(System|Gateway)$' || true) | \
     jq -R -s 'split("\n") | map(select(length > 0))'
-  )
-fi
+  else
+    echo "[]"
+  fi
+}
+
+TAG_PROVIDERS=$(detect_tag_providers "$PROJECT_ROOT")
 # If this project has no tags/ but parent does, check parent
-if [ "$TAG_PROVIDERS" = "[]" ] && [ -n "$PARENT_ROOT" ] && [ -d "$PARENT_ROOT/tags" ]; then
-  TAG_PROVIDERS=$(
-    (ls "$PARENT_ROOT/tags" 2>/dev/null || true) | \
-    sed 's/\.json$//' | \
-    grep -v -E '^(System|Gateway)$' | \
-    jq -R -s 'split("\n") | map(select(length > 0))'
-  )
+if [ "$TAG_PROVIDERS" = "[]" ] && [ -n "$PARENT_ROOT" ]; then
+  TAG_PROVIDERS=$(detect_tag_providers "$PARENT_ROOT")
 fi
 
 # Check for modules

@@ -17,6 +17,8 @@
 
 set -euo pipefail
 
+source "$(dirname "$0")/lib/common.sh"
+
 # ---------------------------------------------------------------------------
 # Argument parsing
 # ---------------------------------------------------------------------------
@@ -55,32 +57,6 @@ PERSPECTIVE_PROJECT="${PERSPECTIVE_PROJECT:-$PROJECT_NAME}"
 PKG_NAME=$(echo "$PROJECT_NAME" | tr '[:upper:]' '[:lower:]' | tr ' _' '--')
 
 CREATED=0 SKIPPED=0
-
-# ---------------------------------------------------------------------------
-# Helper: write a file with existence check
-# ---------------------------------------------------------------------------
-
-write_file() {
-  local filepath="$1"
-  local content="$2"
-  local full_path="$PROJECT_ROOT/$filepath"
-
-  if [[ "$DRY_RUN" = true ]]; then
-    echo "  Would create: $filepath"
-    return
-  fi
-
-  if [[ -f "$full_path" ]] && [[ "$FORCE" != true ]]; then
-    echo "  Skipped (exists): $filepath"
-    SKIPPED=$((SKIPPED + 1))
-    return
-  fi
-
-  mkdir -p "$(dirname "$full_path")"
-  printf '%s' "$content" > "$full_path"
-  CREATED=$((CREATED + 1))
-  echo "  Created: $filepath"
-}
 
 echo "Scaffolding E2E test framework for project: $PROJECT_NAME"
 echo "  Project root:          $PROJECT_ROOT"
