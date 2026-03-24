@@ -16,6 +16,27 @@ This project uses a custom Jython test framework that runs on the Ignition gatew
 
 ## Writing Tests
 
+### File placement convention (IMPORTANT)
+
+Tests go **inside the package they test** as a `__tests__` subdirectory. **Never create standalone top-level test packages.**
+
+```
+CORRECT — tests live inside the package:
+ignition/script-python/core/util/__tests__/code.py          → tests core.util
+ignition/script-python/core/mes/changeover/__tests__/code.py → tests core.mes.changeover
+ignition/script-python/core/networking/__tests__/code.py     → tests core.networking
+
+WRONG — never do this:
+ignition/script-python/testing_smoke/__tests__/code.py       → standalone test package with no matching code
+ignition/script-python/tests/__tests__/code.py               → standalone tests directory
+```
+
+The runner discovers modules by path: `core.mes.changeover.__tests__`. This naming makes it obvious what each test module covers.
+
+If you need a smoke test that tests the framework itself (not any specific package), put it in an existing utility package like `core/util/__tests__/` or ask the user which package it should live in.
+
+### Test file structure
+
 Create `ignition/script-python/<package>/__tests__/code.py` with a matching `resource.json`:
 
 ```python
