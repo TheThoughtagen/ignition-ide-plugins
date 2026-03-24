@@ -27,7 +27,15 @@ Scaffold a complete Jython test framework into the current Ignition project. Thi
 
 4. **Check for project inheritance.** If `parent` is not null:
    - Tell the user: "This project inherits from *{parent.name}*."
-   - If `parent.has_jython_framework` is true: "The parent project already has the Jython test framework — your project inherits `testing.*` scripts automatically. I'll skip scaffolding scripts and only create the WebDev endpoints and type stubs."
+   - If `parent.has_jython_framework` is true, explain clearly what this means:
+
+     > **Inherited from parent (NOT created here):**
+     > The Jython test framework — `testing.runner`, `testing.assertions`, `testing.decorators`, `testing.helpers`, `testing.reporter` — lives in *{parent.name}* and is inherited automatically. These scripts are shared across all child projects. Any `__tests__` modules you write in this project will be discovered alongside the parent's tests.
+     >
+     > **Created here (project-scoped, NOT inherited in Ignition):**
+     > - **WebDev endpoints** (`testing/run`, `testing/tags`) — HTTP APIs are project-scoped in Ignition. Each project needs its own endpoints even if the scripts behind them are inherited. Without these, there's no HTTP entry point to run tests against this project.
+     > - **Type stubs** (`.ignition-stubs/testing/`) — IDE completions for the inherited test framework. These are local files, not Ignition resources.
+
    - If parent not found on disk (`parent.root` is null): ask the user for the parent project path, or offer to scaffold everything locally.
 
 5. If `existing_testing.jython_framework` or `existing_testing.webdev_endpoints` is true, warn the user and ask if they want to overwrite (`--force`).
