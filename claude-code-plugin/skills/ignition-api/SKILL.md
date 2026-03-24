@@ -7,6 +7,167 @@ user-invocable: false
 
 You are writing code for **Ignition SCADA** by Inductive Automation. Scripts run in **Jython 2.7** (Python 2.7 on JVM). The scripting API is `system.*`.
 
+## CRITICAL: resource.json Required for EVERY Ignition Resource
+
+**Every file or directory you create inside an Ignition project MUST have a `resource.json`.** Without it, the gateway silently ignores the resource — no error, no warning, it simply doesn't exist at runtime. This is the #1 cause of "not found" errors when managing Ignition projects via git.
+
+This applies to ALL resource types:
+
+| Resource type | Where | resource.json goes |
+|---------------|-------|--------------------|
+| **Script modules** | `ignition/script-python/my_package/` | Next to `code.py` in every directory in the path |
+| **Script sub-packages** | `ignition/script-python/my_package/sub/` | In `sub/` too — every level needs one |
+| **Test modules** | `ignition/script-python/pkg/__tests__/` | In both `pkg/` AND `__tests__/` |
+| **Perspective views** | `com.inductiveautomation.perspective/views/MyView/` | Next to `view.json` |
+| **Named queries** | `com.inductiveautomation.naming/queries/MyQuery/` | Next to `query.json` |
+| **Vision windows** | `com.inductiveautomation.vision/windows/MyWindow/` | Next to `window.json` |
+| **WebDev endpoints** | `com.inductiveautomation.webdev/resources/my-endpoint/` | Next to `doGet.py`, `config.json`, etc. |
+| **Alarm pipelines** | `com.inductiveautomation.alarm-notification/pipelines/` | Next to pipeline resource files |
+| **Tag configs** | `tags/` | Alongside tag JSON exports |
+
+**Template for script resources** (scope `A` = script module):
+```json
+{
+  "scope": "A",
+  "version": 1,
+  "restricted": false,
+  "overridable": true,
+  "files": ["code.py"],
+  "attributes": {
+    "lastModification": {
+      "actor": "external",
+      "timestamp": "2026-01-01T00:00:00Z"
+    }
+  }
+}
+```
+
+**Template for Perspective views** (scope `G` = general):
+```json
+{
+  "scope": "G",
+  "version": 1,
+  "restricted": false,
+  "overridable": true,
+  "files": ["view.json", "thumbnail.png"],
+  "attributes": {
+    "lastModification": {
+      "actor": "external",
+      "timestamp": "2026-01-01T00:00:00Z"
+    },
+    "lastModificationSignature": "unknown"
+  }
+}
+```
+
+**Template for WebDev endpoints**:
+```json
+{
+  "scope": "G",
+  "version": 1,
+  "restricted": false,
+  "overridable": true,
+  "files": ["config.json", "doGet.py", "doPost.py"],
+  "attributes": {
+    "lastModification": {
+      "actor": "external",
+      "timestamp": "2026-01-01T00:00:00Z"
+    }
+  }
+}
+```
+
+**The `files` array must list every file in the directory that Ignition should load.** If you add a file but don't list it in `files`, Ignition ignores it.
+
+**When creating any new resource in an Ignition project: ALWAYS create the `resource.json` at the same time.** Never create a `code.py`, `view.json`, or any other Ignition resource file without its accompanying `resource.json`.
+
+## Ignition Script Library Structure
+
+Ignition's script library (`ignition/script-python/`) has a strict structure. Each directory is either a **leaf module** or a **package node** — never both.
+
+**Leaf module** — has `code.py` with real code, NO child directories with code:
+```text
+core/util/secrets/
+├── code.py          ← actual functions live here
+└── resource.json
+```
+
+**Package node** — has child directories, NO `code.py` (or only an empty placeholder):
+```text
+core/util/
+├── secrets/         ← child module
+│   ├── code.py
+│   └── resource.json
+├── csv/             ← child module
+│   ├── code.py
+│   └── resource.json
+└── resource.json    ← resource.json still required, but NO code.py
+```
+
+**NEVER put a `code.py` in a directory that also contains child packages.** Ignition treats a directory with `code.py` as a leaf module. If you also put subdirectories in it, the behavior is undefined and the child modules may not be importable.
+
+**Exception:** `__tests__/` directories are special — Ignition's script runtime ignores directories whose names start with `__`, so they do not conflict with a sibling `code.py`. The testing framework relies on this convention.
+
+```text
+WRONG:
+my_package/
+├── code.py          ← has real code
+├── resource.json
+└── utils/           ← real child package — conflicts with code.py above
+    ├── code.py
+    └── resource.json
+
+OK (special case):
+my_package/
+├── code.py          ← has real code
+├── resource.json
+└── __tests__/       ← ignored by Ignition runtime, used by test framework
+    ├── code.py
+    └── resource.json
+
+CORRECT (general pattern):
+my_package/
+├── resource.json    ← package node, no code.py
+├── logic/
+│   ├── code.py      ← real code lives in a leaf
+│   └── resource.json
+└── __tests__/
+    ├── code.py      ← tests live in a leaf
+    └── resource.json
+```
+
+When `resource.json` exists without `code.py`, Ignition recognizes the directory as a package node. The `files` array in `resource.json` should be empty or omit `code.py`:
+```json
+{
+  "scope": "A",
+  "version": 1,
+  "restricted": false,
+  "overridable": true,
+  "files": [],
+  "attributes": {
+    "lastModification": {
+      "actor": "external",
+      "timestamp": "2026-01-01T00:00:00Z"
+    }
+  }
+}
+```
+
+## Linting
+
+This project uses [`ignition-lint`](https://pypi.org/project/ignition-lint-toolkit/) to catch Ignition-specific issues. The auto-lint hook runs on every file write, but you should also be aware of what it checks so you write clean code from the start:
+
+- **JYTHON_PRINT_STATEMENT** — Use `print()` function form, not `print x`
+- **JYTHON_IMPORT_STAR** — Never use `from module import *`
+- **IGNITION_UNKNOWN_SYSTEM_CALL** — Verify `system.*` function names are correct
+- **IGNITION_SYSTEM_OVERRIDE** — Never shadow `system.*` with local variables
+- **LONG_LINE** — Keep lines under 120 characters
+- **MISSING_DOCSTRING** — Add docstrings to public functions
+- **EXPR_NOW_DEFAULT_POLLING** — Expression `now()` defaults to 1-second polling; use `now(5000)` or higher
+- **EMPTY_COMPONENT_NAME / GENERIC_COMPONENT_NAME** — Perspective components need meaningful names
+
+If `ignition-lint` is installed, the plugin's auto-lint hook catches these automatically after every file edit. If it's not installed, the hook silently exits — nothing breaks, but you lose automatic feedback.
+
 ## Jython Conventions
 - Use `print()` function form (not `print x`)
 - Java classes are directly importable: `from java.util import ArrayList`

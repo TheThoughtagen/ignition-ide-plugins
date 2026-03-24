@@ -4,6 +4,8 @@
 
 set -euo pipefail
 
+source "$(dirname "$0")/lib/common.sh"
+
 INPUT=$(cat)
 FILE_PATH=$(echo "$INPUT" | jq -r '.tool_input.file_path // empty')
 
@@ -11,19 +13,6 @@ FILE_PATH=$(echo "$INPUT" | jq -r '.tool_input.file_path // empty')
 if [ -z "$FILE_PATH" ] || [ ! -f "$FILE_PATH" ]; then
   exit 0
 fi
-
-# Walk up from the file to find project.json (Ignition project marker)
-find_project_root() {
-  local dir="$1"
-  while [ "$dir" != "/" ]; do
-    if [ -f "$dir/project.json" ]; then
-      echo "$dir"
-      return 0
-    fi
-    dir=$(dirname "$dir")
-  done
-  return 1
-}
 
 PROJECT_ROOT=$(find_project_root "$(dirname "$FILE_PATH")") || exit 0
 
