@@ -229,7 +229,7 @@ Create the script with these specifications:
 
 5. **reporter/code.py** — Use as-is from WHK-Global (fully generic already)
 
-6. **WebDev run/doGet.py** — Replace `"WHK-Global Test Runner"` with `"${PROJECT_NAME} Test Runner"` (sed replacement)
+6. **WebDev run/doGet.py** — Replace `"WHK-Global Test Runner"` with `"${PROJECT_NAME} — Test Runner"` (sed replacement, em dash avoids awkward "Test Test Runner" for projects named "Test")
 
 7. **WebDev run/doPost.py** — Use as-is (fully generic already — references `testing.runner` and `testing.reporter` which are module-relative)
 
@@ -237,11 +237,11 @@ Create the script with these specifications:
 
 9. **WebDev tags/doPost.py** — Replace hardcoded `/usr/local/bin/ignition/data/projects/WHK-Global` in importTags section. Drop the `mirror` handler that calls `general.tools.conversions.convert_to_memory_tags` (that's a WHK-specific script). Keep: writes, reads, script, deleteTags, importTags (with parameterized path)
 
-10. **config.json** — Use as-is (identical for both endpoints)
+10. **config.json** — Use as-is (identical for both WebDev endpoints). Content is at `~/data/projects/WHK-Global/com.inductiveautomation.webdev/resources/testing/tags/config.json` — enables doGet/doPost with `require-auth: false`, disables all other HTTP methods. Embed as a heredoc in the scaffold script.
 
-11. **resource.json** — Use as-is (identical for all 5 modules)
+11. **resource.json** — Use as-is (identical for all 5 script modules). Content is at `~/data/projects/WHK-Global/ignition/script-python/testing/runner/resource.json` — standard Ignition resource descriptor with `scope: "A"`, `version: 1`, `restricted: false`, `overridable: true`. Embed as a heredoc in the scaffold script — write the same content for all 5 modules.
 
-12. **.pyi stubs** — Use as-is from WHK-Global stubs, minus the `run_process_queue` and `_run_process_queue_direct` entries in helpers.pyi
+12. **.pyi stubs** — Use as-is from WHK-Global stubs at `~/data/projects/WHK-Global/.ignition-stubs/testing/`, minus the `run_process_queue` and `_run_process_queue_direct` entries in helpers.pyi
 
 **Structure:**
 - Parse args with `while` loop and `case` statement
@@ -282,7 +282,7 @@ claude-code-plugin/scripts/scaffold-testing.sh \
 Expected: All files created. Verify:
 - `runner/code.py` contains `PROJECT_NAME = "Test"` (not `WHK-Global`)
 - `helpers/code.py` does NOT contain `run_process_queue`
-- `doGet.py` shows `"Test Test Runner"`
+- `doGet.py` shows `"Test — Test Runner"`
 - `config.json` has `require-auth: false`
 
 Test idempotency:
@@ -296,6 +296,18 @@ claude-code-plugin/scripts/scaffold-testing.sh \
 ```
 
 Expected: All files skipped.
+
+Test `--force` overwrite:
+```bash
+claude-code-plugin/scripts/scaffold-testing.sh \
+  --project-root /tmp/test-ignition-project \
+  --project-name Test \
+  --gateway-url https://localhost:9043 \
+  --tag-provider NEWTAG \
+  --force
+```
+
+Expected: All files overwritten. Verify tag provider changed where applicable.
 
 Clean up: `rm -rf /tmp/test-ignition-project`
 
@@ -335,7 +347,7 @@ git commit -m "feat(plugin): add scaffold-testing.sh for Jython test framework"
 
 7. **fixtures/perspective.ts** — Use as-is (fully generic)
 
-8. **helpers/gateway-api.ts** — Drop everything below line 176 (MES, WMS, changeover tags, GraphQL sections). Replace hardcoded `WHK-Global` in `WEBDEV` constant with `process.env.IGNITION_PROJECT_NAME || "PROJECT_NAME_PLACEHOLDER"` (sed-replaced by script). Keep: `post()`, `get()`, tag operations, mirror operations, script invocation, health checks.
+8. **helpers/gateway-api.ts** — Drop all sections after the health checks: MES changeover REST API, changeover tag helpers, WMS API (Azure Entra OAuth2), changeover UDT member constants, MES GraphQL API, and `readChangeoverState()`. Replace hardcoded `WHK-Global` in `WEBDEV` constant with `process.env.IGNITION_PROJECT_NAME || "PROJECT_NAME_PLACEHOLDER"` (sed-replaced by script). Keep: `post()`, `get()`, tag operations (readTags, writeTags, readTag, writeTag), mirror operations (mirrorTags, deleteMirror), script invocation (callScript), health checks (getHealth, isGatewayReachable).
 
 9. **pages/PerspectivePage.ts** — Use as-is (already uses env var for project name)
 
@@ -403,7 +415,7 @@ fi
 
 # Check commit succeeded
 STDOUT=$(echo "$INPUT" | jq -r '.tool_result.stdout // empty')
-if [[ ! "$STDOUT" =~ create\ mode|file\ changed|files\ changed|insertions|deletions ]] && [[ ! "$STDOUT" =~ \[ ]]; then
+if [[ ! "$STDOUT" =~ create\ mode|file\ changed|files\ changed|insertions|deletions ]] && [[ ! "$STDOUT" =~ \[[a-z]+\ [a-f0-9] ]]; then
   exit 0
 fi
 
@@ -445,11 +457,8 @@ if [ -n "$TOKEN_FILE" ] && [ -f "$TOKEN_FILE" ]; then
     "$GATEWAY_URL/data/project-scan-endpoint/scan?updateDesigners=true" > /dev/null 2>&1 || true
 fi
 
-# Wait for scan propagation (best-effort, max 5s)
-for i in 1 2 3 4 5; do
-  sleep 1
-  curl -k -s --connect-timeout 2 "$GATEWAY_URL/StatusPing" > /dev/null 2>&1 && break
-done
+# Wait for scan propagation (best-effort delay — Ignition has no scan-completion endpoint)
+sleep 3
 
 # Run tests
 ENDPOINT="$GATEWAY_URL/system/webdev/$PROJECT_NAME/testing/run"
@@ -997,7 +1006,18 @@ echo '{"tool_input":{"file_path":"/tmp/foo.py"}}' | \
 
 Both should exit 0 with no output.
 
-- [ ] **Step 6: Clean up and final commit**
+- [ ] **Step 6: Validate skill frontmatter**
+
+```bash
+for skill in claude-code-plugin/skills/*/SKILL.md; do
+  echo "--- $skill ---"
+  head -3 "$skill"
+done
+```
+
+Expected: Each SKILL.md starts with `---` frontmatter containing a `description:` field.
+
+- [ ] **Step 7: Clean up and final commit**
 
 ```bash
 rm -rf /tmp/verify-plugin
