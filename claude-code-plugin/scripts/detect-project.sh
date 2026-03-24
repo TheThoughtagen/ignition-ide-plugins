@@ -58,14 +58,26 @@ done
 
 GATEWAY_URL="${GATEWAY_URL:-https://localhost:9043}"
 
-# Detect tag providers
+# Detect tag providers from the tags/ directory on disk.
+# Each .json file or subdirectory in tags/ is a provider.
+# Filter out system providers (System, Gateway) — users want their own.
 TAG_PROVIDERS="[]"
-if [ "$GATEWAY_REACHABLE" = true ]; then
-  TAG_PROVIDERS=$(curl -k -s --connect-timeout 3 "$GATEWAY_URL/system/tag-providers" 2>/dev/null || echo "[]")
-  # Validate it's JSON array
-  if ! echo "$TAG_PROVIDERS" | jq -e 'type == "array"' > /dev/null 2>&1; then
-    TAG_PROVIDERS="[]"
-  fi
+if [ -d "$PROJECT_ROOT/tags" ]; then
+  TAG_PROVIDERS=$(
+    (ls "$PROJECT_ROOT/tags" 2>/dev/null || true) | \
+    sed 's/\.json$//' | \
+    grep -v -E '^(System|Gateway)$' | \
+    jq -R -s 'split("\n") | map(select(length > 0))'
+  )
+fi
+# If this project has no tags/ but parent does, check parent
+if [ "$TAG_PROVIDERS" = "[]" ] && [ -n "$PARENT_ROOT" ] && [ -d "$PARENT_ROOT/tags" ]; then
+  TAG_PROVIDERS=$(
+    (ls "$PARENT_ROOT/tags" 2>/dev/null || true) | \
+    sed 's/\.json$//' | \
+    grep -v -E '^(System|Gateway)$' | \
+    jq -R -s 'split("\n") | map(select(length > 0))'
+  )
 fi
 
 # Check for modules
