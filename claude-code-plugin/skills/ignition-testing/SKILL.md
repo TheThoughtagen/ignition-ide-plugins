@@ -206,6 +206,23 @@ In projects that inherit from a parent:
 - **Test modules** (`__tests__/code.py`) — can exist in both parent and child; runner discovers all
 - **WebDev endpoints** — NOT inherited, each project needs its own `testing/run` and `testing/tags`
 
+### Runner discovery and child project tests
+
+The test runner discovers `__tests__` modules by walking the gateway filesystem. The **scaffolded runner** (from this plugin) dynamically scans all projects in the gateway's data directory, so it finds tests in both parent and child projects automatically.
+
+**However**, if the parent project has an **older runner** (pre-scaffold, hardcoded paths), it will only find tests in its own project. Child project tests won't be discovered.
+
+**When a user adds tests to a child project and they aren't discovered, ASK THE USER:**
+
+> "The test runner in your parent project (*{parent_name}*) only scans its own script library. Your child project's `__tests__` modules won't be discovered. Two options:
+>
+> 1. **Update the parent runner** — Replace `testing/runner/code.py` in *{parent_name}* with the updated version that dynamically discovers all projects. This fixes it for every child project.
+> 2. **Override the runner in this project** — Create `testing/runner/code.py` here with dynamic discovery. This project gets its own runner without touching the parent.
+>
+> Which do you prefer?"
+
+If they choose option 2, scaffold the runner locally (don't use `--skip-scripts`, or copy just the runner module). If they choose option 1, update the parent's runner code.
+
 ## Common Patterns
 
 **Testing a script function that reads tags:**

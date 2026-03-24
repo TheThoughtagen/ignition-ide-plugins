@@ -377,23 +377,33 @@ def _discover_test_modules():
 	Looks for both __tests__ (lowercase, new convention) and __TESTS__
 	(uppercase, legacy convention) directories containing code.py.
 
+	Dynamically discovers all project script-python directories by scanning
+	the gateway's projects folder. This means tests are found in both the
+	current project and any parent/sibling projects — matching how Ignition's
+	project inheritance makes scripts available at runtime.
+
 	Returns:
 		list[str]: Dotted module paths (e.g. ["core.mes.changeover.__tests__"])
 	"""
-	# Ignition project script library root on the gateway filesystem.
-	# The default gateway install path is /usr/local/bin/ignition.
-	# Adjust if your gateway is installed elsewhere.
-	project_dirs = [
-		"/usr/local/bin/ignition/data/projects/" + PROJECT_NAME + "/ignition/script-python",
-	]
+	# Discover project directories dynamically.
+	# The gateway stores projects at /usr/local/bin/ignition/data/projects/.
+	# We scan all projects that have a script-python directory, so tests in
+	# parent projects (inherited via project inheritance) are also found.
+	project_dirs = []
 
-	# NOTE: To test discovery locally (outside the gateway), uncomment the
-	# following lines and set the path to your local project checkout:
-	#
-	# local_path = "/path/to/your/local/projects/" + PROJECT_NAME + "/ignition/script-python"
-	# local_file = File(local_path)
-	# if local_file.exists():
-	#     project_dirs.append(local_path)
+	gateway_projects_root = File("/usr/local/bin/ignition/data/projects")
+	if gateway_projects_root.exists():
+		for project_dir in (gateway_projects_root.listFiles() or []):
+			if not project_dir.isDirectory():
+				continue
+			script_path = File(project_dir, "ignition/script-python")
+			if script_path.exists():
+				project_dirs.append(script_path.getAbsolutePath())
+
+	# Fallback: if no gateway path found, try the configured project name
+	if not project_dirs:
+		fallback = "/usr/local/bin/ignition/data/projects/" + PROJECT_NAME + "/ignition/script-python"
+		project_dirs.append(fallback)
 
 	modules = []
 	seen = set()
