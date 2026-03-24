@@ -8,6 +8,21 @@
             "type": "command",
             "command": "${CLAUDE_PLUGIN_ROOT}/scripts/ignition-lint.sh",
             "timeout": 30
+          },
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/scripts/run-ui-tests.sh",
+            "timeout": 120
+          }
+        ]
+      },
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/scripts/run-tests.sh",
+            "timeout": 30
           }
         ]
       }
