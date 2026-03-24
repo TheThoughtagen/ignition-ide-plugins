@@ -20,7 +20,7 @@ This project uses a custom Jython test framework that runs on the Ignition gatew
 
 Tests go **inside the package they test** as a `__tests__` subdirectory. **Never create standalone top-level test packages.**
 
-```
+```text
 CORRECT — tests live inside the package:
 ignition/script-python/core/util/__tests__/code.py          → tests core.util
 ignition/script-python/core/mes/changeover/__tests__/code.py → tests core.mes.changeover
@@ -61,7 +61,7 @@ def test_basic_logic():
 @test
 def test_tag_value():
     from testing.assertions import assert_tag_value
-    assert_tag_value("[WHK01]Path/To/Tag", expected_value)
+    assert_tag_value("[default]Path/To/Tag", 42.0)
 
 @test
 def test_system_call():
@@ -215,7 +215,7 @@ curl -k -s -X POST "https://localhost:9043/system/webdev/<PROJECT>/testing/tags"
 
 The runner walks `ignition/script-python/` looking for directories named `__tests__` or `__TESTS__` containing `code.py`. The dotted module path is derived from the filesystem path:
 
-```
+```text
 ignition/script-python/core/mes/changeover/__tests__/code.py
 → module path: core.mes.changeover.__tests__
 ```
@@ -226,7 +226,7 @@ ignition/script-python/core/mes/changeover/__tests__/code.py
 
 When creating a new test module, create `resource.json` for BOTH the package AND `__tests__`:
 
-```
+```text
 ignition/script-python/my_package/
 ├── code.py           # Package code
 ├── resource.json     # ← REQUIRED — use scope "A" template

@@ -21,14 +21,19 @@ write_file() {
   local content="$2"
   local full_path="$PROJECT_ROOT/$filepath"
 
-  if [[ "$DRY_RUN" = true ]]; then
-    echo "  Would create: $filepath"
+  # Check existence before dry-run so --dry-run accurately reflects real behavior
+  if [[ -f "$full_path" ]] && [[ "$FORCE" != true ]]; then
+    if [[ "$DRY_RUN" = true ]]; then
+      echo "  Would skip (exists): $filepath"
+    else
+      echo "  Skipped (exists): $filepath"
+    fi
+    SKIPPED=$((SKIPPED + 1))
     return
   fi
 
-  if [[ -f "$full_path" ]] && [[ "$FORCE" != true ]]; then
-    echo "  Skipped (exists): $filepath"
-    SKIPPED=$((SKIPPED + 1))
+  if [[ "$DRY_RUN" = true ]]; then
+    echo "  Would create: $filepath"
     return
   fi
 

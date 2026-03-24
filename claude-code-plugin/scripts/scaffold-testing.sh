@@ -167,6 +167,80 @@ WEBDEV_CONFIG_JSON=$(cat <<'WCEOF'
 WCEOF
 )
 
+# Authenticated WebDev config for endpoints with write operations (tags endpoint).
+# Requires a valid Ignition session. The run endpoint stays unauthenticated since
+# it only executes read-only test functions.
+WEBDEV_AUTH_CONFIG_JSON=$(cat <<'WACEOF'
+{
+  "resource-type": "python-resource",
+  "doGet": {
+    "enabled": true,
+    "max-retry-attempts": 3,
+    "require-auth": true,
+    "require-https": false,
+    "required-roles": "",
+    "user-source": ""
+  },
+  "doPost": {
+    "enabled": true,
+    "max-retry-attempts": 3,
+    "require-auth": true,
+    "require-https": false,
+    "required-roles": "",
+    "user-source": ""
+  },
+  "doPut": {
+    "enabled": false,
+    "max-retry-attempts": 3,
+    "require-auth": true,
+    "require-https": false,
+    "required-roles": "",
+    "user-source": ""
+  },
+  "doDelete": {
+    "enabled": false,
+    "max-retry-attempts": 3,
+    "require-auth": true,
+    "require-https": false,
+    "required-roles": "",
+    "user-source": ""
+  },
+  "doHead": {
+    "enabled": false,
+    "max-retry-attempts": 3,
+    "require-auth": true,
+    "require-https": false,
+    "required-roles": "",
+    "user-source": ""
+  },
+  "doOptions": {
+    "enabled": false,
+    "max-retry-attempts": 3,
+    "require-auth": true,
+    "require-https": false,
+    "required-roles": "",
+    "user-source": ""
+  },
+  "doTrace": {
+    "enabled": false,
+    "max-retry-attempts": 3,
+    "require-auth": true,
+    "require-https": false,
+    "required-roles": "",
+    "user-source": ""
+  },
+  "doPatch": {
+    "enabled": false,
+    "max-retry-attempts": 3,
+    "require-auth": true,
+    "require-https": false,
+    "required-roles": "",
+    "user-source": ""
+  }
+}
+WACEOF
+)
+
 echo "Scaffolding test framework for project: $PROJECT_NAME"
 echo "  Project root:  $PROJECT_ROOT"
 echo "  Gateway URL:   $GATEWAY_URL"
@@ -382,24 +456,30 @@ def _discover_test_modules():
 		list[str]: Dotted module paths (e.g. ["core.mes.changeover.__tests__"])
 	"""
 	# Discover project directories dynamically.
-	# The gateway stores projects at /usr/local/bin/ignition/data/projects/.
-	# We scan all projects that have a script-python directory, so tests in
-	# parent projects (inherited via project inheritance) are also found.
+	# Derive the gateway data directory at runtime from the system tag rather
+	# than hardcoding a platform-specific path (Linux vs macOS vs custom install).
 	project_dirs = []
 
-	gateway_projects_root = File("/usr/local/bin/ignition/data/projects")
-	if gateway_projects_root.exists():
-		for project_dir in (gateway_projects_root.listFiles() or []):
-			if not project_dir.isDirectory():
-				continue
-			script_path = File(project_dir, "ignition/script-python")
-			if script_path.exists():
-				project_dirs.append(script_path.getAbsolutePath())
+	data_dir_qv = system.tag.readBlocking(["[System]Gateway/SystemProperties/DataDirectory"])[0]
+	data_dir = data_dir_qv.value if data_dir_qv.quality.isGood() and data_dir_qv.value else None
+	if data_dir:
+		gateway_projects_root = File(data_dir, "projects")
+		if gateway_projects_root.exists():
+			for project_dir in (gateway_projects_root.listFiles() or []):
+				if not project_dir.isDirectory():
+					continue
+				script_path = File(project_dir, "ignition/script-python")
+				if script_path.exists():
+					project_dirs.append(script_path.getAbsolutePath())
 
-	# Fallback: if no gateway path found, try the configured project name
+	# Fallback: if runtime detection failed, try common default paths
 	if not project_dirs:
-		fallback = "/usr/local/bin/ignition/data/projects/" + PROJECT_NAME + "/ignition/script-python"
-		project_dirs.append(fallback)
+		import os
+		for base in ["/usr/local/bin/ignition/data", "C:/Program Files/Inductive Automation/Ignition/data"]:
+			fallback = os.path.join(base, "projects", PROJECT_NAME, "ignition/script-python")
+			if File(fallback).exists():
+				project_dirs.append(fallback)
+				break
 
 	modules = []
 	seen = set()
@@ -1377,21 +1457,18 @@ def doPost(request, session):
 	# your project's script library.  The function should browse the source OPC
 	# tag tree and recreate it under dest with valueSource="memory".
 	# If you don't need mirror functionality, you can safely remove this block.
-	if 'mirror' in data:
-		mirrorCfg = data['mirror']
-		source = mirrorCfg['source']
-		dest = mirrorCfg.get('dest', source + '_MEM')
-		try:
-			# TODO: Replace with your project's convert_to_memory_tags function.
-			# Example: your_project.tools.conversions.convert_to_memory_tags(source, dest)
-			raise NotImplementedError(
-				"Mirror requires a convert_to_memory_tags(source, dest) function. "
-				"Implement one in your script library and update this endpoint."
-			)
-			response['mirror'] = {'success': True, 'dest': dest}
-		except Exception:
-			import traceback
-			response['mirror'] = {'success': False, 'error': traceback.format_exc()}
+	# Mirror tags — copies OPC/device tags to writable memory tags for testing.
+	# Uncomment and implement when your project has a convert_to_memory_tags function.
+	# if 'mirror' in data:
+	# 	mirrorCfg = data['mirror']
+	# 	source = mirrorCfg['source']
+	# 	dest = mirrorCfg.get('dest', source + '_MEM')
+	# 	try:
+	# 		your_project.tools.conversions.convert_to_memory_tags(source, dest)
+	# 		response['mirror'] = {'success': True, 'dest': dest}
+	# 	except Exception:
+	# 		import traceback
+	# 		response['mirror'] = {'success': False, 'error': traceback.format_exc()}
 
 	# Handle deleteTags — remove a tag tree (for cleanup after mirror)
 	if 'deleteTags' in data:
@@ -1481,8 +1558,16 @@ def doPost(request, session):
 		collisionPolicy = importCfg.get('collisionPolicy', 'o')
 		try:
 			import os
-			projectRoot = '/usr/local/bin/ignition/data/projects/PLACEHOLDER_PROJECT_NAME'
-			fullPath = os.path.join(projectRoot, filePath)
+			projectRoot = system.util.getProjectName()
+			projectRoot = os.path.join(
+				system.tag.readBlocking(["[System]Gateway/SystemProperties/DataDirectory"])[0].value or "/usr/local/bin/ignition/data",
+				"projects", projectRoot
+			)
+			fullPath = os.path.normpath(os.path.join(projectRoot, filePath))
+			# Prevent path traversal outside the project directory
+			if not fullPath.startswith(projectRoot + os.sep):
+				response['importTags'] = {'success': False, 'error': 'Invalid filePath: path traversal detected'}
+				return {'json': response}
 			with open(fullPath, 'r') as f:
 				tagJson = f.read()
 			tagObj = system.util.jsonDecode(tagJson)
@@ -1561,7 +1646,7 @@ write_file "com.inductiveautomation.webdev/resources/testing/tags/doPost.py" "$T
 
 # --- tags/config.json ---
 
-write_file "com.inductiveautomation.webdev/resources/testing/tags/config.json" "$WEBDEV_CONFIG_JSON"
+write_file "com.inductiveautomation.webdev/resources/testing/tags/config.json" "$WEBDEV_AUTH_CONFIG_JSON"
 
 # --- tags/resource.json ---
 

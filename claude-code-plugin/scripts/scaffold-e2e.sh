@@ -390,31 +390,10 @@ export async function writeTag(
 }
 
 // ── Tag mirroring (OPC → memory copies for testing without PLC) ──
+// To enable mirrorTags(), implement convert_to_memory_tags() in your gateway
+// script library, then uncomment the mirror block in the testing/tags endpoint.
 
-export interface MirrorResult {
-  success: boolean;
-  dest?: string;
-  error?: string;
-}
-
-/**
- * Mirror an OPC tag subtree to memory tags.
- * The mirror copies the entire folder/UDT structure with current values
- * (or safe defaults for bad-quality tags) into writable memory tags.
- */
-export async function mirrorTags(
-  source: string,
-  dest?: string
-): Promise<MirrorResult> {
-  const body: Record<string, unknown> = { source };
-  if (dest) body.dest = dest;
-  const data = (await post("/testing/tags", { mirror: body })) as {
-    mirror: MirrorResult;
-  };
-  return data.mirror;
-}
-
-/** Delete a mirrored tag tree (cleanup after tests). */
+/** Delete a tag tree (cleanup after tests). */
 export async function deleteMirror(path: string): Promise<boolean> {
   const data = (await post("/testing/tags", { deleteTags: path })) as {
     deleteTags: { success: boolean };
@@ -448,17 +427,6 @@ export async function callScript(
 }
 
 // ── Health checks ──
-
-export interface HealthStatus {
-  cpu?: number;
-  memory?: number;
-  uptime?: number;
-  [key: string]: unknown;
-}
-
-export async function getHealth(): Promise<HealthStatus> {
-  return (await get("/GatewayAPI/getSystemHealth")) as HealthStatus;
-}
 
 /** Quick connectivity check — returns true if gateway responds. */
 export async function isGatewayReachable(): Promise<boolean> {
@@ -714,13 +682,13 @@ SMOKE_TESTS=$(cat <<'TSEOF'
 import { test, expect } from "../../fixtures/perspective";
 
 test.describe("Perspective smoke tests", () => {
-  test("session loads and docks render", async ({ perspective }) => {
+  test("session loads successfully", async ({ perspective }) => {
     await perspective.openPage("/");
     await perspective.waitForSession();
 
-    // Top dock should be visible (most Perspective projects have a header dock)
-    const topDock = perspective.page.locator("[data-component-path^='T']");
-    await expect(topDock.first()).toBeVisible({ timeout: 10_000 });
+    // Verify the Perspective session is active by checking for any rendered component
+    const anyComponent = perspective.page.locator("[data-component]");
+    await expect(anyComponent.first()).toBeVisible({ timeout: 15_000 });
   });
 
   test("page content renders", async ({ perspective }) => {
@@ -735,16 +703,18 @@ test.describe("Perspective smoke tests", () => {
     expect(await components.count()).toBeGreaterThan(0);
   });
 
-  test("navigation exists in DOM", async ({ perspective }) => {
-    await perspective.openPage("/");
-    await perspective.waitForSession();
+  test("no console errors on load", async ({ perspective }) => {
+    const errors: string[] = [];
+    perspective.page.on("console", (msg) => {
+      if (msg.type() === "error") errors.push(msg.text());
+    });
 
-    // Check for a menu tree navigation component anywhere in the DOM
-    const menuTree = perspective.page.locator(
-      "[data-component='ia.navigation.menutree']"
-    );
-    // Navigation may be in a dock or the page — just verify it exists
-    expect(await menuTree.count()).toBeGreaterThan(0);
+    await perspective.openPage("/");
+    await perspective.waitForPageContent();
+
+    // Filter out known benign errors (e.g., favicon 404)
+    const realErrors = errors.filter((e) => !e.includes("favicon"));
+    expect(realErrors).toEqual([]);
   });
 });
 TSEOF

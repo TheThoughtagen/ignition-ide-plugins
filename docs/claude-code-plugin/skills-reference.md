@@ -80,7 +80,7 @@ Runs `ignition-lint` to validate Ignition project files. The linter checks Jytho
 
 **Examples:**
 
-```
+```bash
 /ignition-scada:ignition-lint
 /ignition-scada:ignition-lint scripts-only
 /ignition-scada:ignition-lint ignition/script-python/core/util/code.py
@@ -188,7 +188,7 @@ Runs gateway Jython tests or Playwright browser tests. Default is always gateway
 
 **Examples:**
 
-```
+```bash
 /ignition-scada:test                    # All gateway tests
 /ignition-scada:test changeover         # Gateway tests for changeover module
 /ignition-scada:test core.mes           # Gateway tests for core.mes package

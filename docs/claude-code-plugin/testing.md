@@ -6,7 +6,7 @@ sidebar_position: 2
 
 The Claude Code plugin provides a complete testing story for Ignition projects: a Jython test framework that runs on the gateway with full access to `system.*` APIs, real tags, and database connections, plus Playwright browser tests for Perspective views. Two commands get you from zero to a full test suite.
 
-```
+```bash
 /ignition-scada:init-testing    # Gateway Jython tests
 /ignition-scada:init-e2e        # Playwright browser tests (Perspective)
 ```
@@ -36,13 +36,13 @@ Plus two WebDev endpoints:
 
 Run the init-testing skill:
 
-```
+```bash
 /ignition-scada:init-testing
 ```
 
 The plugin auto-detects your project — name, gateway, tag providers, parent project inheritance — and scaffolds everything:
 
-```
+```text
 > /ignition-scada:init-testing
 
   Here's what I found:
@@ -92,7 +92,7 @@ If the parent project already has the test framework, the scaffolding uses `--sk
 
 Tests go **inside the package they test** as a `__tests__` subdirectory. Never create standalone top-level test packages.
 
-```
+```text
 CORRECT:
 ignition/script-python/core/util/__tests__/code.py          # tests core.util
 ignition/script-python/core/mes/changeover/__tests__/code.py # tests core.mes.changeover
@@ -218,7 +218,7 @@ HTTP response codes: **200** = all passed, **207** = failures/errors, **500** = 
 
 **Via Claude Code:**
 
-```
+```bash
 /ignition-scada:test                    # All gateway Jython tests
 /ignition-scada:test changeover         # Specific module
 /ignition-scada:test core.mes           # By package prefix
@@ -321,13 +321,13 @@ The `/ignition-scada:init-e2e` command creates a complete Playwright test setup 
 
 ### How to Scaffold
 
-```
+```bash
 /ignition-scada:init-e2e
 ```
 
 Example flow:
 
-```
+```text
 > /ignition-scada:init-e2e
 
   Perspective module found. Parent project has e2e/.env — copying
@@ -559,7 +559,7 @@ npx playwright show-report
 
 Via Claude Code:
 
-```
+```bash
 /ignition-scada:test ui                 # All Playwright browser tests
 /ignition-scada:test ui smoke           # Playwright smoke tests only
 /ignition-scada:test ui changeover      # Specific area

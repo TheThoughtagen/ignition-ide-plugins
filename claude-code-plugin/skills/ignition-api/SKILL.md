@@ -86,14 +86,14 @@ This applies to ALL resource types:
 Ignition's script library (`ignition/script-python/`) has a strict structure. Each directory is either a **leaf module** or a **package node** — never both.
 
 **Leaf module** — has `code.py` with real code, NO child directories with code:
-```
+```text
 core/util/secrets/
 ├── code.py          ← actual functions live here
 └── resource.json
 ```
 
 **Package node** — has child directories, NO `code.py` (or only an empty placeholder):
-```
+```text
 core/util/
 ├── secrets/         ← child module
 │   ├── code.py
@@ -108,7 +108,7 @@ core/util/
 
 **Exception:** `__tests__/` directories are special — Ignition's script runtime ignores directories whose names start with `__`, so they do not conflict with a sibling `code.py`. The testing framework relies on this convention.
 
-```
+```text
 WRONG:
 my_package/
 ├── code.py          ← has real code

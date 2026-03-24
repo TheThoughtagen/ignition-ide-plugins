@@ -86,7 +86,7 @@ Both approaches include the same lint hook and the same domain knowledge. The pl
 
 Two commands to go from zero to a full test suite:
 
-```
+```bash
 /ignition-scada:init-testing    # Gateway Jython tests
 /ignition-scada:init-e2e        # Playwright browser tests (Perspective)
 ```
@@ -95,7 +95,7 @@ Two commands to go from zero to a full test suite:
 
 The plugin auto-detects your project — name, gateway, tag providers, parent project inheritance — and scaffolds everything you need:
 
-```
+```text
 ❯ /ignition-scada:init-testing
 
 ⏺ Here's what I found:
@@ -138,7 +138,7 @@ It understands Ignition project inheritance — if your parent project already h
 
 Scaffolds Playwright browser tests with Perspective-aware page objects, then authenticates and runs smoke tests:
 
-```
+```text
 ❯ /ignition-scada:init-e2e
 
 ⏺ Perspective module found. Parent project has e2e/.env — copying
@@ -200,7 +200,7 @@ Both support `--dry-run` to preview and `--force` to overwrite. Use `--skip-scri
 
 ## File Structure
 
-```
+```text
 claude-code-plugin/
   .claude-plugin/
     plugin.json               # Plugin manifest (name, version, entry points)
