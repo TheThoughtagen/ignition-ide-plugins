@@ -1,4 +1,5 @@
 ---
+name: ignition-testing
 description: Ignition testing framework reference — writing and running Jython gateway tests. Use when writing tests, debugging test failures, or working with the testing.* modules.
 user-invocable: false
 ---

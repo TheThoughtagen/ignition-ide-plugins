@@ -1,4 +1,5 @@
 ---
+name: init-e2e
 description: Scaffold Playwright e2e tests for Perspective views into an Ignition project. Usage — /ignition-scada:init-e2e [--force]
 user-invocable: true
 ---

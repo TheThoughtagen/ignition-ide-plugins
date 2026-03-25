@@ -1,4 +1,5 @@
 ---
+name: ignition-e2e
 description: Ignition Perspective e2e testing reference — Playwright page objects, gateway API helpers, and Perspective DOM conventions. Use when writing or debugging Playwright browser tests for Perspective views.
 user-invocable: false
 ---

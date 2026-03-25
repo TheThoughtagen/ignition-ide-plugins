@@ -1,4 +1,5 @@
 ---
+name: ignition-expressions
 description: Ignition expression language reference — 104 functions. Use when writing tag expressions or Perspective binding expressions.
 user-invocable: false
 ---

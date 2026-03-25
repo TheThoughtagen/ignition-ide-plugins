@@ -1,4 +1,5 @@
 ---
+name: ignition-api
 description: Ignition system.* API reference — 14 modules, 239 functions. Use when writing Ignition Jython scripts.
 user-invocable: false
 ---
