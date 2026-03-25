@@ -10,6 +10,5 @@
   "repository": "https://github.com/whiskeyhouse/ignition-nvim",
   "license": "MIT",
   "keywords": ["ignition", "scada", "ics", "inductive-automation", "jython", "plc", "testing", "playwright"],
-  "skills": "./skills/",
-  "hooks": "./hooks/hooks.json"
+  "skills": "./skills/"
 }
