@@ -1,7 +1,6 @@
 ---
 name: test
 description: Run Jython gateway tests or Playwright e2e tests. Usage — /ignition-scada:test [module|package|ui|e2e|smoke]
-user-invocable: true
 ---
 
 # Run Tests

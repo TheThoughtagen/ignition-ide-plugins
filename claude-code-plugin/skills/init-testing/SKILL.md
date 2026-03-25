@@ -1,7 +1,6 @@
 ---
 name: init-testing
 description: Scaffold the Jython test framework, WebDev test endpoints, and type stubs into an Ignition project. Usage — /ignition-scada:init-testing [--all] [--force]
-user-invocable: true
 ---
 
 # Initialize Ignition Testing
