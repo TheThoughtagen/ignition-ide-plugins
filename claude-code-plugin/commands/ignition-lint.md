@@ -1,6 +1,7 @@
 ---
 name: ignition-lint
 description: Run ignition-lint on files or the whole project
+argument-hint: "[file|directory|profile]"
 ---
 
 Run ignition-lint on files or the whole Ignition project.

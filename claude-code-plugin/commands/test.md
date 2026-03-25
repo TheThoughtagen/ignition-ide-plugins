@@ -1,6 +1,7 @@
 ---
 name: test
 description: Run Jython gateway tests or Playwright e2e tests
+argument-hint: "[module|package|ui|e2e|smoke]"
 ---
 
 Run Jython gateway tests or Playwright e2e tests.

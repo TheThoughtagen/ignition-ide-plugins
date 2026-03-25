@@ -1,6 +1,7 @@
 ---
 name: init-e2e
 description: Scaffold Playwright e2e tests for Perspective views into an Ignition project
+argument-hint: "[--force]"
 ---
 
 Scaffold Playwright e2e tests for Perspective views into an Ignition project.
