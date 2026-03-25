@@ -1,6 +1,6 @@
 ---
+name: check-setup
 description: Validate your Ignition project setup — checks gateway, tooling, test infrastructure, and plugin health
-argument-hint: ""
 ---
 
 Run a full health check on the current Ignition project and report what's working, what's missing, and how to fix it.
