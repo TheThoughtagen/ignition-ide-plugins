@@ -1,5 +1,10 @@
-Run ignition-lint on files or the whole project.
+---
+name: ignition-lint
+description: Run ignition-lint on files or the whole project
+---
+
+Run ignition-lint on files or the whole Ignition project.
 
 $ARGUMENTS
 
-See skills/ignition-lint/SKILL.md for full instructions. Load that skill and follow it.
+Load and follow the instructions in the `ignition-scada:ignition-lint` skill (skills/ignition-lint/SKILL.md).

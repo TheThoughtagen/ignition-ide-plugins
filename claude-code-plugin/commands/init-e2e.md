@@ -1,5 +1,10 @@
+---
+name: init-e2e
+description: Scaffold Playwright e2e tests for Perspective views into an Ignition project
+---
+
 Scaffold Playwright e2e tests for Perspective views into an Ignition project.
 
 $ARGUMENTS
 
-See skills/init-e2e/SKILL.md for full instructions. Load that skill and follow it.
+Load and follow the instructions in the `ignition-scada:init-e2e` skill (skills/init-e2e/SKILL.md).

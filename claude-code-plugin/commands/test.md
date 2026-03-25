@@ -1,5 +1,10 @@
+---
+name: test
+description: Run Jython gateway tests or Playwright e2e tests
+---
+
 Run Jython gateway tests or Playwright e2e tests.
 
 $ARGUMENTS
 
-Route based on arguments. See skills/test/SKILL.md for full instructions. Load that skill and follow it.
+Load and follow the instructions in the `ignition-scada:test` skill (skills/test/SKILL.md).

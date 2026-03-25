@@ -1,5 +1,10 @@
+---
+name: init-testing
+description: Scaffold the Jython test framework, WebDev endpoints, and type stubs into an Ignition project
+---
+
 Scaffold the Jython test framework, WebDev test endpoints, and type stubs into an Ignition project.
 
 $ARGUMENTS
 
-See skills/init-testing/SKILL.md for full instructions. Load that skill and follow it.
+Load and follow the instructions in the `ignition-scada:init-testing` skill (skills/init-testing/SKILL.md).
