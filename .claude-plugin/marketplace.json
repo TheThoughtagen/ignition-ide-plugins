@@ -11,7 +11,7 @@
       "name": "ignition-scada",
       "source": "./claude-code-plugin",
       "description": "Ignition SCADA development — API reference, expression language, auto-linting, test scaffolding, and automated testing for Ignition projects",
-      "version": "0.2.6",
+      "version": "0.2.7",
       "author": {
         "name": "Whiskey House"
       },
