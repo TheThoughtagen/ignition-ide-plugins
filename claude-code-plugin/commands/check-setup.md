@@ -1,5 +1,4 @@
 ---
-name: doctor
 description: Validate your Ignition project setup — checks gateway, tooling, test infrastructure, and plugin health
 argument-hint: ""
 ---

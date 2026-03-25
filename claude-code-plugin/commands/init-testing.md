@@ -1,5 +1,4 @@
 ---
-name: init-testing
 description: Scaffold the Jython test framework, WebDev endpoints, and type stubs into an Ignition project
 argument-hint: "[--all] [--force]"
 ---
