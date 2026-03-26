@@ -139,7 +139,7 @@ fi
 
 # Project scan endpoint (requires gateway + API token)
 if [ "$GATEWAY_REACHABLE" = true ]; then
-  SCAN_RESPONSE=$(curl -k -s --connect-timeout 3 -o /dev/null -w "%{http_code}" \
+  SCAN_RESPONSE=$(curl -k -s -X POST --connect-timeout 3 -o /dev/null -w "%{http_code}" \
     "$GATEWAY_URL/data/project-scan-endpoint/scan" 2>/dev/null || echo "000")
   # 401 = endpoint exists but needs auth, 200 = open, 405 = exists but wrong method
   if [ "$SCAN_RESPONSE" = "401" ] || [ "$SCAN_RESPONSE" = "200" ] || [ "$SCAN_RESPONSE" = "405" ]; then
