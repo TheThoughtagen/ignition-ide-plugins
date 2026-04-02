@@ -78,6 +78,17 @@ Run tests for the current Ignition project. Routes to gateway tests (Jython) or 
 
 ## Playwright Tests
 
+**0. Check for inheritable parent project.** Run `detect-project.sh` and check `is_parent` and `has_perspective`.
+
+If `is_parent == true` AND `has_perspective == false`, this project has no Perspective views — E2E tests must run through a child project:
+
+- Check the `children` array for entries where `has_e2e == true`
+- **One child with E2E:** Tell the user: "This is an inheritable project with no Perspective views. Running E2E tests through child project *{child.name}*." Then execute Playwright from `{child.root}/e2e/` (continue to step 3 below with `E2E_DIR={child.root}/e2e`).
+- **Multiple children with E2E:** Ask the user which child to target, then run from that child's `e2e/` directory.
+- **No children with E2E:** Check if any children have `has_perspective == true`. If so, suggest: "Child project *{child.name}* has Perspective views but no E2E setup. Run `/ignition-scada:init-e2e` from that project first." If no children have Perspective at all, explain that E2E tests need a project with Perspective views. Suggest using `/ignition-scada:test` (no `ui` argument) for Jython gateway tests, which work normally in this project.
+
+If `is_parent == true` AND `has_perspective == true`: proceed normally (parent has its own views).
+
 1. Check that `e2e/node_modules` exists. If not, tell the user to run `cd e2e && npm install && npx playwright install chromium`.
 
 2. Check that `e2e/.auth/user.json` exists. If not, tell the user to run `cd e2e && npx playwright test --project=setup`.

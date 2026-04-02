@@ -41,6 +41,49 @@ if [ -n "$PARENT_ROOT" ] && [ -f "$PARENT_ROOT/e2e/.env" ]; then
   PARENT_E2E_ENV_PATH="$PARENT_ROOT/e2e/.env"
 fi
 
+# Check if this project is a parent (other projects inherit from it)
+# Scan sibling directories for project.json files whose "parent" matches this project's title.
+IS_PARENT=false
+CHILDREN_JSON="[]"
+MATCH_TITLE="${PROJECT_TITLE:-$PROJECT_NAME}"
+
+if [ -n "$MATCH_TITLE" ]; then
+  CHILDREN_ENTRIES=""
+  for sibling in "$(dirname "$PROJECT_ROOT")"/*/; do
+    sibling="${sibling%/}"
+    # Skip self
+    [ "$sibling" = "$PROJECT_ROOT" ] && continue
+    [ -f "$sibling/project.json" ] || continue
+
+    SIBLING_PARENT=$(jq -r '.parent // ""' "$sibling/project.json" 2>/dev/null || echo "")
+    if [ "$SIBLING_PARENT" = "$MATCH_TITLE" ] || [ "$SIBLING_PARENT" = "$PROJECT_NAME" ]; then
+      IS_PARENT=true
+      CHILD_NAME=$(jq -r '.title // ""' "$sibling/project.json" 2>/dev/null || echo "")
+      [ -z "$CHILD_NAME" ] && CHILD_NAME=$(basename "$sibling")
+      CHILD_HAS_PERSPECTIVE=false
+      CHILD_HAS_E2E=false
+      [ -d "$sibling/com.inductiveautomation.perspective" ] && CHILD_HAS_PERSPECTIVE=true
+      [ -f "$sibling/e2e/package.json" ] && CHILD_HAS_E2E=true
+
+      ENTRY=$(jq -n \
+        --arg name "$CHILD_NAME" \
+        --arg root "$sibling" \
+        --argjson has_perspective "$CHILD_HAS_PERSPECTIVE" \
+        --argjson has_e2e "$CHILD_HAS_E2E" \
+        '{name: $name, root: $root, has_perspective: $has_perspective, has_e2e: $has_e2e}')
+      if [ -z "$CHILDREN_ENTRIES" ]; then
+        CHILDREN_ENTRIES="$ENTRY"
+      else
+        CHILDREN_ENTRIES="$CHILDREN_ENTRIES,$ENTRY"
+      fi
+    fi
+  done
+
+  if [ -n "$CHILDREN_ENTRIES" ]; then
+    CHILDREN_JSON="[$CHILDREN_ENTRIES]"
+  fi
+fi
+
 # Probe gateway
 GATEWAY_URL=""
 GATEWAY_REACHABLE=false
@@ -168,6 +211,8 @@ jq -n \
   --argjson parent_has_webdev_endpoints "$PARENT_HAS_WEBDEV_ENDPOINTS" \
   --argjson parent_has_e2e_env "$PARENT_HAS_E2E_ENV" \
   --arg parent_e2e_env_path "$PARENT_E2E_ENV_PATH" \
+  --argjson is_parent "$IS_PARENT" \
+  --argjson children "$CHILDREN_JSON" \
   --arg gateway_url "$GATEWAY_URL" \
   --argjson gateway_reachable "$GATEWAY_REACHABLE" \
   --argjson has_perspective "$HAS_PERSPECTIVE" \
@@ -195,6 +240,8 @@ jq -n \
       has_e2e_env: $parent_has_e2e_env,
       e2e_env_path: (if $parent_e2e_env_path == "" then null else $parent_e2e_env_path end)
     } end),
+    is_parent: $is_parent,
+    children: $children,
     gateway_url: $gateway_url,
     gateway_reachable: $gateway_reachable,
     has_perspective: $has_perspective,
