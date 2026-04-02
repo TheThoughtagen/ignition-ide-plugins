@@ -206,7 +206,16 @@
       "Bash(mkdir -p test-scaffold-project/MyProject/com.inductiveautomation.webdev)",
       "Bash(mkdir -p test-scaffold-project/MyProject/ignition/script-python)",
       "Bash(bash /Users/pmannion/whiskeyhouse/ignition-nvim/claude-code-plugin/scripts/scaffold-testing.sh --project-root /private/tmp/test-scaffold-project/MyProject --project-name MyProject --tag-provider default --dry-run 2>&1)",
-      "Bash(bash /Users/pmannion/whiskeyhouse/ignition-nvim/claude-code-plugin/scripts/scaffold-testing.sh --project-root /private/tmp/test-scaffold-project/MyProject --project-name MyProject --tag-provider default 2>&1)"
+      "Bash(bash /Users/pmannion/whiskeyhouse/ignition-nvim/claude-code-plugin/scripts/scaffold-testing.sh --project-root /private/tmp/test-scaffold-project/MyProject --project-name MyProject --tag-provider default 2>&1)",
+      "Read(//Users/pmannion/.claude/plugins/**)",
+      "Read(//Users/pmannion/.claude/plugins/marketplaces/**)",
+      "Bash(python3 -c \"import json; d=json.load\\(open\\(''''/Users/pmannion/.claude/plugins/installed_plugins.json''''\\)\\); [print\\(k, v.get\\(''''name'''',''''''''\\)\\) for k,v in d.items\\(\\) if ''''ignition'''' in k.lower\\(\\) or ''''ignition'''' in v.get\\(''''name'''',''''''''\\).lower\\(\\)]\")",
+      "Bash(head:*)",
+      "Bash(while read:*)",
+      "Bash(find ~/.claude/plugins/cache/ignition-tools -delete)",
+      "Bash(find ~/.claude/plugins -path *get-shit-done* -o -path *gsd*)",
+      "Bash(dirname:*)",
+      "Bash(find /Users/pmannion/.claude/plugins/cache/claude-plugins-official/ -path */commands/*.md)"
     ],
     "deny": [],
     "ask": []
