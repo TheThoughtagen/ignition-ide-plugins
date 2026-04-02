@@ -36,7 +36,7 @@ Run tests for the current Ignition project. Routes to gateway tests (Jython) or 
 
 2. Check that test infrastructure exists (`existing_testing.jython_framework` and `existing_testing.webdev_endpoints`). If not, tell the user: "Test infrastructure not found. Run `/ignition-scada:init-testing` first."
 
-3. **Commit or stash pending changes** before proceeding. The force scan in the next step can trigger the Designer or Git module to write back to the project directory — uncommitted work could be overwritten.
+3. **Commit pending changes** before proceeding. The force scan in the next step can trigger the Designer or Git module to write back to the project directory — uncommitted work could be overwritten. Avoid `git stash` here: stashing removes the edits from the working tree, so the test run would exercise old code rather than your current changes.
 
 4. **Bump `resource.json` versions** for any script modules that were edited since the last test run. Ignition's Jython runtime caches compiled modules in `sys.modules` — a project scan alone does NOT flush this cache. Incrementing the `version` field is the strongest signal to force re-import.
 
@@ -45,17 +45,19 @@ Run tests for the current Ignition project. Routes to gateway tests (Jython) or 
    { "version": 2, ... }
    ```
 
-5. Trigger a gateway project scan with `forceUpdate=true` (if API token is available):
+5. Trigger a gateway project scan with `forceUpdate=true`:
    ```bash
    TOKEN_FILE="${IGNITION_API_TOKEN_FILE:-}"
    if [ -n "$TOKEN_FILE" ] && [ -f "$TOKEN_FILE" ]; then
      TOKEN=$(cat "$TOKEN_FILE")
-     curl -k -s -X POST -H "X-Ignition-API-Token: $TOKEN" \
+     curl -k -fsS --max-time 10 -o /dev/null -X POST -H "X-Ignition-API-Token: $TOKEN" \
        "<gateway>/data/project-scan-endpoint/scan?updateDesigners=true&forceUpdate=true"
    fi
    ```
 
    **Why `forceUpdate=true`?** Without it, the scan may skip resources it considers unchanged. Combined with the version bump, this ensures the gateway picks up the new bytecode.
+
+   If no API token is configured, warn the user that tests may run against stale Jython state. They can manually trigger a scan by saving from Designer or restarting the gateway before proceeding.
 
 6. Wait 3-5 seconds for scan propagation.
 
@@ -77,6 +79,17 @@ Run tests for the current Ignition project. Routes to gateway tests (Jython) or 
    - On success: report concisely
 
 ## Playwright Tests
+
+**0. Check for inheritable parent project.** Run `detect-project.sh` and check `is_parent` and `has_perspective`.
+
+If `is_parent == true` AND `has_perspective == false`, this project has no Perspective views — E2E tests must run through a child project:
+
+- Check the `children` array for entries where `has_e2e == true`
+- **One child with E2E:** Tell the user: "This is an inheritable project with no Perspective views. Running E2E tests through child project *{child.name}*." Then execute Playwright from `{child.root}/e2e/` (continue to step 3 below with `E2E_DIR={child.root}/e2e`).
+- **Multiple children with E2E:** Ask the user which child to target, then run from that child's `e2e/` directory.
+- **No children with E2E:** Check if any children have `has_perspective == true`. If so, suggest: "Child project *{child.name}* has Perspective views but no E2E setup. Run `/ignition-scada:init-e2e` from that project first." If no children have Perspective at all, explain that E2E tests need a project with Perspective views. Suggest using `/ignition-scada:test` (no `ui` argument) for Jython gateway tests, which work normally in this project.
+
+If `is_parent == true` AND `has_perspective == true`: proceed normally (parent has its own views).
 
 1. Check that `e2e/node_modules` exists. If not, tell the user to run `cd e2e && npm install && npx playwright install chromium`.
 
