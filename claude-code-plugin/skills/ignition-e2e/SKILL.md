@@ -16,6 +16,10 @@ This project uses Playwright to test Ignition Perspective views in a real browse
 - **gateway-api.ts** — Node.js helper that calls WebDev endpoints for tag read/write, script invocation
 - **Auth fixture** — authenticates once, persists session to `.auth/user.json` for reuse
 
+## Inheritable Projects
+
+E2E tests target Perspective views rendered in a browser. Inheritable (parent) projects — those where other projects list them as `"parent"` in `project.json` — typically have no `com.inductiveautomation.perspective/` directory and no views. If you're in a parent project, E2E tests can be proxied through a child project that has Perspective views. The `/ignition-scada:test ui` command detects this automatically, finds child projects with E2E setup, and runs Playwright from the child's `e2e/` directory.
+
 ## Perspective DOM Conventions (CRITICAL)
 
 Perspective is a React SPA served over WebSocket. The DOM has specific conventions you MUST understand:

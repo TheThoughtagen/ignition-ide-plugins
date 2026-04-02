@@ -215,7 +215,8 @@
       "Bash(find ~/.claude/plugins/cache/ignition-tools -delete)",
       "Bash(find ~/.claude/plugins -path *get-shit-done* -o -path *gsd*)",
       "Bash(dirname:*)",
-      "Bash(find /Users/pmannion/.claude/plugins/cache/claude-plugins-official/ -path */commands/*.md)"
+      "Bash(find /Users/pmannion/.claude/plugins/cache/claude-plugins-official/ -path */commands/*.md)",
+      "Bash(bash -n /Users/pmannion/whiskeyhouse/ignition-nvim/claude-code-plugin/scripts/detect-project.sh)"
     ],
     "deny": [],
     "ask": []
