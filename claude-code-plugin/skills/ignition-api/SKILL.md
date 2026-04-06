@@ -61,6 +61,37 @@ This applies to ALL resource types:
 }
 ```
 
+### Perspective View Parameters (propConfig)
+
+**CRITICAL:** Every view parameter MUST have an explicit `propConfig` entry with `paramDirection`. Without it, the runtime silently fails to propagate parameter values from embedding parent views.
+
+The Designer shows "input" as the default direction arrow in the UI, but this is NOT serialized to the view JSON unless the user explicitly sets it. **Missing propConfig ≠ default propConfig.**
+
+**paramDirection values:**
+- `"input"` — parent sets this param; child reads it (most common for embedded views)
+- `"output"` — child sets this param; parent reads it
+- `"inout"` — bidirectional; both parent and child can read/write
+
+**Correct view.json pattern:**
+```json
+{
+  "params": {
+    "itemId": 0,
+    "mode": "view"
+  },
+  "propConfig": {
+    "params.itemId": {
+      "paramDirection": "input",
+      "persistent": true
+    },
+    "params.mode": {
+      "paramDirection": "input",
+      "persistent": true
+    }
+  }
+}
+```
+
 **Template for WebDev endpoints**:
 ```json
 {
@@ -252,3 +283,5 @@ system.perspective.sendMessage("updateChart", {"tagPath": path}, scope="page")
 - NEVER hardcode gateway URLs (localhost:8088)
 - NEVER use `import *`
 - NEVER use `getSibling()`/`getParent()` for component references
+- NEVER edit `code.py` without bumping the adjacent `resource.json` version
+- NEVER define view params without a corresponding `propConfig` entry with `paramDirection` — the runtime silently ignores parameters without it
