@@ -19,7 +19,36 @@ Scaffold a complete Playwright e2e test setup for Perspective views. This create
    ${CLAUDE_PLUGIN_ROOT}/scripts/detect-project.sh
    ```
 
-2. Check `has_perspective` — if false, warn the user: "No Perspective module found (`com.inductiveautomation.perspective/` directory missing). E2E tests require Perspective views. Continue anyway?"
+2. Check project type and Perspective availability:
+
+   **If `is_parent == true` AND `has_perspective == false`** (inheritable parent project):
+
+   This project is an inheritable (parent) project — it provides shared scripts and resources to child projects but has no Perspective views of its own. E2E tests target Perspective views, so they should be set up in a child project.
+
+   Tell the user:
+   > "This project (*{project_title}*) is an inheritable parent project — child projects inherit its scripts but it has no Perspective views of its own.
+   >
+   > Child projects that inherit from this one:
+   > {for each child in children:}
+   > - **{child.name}** — {child.has_perspective ? 'has Perspective views' : 'no Perspective views'} {child.has_e2e ? '(e2e already set up)' : ''}
+   >
+   > **Recommended:** I can scaffold E2E tests in a child project that has Perspective views. Which child project should I set up?"
+
+   If the user picks a child project, run the scaffold steps below using the **child's** `--project-root` and `--project-name` instead of the current project's. The E2E setup lives in the child's directory.
+
+   If no children have Perspective views, explain that E2E tests need a project with `com.inductiveautomation.perspective/` views. Jython gateway tests (`/ignition-scada:init-testing`, `/ignition-scada:test`) still work normally in this project.
+
+   **Do not proceed** with scaffolding in the parent project.
+
+   **If `is_parent == true` AND `has_perspective == true`** (parent with its own views):
+
+   Proceed normally. Note to the user that child projects also inherit from this project, but since it has its own Perspective views, E2E tests can be set up here.
+
+   **If `has_perspective == false` AND `is_parent == false`** (non-parent, no Perspective):
+
+   Warn the user: "No Perspective module found (`com.inductiveautomation.perspective/` directory missing). E2E tests require Perspective views. Continue anyway?"
+
+   **Otherwise** (`has_perspective == true`, not a parent): Proceed normally.
 
 3. Present findings and ask the user to confirm their tag provider.
 

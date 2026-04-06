@@ -49,10 +49,12 @@ fi
 TOKEN_FILE="${IGNITION_API_TOKEN_FILE:-}"
 if [ -n "$TOKEN_FILE" ] && [ -f "$TOKEN_FILE" ]; then
   TOKEN=$(cat "$TOKEN_FILE")
-  if ! curl -k -s --max-time 10 -X POST -H "X-Ignition-API-Token: $TOKEN" \
-    "$GATEWAY_URL/data/project-scan-endpoint/scan?updateDesigners=true&forceUpdate=true" > /dev/null 2>&1; then
+  if ! curl -k -fsS --max-time 10 -o /dev/null -X POST -H "X-Ignition-API-Token: $TOKEN" \
+    "$GATEWAY_URL/data/project-scan-endpoint/scan?updateDesigners=true&forceUpdate=true"; then
     echo "Warning: project scan request failed — tests may run against stale state" >&2
   fi
+else
+  echo "Warning: IGNITION_API_TOKEN_FILE is not configured — tests may run against stale state" >&2
 fi
 
 # Wait for scan propagation (best-effort delay — Ignition has no scan-completion endpoint)
