@@ -36,19 +36,30 @@ Run tests for the current Ignition project. Routes to gateway tests (Jython) or 
 
 2. Check that test infrastructure exists (`existing_testing.jython_framework` and `existing_testing.webdev_endpoints`). If not, tell the user: "Test infrastructure not found. Run `/ignition-scada:init-testing` first."
 
-3. Trigger a gateway project scan (if API token is available):
+3. **Commit or stash pending changes** before proceeding. The force scan in the next step can trigger the Designer or Git module to write back to the project directory — uncommitted work could be overwritten.
+
+4. **Bump `resource.json` versions** for any script modules that were edited since the last test run. Ignition's Jython runtime caches compiled modules in `sys.modules` — a project scan alone does NOT flush this cache. Incrementing the `version` field is the strongest signal to force re-import.
+
+   For each modified `code.py`, increment `version` in the adjacent `resource.json`:
+   ```json
+   { "version": 2, ... }
+   ```
+
+5. Trigger a gateway project scan with `forceUpdate=true` (if API token is available):
    ```bash
    TOKEN_FILE="${IGNITION_API_TOKEN_FILE:-}"
    if [ -n "$TOKEN_FILE" ] && [ -f "$TOKEN_FILE" ]; then
      TOKEN=$(cat "$TOKEN_FILE")
      curl -k -s -X POST -H "X-Ignition-API-Token: $TOKEN" \
-       "<gateway>/data/project-scan-endpoint/scan?updateDesigners=true"
+       "<gateway>/data/project-scan-endpoint/scan?updateDesigners=true&forceUpdate=true"
    fi
    ```
 
-4. Wait 3-5 seconds for scan propagation.
+   **Why `forceUpdate=true`?** Without it, the scan may skip resources it considers unchanged. Combined with the version bump, this ensures the gateway picks up the new bytecode.
 
-5. Run the tests:
+6. Wait 3-5 seconds for scan propagation.
+
+7. Run the tests:
    ```bash
    # All tests
    curl -k -s -X POST "<gateway>/system/webdev/<project>/testing/run"
@@ -60,7 +71,7 @@ Run tests for the current Ignition project. Routes to gateway tests (Jython) or 
    curl -k -s -X POST "<gateway>/system/webdev/<project>/testing/run?package=<package>"
    ```
 
-6. Parse the JSON response and present results:
+8. Parse the JSON response and present results:
    - Summary: total, passed, failed, skipped, errors, duration
    - On failure: show each failure with test name, error message, and traceback
    - On success: report concisely
