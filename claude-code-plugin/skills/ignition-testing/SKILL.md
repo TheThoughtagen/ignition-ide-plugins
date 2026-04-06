@@ -157,6 +157,29 @@ Returns structured dict:
 | `to_console(results)` | Human-readable text for Script Console |
 | `to_junit_xml(results)` | JUnit XML for CI integration |
 
+## CRITICAL: Script Changes and the Jython Module Cache
+
+Ignition caches compiled Jython modules in `sys.modules`. A project scan tells Ignition "files changed on disk" but does **NOT** flush this bytecode cache. If you edit a script module that was already imported, the scan succeeds but tests still run against **stale code**.
+
+**When editing test files or the code they test, ALWAYS:**
+1. **Commit or stash your work first** — a force scan can trigger the Designer or Git module to write back to the project directory, risking uncommitted changes
+2. Increment the `version` field in the adjacent `resource.json` (both the test module's AND the code module's)
+3. Use `forceUpdate=true` on the project scan
+4. Wait 3-5 seconds for propagation
+
+Without the version bump, you will see confusing failures where new functions show `AttributeError` or old behavior persists despite the file being correct on disk.
+
+```bash
+# After editing code.py, bump version in resource.json:
+# "version": 1  →  "version": 2
+
+# Then force-scan:
+curl -k -X POST -H "X-Ignition-API-Token: $TOKEN" \
+  "<gateway>/data/project-scan-endpoint/scan?updateDesigners=true&forceUpdate=true"
+```
+
+If tests still show stale behavior after a version bump + force scan, the last resort is a gateway restart.
+
 ## Running Tests
 
 **From Script Console:**

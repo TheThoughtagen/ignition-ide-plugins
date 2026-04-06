@@ -277,6 +277,53 @@ logger.info("Processing %s items" % count)
 system.perspective.sendMessage("updateChart", {"tagPath": path}, scope="page")
 ```
 
+## Jython Module Cache & Script Reloading
+
+Ignition's Jython runtime caches compiled script modules in `sys.modules`. This cache is **separate from the project scan**. Understanding the distinction is critical when editing scripts via git/filesystem:
+
+### What a project scan does
+- Tells Ignition "files changed on disk"
+- Updates Ignition's internal resource index
+- Notifies connected Designers to refresh
+
+### What a project scan does NOT do
+- Flush the Jython `sys.modules` bytecode cache
+- Force re-import of already-loaded script modules
+- Guarantee that the next function call uses the new code
+
+### Symptom
+You edit `code.py`, trigger a project scan (succeeds), call a function — and get `AttributeError` for a function you just added, or the old behavior persists. The scan succeeded but Jython is still running the cached bytecode.
+
+### How to force script reload
+
+> **Safety first:** Before bumping versions or triggering scans, **commit or stash your work**. The Git module handles project files well now, but a force scan can trigger the Designer or Git module to write back to disk — protecting your uncommitted changes avoids surprises.
+
+**1. Bump `resource.json` version** — strongest signal to Ignition's change detection:
+```json
+{
+  "scope": "A",
+  "version": 2,
+  ...
+}
+```
+Increment the `version` field every time you modify `code.py`. This tells Ignition the resource has a new revision, not just a new file timestamp.
+
+**2. Use `forceUpdate=true` on the scan** — forces Ignition to re-process all resources:
+```bash
+curl -k -X POST -H "X-Ignition-API-Token: $TOKEN" \
+  "<gateway>/data/project-scan-endpoint/scan?updateDesigners=true&forceUpdate=true"
+```
+
+**3. Save from Designer** — triggers a full script recompile (not just a file scan).
+
+**4. Restart the gateway** — nuclear option, always works.
+
+### IMPORTANT: Always bump version when editing scripts
+
+When you modify any `code.py` in `ignition/script-python/`, you MUST also increment the `version` field in the adjacent `resource.json`. Without this, the gateway may continue running stale bytecode even after a successful project scan.
+
+**Before bumping versions:** commit or stash all pending changes. A force scan can cause the Designer or Git module to write back to the project directory, and uncommitted work could be overwritten.
+
 ## Anti-Patterns
 - NEVER use string formatting in SQL — always `?` params
 - NEVER shadow the `system` variable

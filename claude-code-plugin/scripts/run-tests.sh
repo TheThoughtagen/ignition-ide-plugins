@@ -42,12 +42,15 @@ if ! curl -k -s --connect-timeout 3 "$GATEWAY_URL/StatusPing" > /dev/null 2>&1; 
   exit 0
 fi
 
-# Trigger project scan (optional — requires API token)
+# Trigger project scan with forceUpdate (optional — requires API token)
+# forceUpdate=true forces Ignition to re-process all resources, which combined
+# with resource.json version bumps is the strongest way to flush the Jython
+# module cache and ensure tests run against current code.
 TOKEN_FILE="${IGNITION_API_TOKEN_FILE:-}"
 if [ -n "$TOKEN_FILE" ] && [ -f "$TOKEN_FILE" ]; then
   TOKEN=$(cat "$TOKEN_FILE")
   if ! curl -k -s --max-time 10 -X POST -H "X-Ignition-API-Token: $TOKEN" \
-    "$GATEWAY_URL/data/project-scan-endpoint/scan?updateDesigners=true" > /dev/null 2>&1; then
+    "$GATEWAY_URL/data/project-scan-endpoint/scan?updateDesigners=true&forceUpdate=true" > /dev/null 2>&1; then
     echo "Warning: project scan request failed — tests may run against stale state" >&2
   fi
 fi
