@@ -8,6 +8,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Zed extension** (`packages/ignition-zed/`) — Rust/WebAssembly extension registering
+  `ignition-lsp` for Python and JSON inside Ignition projects:
+  - Completions, hover docs, go-to-definition, diagnostics, and workspace symbols
+  - Auto-installs the language server into a managed virtualenv on first use
+  - Attaches only to worktrees with a root `project.json`, leaving unrelated projects alone
+  - Settings passthrough via `lsp.ignition-lsp.settings` (accepts the Neovim settings shape)
+- **LSP code actions for embedded scripts** — decode/encode is now available to any
+  standard LSP client, not just editors with a virtual-document API:
+  - `textDocument/codeAction` offers "Ignition: Decode …" on JSON resource lines and
+    "Ignition: Save … back to JSON" on decoded files
+  - New `ignition.decodeScriptToFile` and `ignition.saveScriptToSource` commands
+  - Decoded scripts are written to `.ignition-scripts/` with a metadata header
+    recording their source URI, key, line, and indentation
+
 - **Ignition System API completions** — 14 modules with 239+ functions:
   - `system.tag` — Tag operations (read, write, browse)
   - `system.db` — Database queries and transactions
@@ -74,6 +88,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Comprehensive round-trip tests
 
 ### Fixed
+- Saving an embedded script with no edits no longer fails with "Key not found".
+  The missing-key check now tests for the key itself rather than inferring it from
+  an unchanged line, so a genuine no-op save succeeds. Affects `ignition/saveScript`
+  in all editors.
 - LSP auto-start with FileType autocmd
   - Prevents race conditions
   - Reliable attachment on buffer open

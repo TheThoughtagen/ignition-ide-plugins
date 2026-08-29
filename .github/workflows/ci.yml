@@ -66,6 +66,37 @@ jobs:
           cd packages/ignition-lsp
           python -m pytest tests/ -v --tb=short
 
+  zed-extension:
+    name: Zed Extension
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Rust
+        run: |
+          rustup toolchain install stable --profile minimal
+          rustup component add rustfmt clippy
+          rustup target add wasm32-wasip2
+
+      - name: Cache cargo
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            packages/ignition-zed/target
+          key: ${{ runner.os }}-cargo-${{ hashFiles('packages/ignition-zed/Cargo.lock') }}
+          restore-keys: ${{ runner.os }}-cargo-
+
+      - name: Check formatting
+        run: cd packages/ignition-zed && cargo fmt --check
+
+      - name: Clippy
+        run: cd packages/ignition-zed && cargo clippy --target wasm32-wasip2 --release -- -D warnings
+
+      - name: Build extension
+        run: cd packages/ignition-zed && cargo build --target wasm32-wasip2 --release
+
   vscode-tests:
     name: VS Code Extension Tests
     runs-on: ubuntu-latest
