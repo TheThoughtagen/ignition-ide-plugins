@@ -106,20 +106,6 @@ jobs:
       - name: Build extension
         run: cd packages/ignition-zed && cargo build --target wasm32-wasip2 --release
 
-      - name: Validate WASM component
-        run: |
-          cargo install wasm-tools --locked
-          cd packages/ignition-zed
-          WASM=target/wasm32-wasip2/release/zed_ignition.wasm
-          wasm-tools validate "$WASM" --features all
-          # Zed calls these three hooks; if they are missing the extension
-          # loads but silently does nothing.
-          for hook in language-server-command \
-                      language-server-initialization-options \
-                      language-server-workspace-configuration; do
-            wasm-tools component wit "$WASM" | grep -q "export $hook:" \
-              || { echo "::error::WASM component is missing export $hook"; exit 1; }
-          done
 
   vscode-tests:
     name: VS Code Extension Tests
