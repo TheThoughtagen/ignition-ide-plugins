@@ -146,29 +146,38 @@ impl IgnitionExtension {
     /// Settings for the server, merging Zed's `lsp.ignition-lsp.settings` over
     /// this extension's defaults.
     fn ignition_settings(worktree: &zed::Worktree) -> zed::serde_json::Value {
-        use zed::serde_json::{Map, Value};
-
-        let mut settings = Map::new();
-        settings.insert(
-            "version".to_string(),
-            Value::String(DEFAULT_IGNITION_VERSION.to_string()),
-        );
-
-        if let Some(Value::Object(user)) = LspSettings::for_worktree(SERVER_ID, worktree)
-            .ok()
-            .and_then(|settings| settings.settings)
-        {
-            // Accept both `{ "version": ... }` and `{ "ignition": { "version": ... } }`
-            // so a config copied from the Neovim plugin works unchanged.
-            let user = match user.get("ignition") {
-                Some(Value::Object(nested)) => nested.clone(),
-                _ => user,
-            };
-            settings.extend(user);
-        }
-
-        Value::Object(settings)
+        merge_settings(
+            LspSettings::for_worktree(SERVER_ID, worktree)
+                .ok()
+                .and_then(|settings| settings.settings),
+        )
     }
+}
+
+/// Merge user-supplied LSP settings over this extension's defaults.
+///
+/// Split out from `ignition_settings` so the merge rules can be tested without
+/// a `Worktree`, which only exists inside the Zed WASM host.
+fn merge_settings(user: Option<zed::serde_json::Value>) -> zed::serde_json::Value {
+    use zed::serde_json::{Map, Value};
+
+    let mut settings = Map::new();
+    settings.insert(
+        "version".to_string(),
+        Value::String(DEFAULT_IGNITION_VERSION.to_string()),
+    );
+
+    if let Some(Value::Object(user)) = user {
+        // Accept both `{ "version": ... }` and `{ "ignition": { "version": ... } }`
+        // so a config copied from the Neovim plugin works unchanged.
+        let user = match user.get("ignition") {
+            Some(Value::Object(nested)) => nested.clone(),
+            _ => user,
+        };
+        settings.extend(user);
+    }
+
+    Value::Object(settings)
 }
 
 /// Run a command, turning a non-zero exit into a readable error.
@@ -251,3 +260,48 @@ impl zed::Extension for IgnitionExtension {
 }
 
 zed::register_extension!(IgnitionExtension);
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use zed_extension_api::serde_json::json;
+
+    #[test]
+    fn defaults_when_no_user_settings() {
+        assert_eq!(merge_settings(None), json!({"version": "8.1"}));
+    }
+
+    #[test]
+    fn user_version_overrides_the_default() {
+        let merged = merge_settings(Some(json!({"version": "8.0"})));
+        assert_eq!(merged["version"], "8.0");
+    }
+
+    #[test]
+    fn accepts_the_neovim_nested_shape() {
+        let merged = merge_settings(Some(json!({"ignition": {"version": "8.0"}})));
+        assert_eq!(merged["version"], "8.0");
+    }
+
+    #[test]
+    fn unknown_keys_are_passed_through() {
+        let merged = merge_settings(Some(json!({"somethingElse": true})));
+        assert_eq!(merged["version"], "8.1");
+        assert_eq!(merged["somethingElse"], true);
+    }
+
+    #[test]
+    fn nested_shape_passes_through_unknown_keys_too() {
+        let merged = merge_settings(Some(json!({"ignition": {"somethingElse": 42}})));
+        assert_eq!(merged["version"], "8.1");
+        assert_eq!(merged["somethingElse"], 42);
+    }
+
+    #[test]
+    fn non_object_settings_fall_back_to_defaults() {
+        assert_eq!(
+            merge_settings(Some(json!("nonsense"))),
+            json!({"version": "8.1"})
+        );
+    }
+}

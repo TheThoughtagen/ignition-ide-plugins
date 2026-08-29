@@ -6,7 +6,7 @@ import os
 import sys
 import tempfile
 from pathlib import Path
-from typing import TYPE_CHECKING, List, Optional
+from typing import TYPE_CHECKING, Any, Dict, List, Optional
 from urllib.parse import unquote, urlparse
 from urllib.request import url2pathname
 
@@ -776,10 +776,16 @@ def _json_resource_code_actions(
 
 
 @server.command(DECODE_SCRIPT_COMMAND)
-def decode_script_to_file_command(ls: IgnitionLanguageServer, args: object) -> dict:
+def decode_script_to_file_command(
+    ls: IgnitionLanguageServer, args: Dict[str, Any]
+) -> dict:
     """Decode an embedded script into an editable sidecar file, and open it.
 
     Args (single object argument): ``uri``, ``line`` (1-based), ``key``.
+
+    The ``Dict[str, Any]`` annotation is load-bearing: pygls structures each
+    executeCommand argument into the parameter's annotated type, and cattrs has
+    no hook for a bare ``object``.
     """
     from ignition_lsp.encoding import decode, dedent
     from ignition_lsp.json_scanner import find_scripts_in_lines
@@ -917,7 +923,9 @@ def _validate_sidecar_target(sidecar: Path, ref: "ScriptRef") -> Optional[str]:
 
 
 @server.command(SAVE_SCRIPT_COMMAND)
-def save_script_to_source_command(ls: IgnitionLanguageServer, args: object) -> dict:
+def save_script_to_source_command(
+    ls: IgnitionLanguageServer, args: Dict[str, Any]
+) -> dict:
     """Encode a sidecar script and write it back into its source JSON.
 
     Args (single object argument): ``uri`` of the sidecar file. Everything else

@@ -6,7 +6,7 @@ publish = false
 license = "MIT"
 
 [lib]
-crate-type = ["cdylib"]
+crate-type = ["cdylib", "rlib"]
 
 [dependencies]
 zed_extension_api = "0.7.0"
