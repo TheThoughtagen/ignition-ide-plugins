@@ -76,6 +76,56 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
+def _uri_to_path(uri: str) -> str:
+    """Convert a file URI to a filesystem path.
+
+    The single URI-to-path conversion in this module. Uses url2pathname so
+    drive-qualified Windows URIs survive the round trip: a plain unquote turns
+    ``file:///C:/proj/view.json`` into ``/C:/proj/view.json``, which Path then
+    reads as root-relative. On POSIX this is equivalent to that unquote. UNC
+    URIs carry the host in the authority component.
+
+    Every caller must use this. Two conversions that disagree are worse than
+    one that is wrong everywhere: a project root resolved one way and a source
+    path the other do not compare equal, which sends sidecars to the wrong
+    directory and then refuses to save them.
+    """
+    parsed = urlparse(uri)
+    if parsed.scheme and parsed.scheme != "file":
+        # Virtual-buffer schemes are not filesystem paths; leave them as-is.
+        return unquote(parsed.path)
+
+    path = url2pathname(parsed.path)
+    if parsed.netloc:
+        return f"\\\\{parsed.netloc}{path}" if os.name == "nt" else f"//{parsed.netloc}{path}"
+    return path
+
+
+def _path_to_uri(path: Path) -> str:
+    """Convert a filesystem path to a file URI."""
+    return path.as_uri()
+
+
+def _atomic_write_text(path: Path, content: str) -> None:
+    """Replace a file's contents in one step.
+
+    Project JSON is the user's source of truth, and a plain write truncates
+    before it writes: an interruption partway leaves a half-written resource
+    file. Writing a sibling temp file and renaming it over the target means a
+    reader sees either the old contents or the new ones, never a torn file.
+    """
+    temp = path.with_name(f".{path.name}.ignition-lsp.tmp")
+    try:
+        temp.write_text(content, encoding="utf-8")
+        os.replace(str(temp), str(path))
+    except BaseException:
+        try:
+            temp.unlink()
+        except OSError:
+            pass
+        raise
+
+
 class IgnitionLanguageServer(LanguageServer):
     """Language server for Ignition development."""
 
@@ -154,7 +204,7 @@ class IgnitionLanguageServer(LanguageServer):
         """Find Ignition project root by walking up from a URI or workspace root."""
         # Try from the file's directory
         try:
-            file_path = unquote(urlparse(uri).path)
+            file_path = _uri_to_path(uri)
             current = Path(file_path).parent
             while current != current.parent:
                 if (current / "project.json").is_file():
@@ -167,7 +217,7 @@ class IgnitionLanguageServer(LanguageServer):
         try:
             root_uri = getattr(self.workspace, 'root_uri', None)
             if root_uri:
-                root_path = unquote(urlparse(root_uri).path)
+                root_path = _uri_to_path(root_uri)
                 if (Path(root_path) / "project.json").is_file():
                     return root_path
                 current = Path(root_path)
@@ -345,7 +395,7 @@ async def did_save(ls: IgnitionLanguageServer, params: DidSaveTextDocumentParams
     logger.info(f"Document saved: {uri}")
 
     # Invalidate symbol cache when a .py file is saved
-    file_path = unquote(urlparse(uri).path)
+    file_path = _uri_to_path(uri)
     if file_path.endswith(".py") and ls.symbol_cache is not None:
         ls.symbol_cache.invalidate(file_path)
 
@@ -509,7 +559,7 @@ def find_scripts_handler(ls: IgnitionLanguageServer, params: object) -> list:
     try:
         from ignition_lsp.json_scanner import find_scripts
 
-        file_path = unquote(urlparse(uri).path)
+        file_path = _uri_to_path(uri)
         scripts = find_scripts(file_path)
         return [
             {
@@ -619,7 +669,7 @@ def _write_script_to_source(
         # An unchanged line means the script was saved without edits — that is a
         # successful no-op, not a failure.
         lines[line_idx] = new_line + trailing
-        path.write_text("".join(lines), encoding="utf-8")
+        _atomic_write_text(path, "".join(lines))
 
         logger.info(f"Saved script to {file_path} line {line}")
         return {"success": True, "encoded": encoded}
@@ -651,30 +701,6 @@ def save_script_handler(ls: IgnitionLanguageServer, params: object) -> dict:
 # decode/edit/save cycle entirely through these two commands.
 DECODE_SCRIPT_COMMAND = "ignition.decodeScriptToFile"
 SAVE_SCRIPT_COMMAND = "ignition.saveScriptToSource"
-
-
-def _uri_to_path(uri: str) -> str:
-    """Convert a file URI to a filesystem path.
-
-    Uses url2pathname so drive-qualified Windows URIs survive the round trip:
-    a plain unquote turns ``file:///C:/proj/view.json`` into ``/C:/proj/...``,
-    which Path then reads as root-relative. On POSIX this is equivalent to the
-    old unquote. UNC URIs carry the host in the authority component.
-    """
-    parsed = urlparse(uri)
-    if parsed.scheme and parsed.scheme != "file":
-        # Virtual-buffer schemes are not filesystem paths; leave them as-is.
-        return unquote(parsed.path)
-
-    path = url2pathname(parsed.path)
-    if parsed.netloc:
-        return f"\\\\{parsed.netloc}{path}" if os.name == "nt" else f"//{parsed.netloc}{path}"
-    return path
-
-
-def _path_to_uri(path: Path) -> str:
-    """Convert a filesystem path to a file URI."""
-    return path.as_uri()
 
 
 def _is_sidecar_uri(uri: str) -> bool:
@@ -834,7 +860,7 @@ def decode_script_to_file_command(
             indent=indent,
             digest=content_digest(match.content),
         )
-        target.write_text(build_sidecar_content(ref, body), encoding="utf-8")
+        _atomic_write_text(target, build_sidecar_content(ref, body))
 
         target_uri = _path_to_uri(target)
         logger.info(f"Decoded script to {target}")
@@ -970,7 +996,7 @@ def save_script_to_source_command(
         encoded = result.get("encoded")
         if result.get("success") and encoded:
             ref.digest = content_digest(encoded)
-            path.write_text(build_header(ref) + body, encoding="utf-8")
+            _atomic_write_text(path, build_header(ref) + body)
 
         return result
 

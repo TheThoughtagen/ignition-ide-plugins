@@ -28,13 +28,13 @@ from ignition_lsp.server import (
 from tests.conftest import MockTextDocument
 
 RESOURCE_JSON = (
-    '{\n'
+    "{\n"
     '  "name": "TestView",\n'
     '  "events": {\n'
     '    "onActionPerformed": "def runAction(self, event):\\n\\tsystem.perspective.'
     'navigate(\\u0027/home\\u0027)\\n\\tprint(\\"done\\")\\n"\n'
-    '  }\n'
-    '}\n'
+    "  }\n"
+    "}\n"
 )
 
 # 1-based line number of the onActionPerformed script above.
@@ -83,9 +83,7 @@ class TestJsonResourceCodeActions:
 
     def test_offers_decode_on_script_line(self, mock_ls: MagicMock) -> None:
         uri = "file:///proj/views/Main/view.json"
-        mock_ls.workspace.get_text_document.return_value = MockTextDocument(
-            uri, RESOURCE_JSON
-        )
+        mock_ls.workspace.get_text_document.return_value = MockTextDocument(uri, RESOURCE_JSON)
 
         actions = code_action(mock_ls, _params(uri, SCRIPT_LINE - 1))
 
@@ -100,17 +98,13 @@ class TestJsonResourceCodeActions:
 
     def test_no_actions_on_unrelated_line(self, mock_ls: MagicMock) -> None:
         uri = "file:///proj/views/Main/view.json"
-        mock_ls.workspace.get_text_document.return_value = MockTextDocument(
-            uri, RESOURCE_JSON
-        )
+        mock_ls.workspace.get_text_document.return_value = MockTextDocument(uri, RESOURCE_JSON)
 
         assert code_action(mock_ls, _params(uri, 0)) is None
 
     def test_range_spanning_file_offers_every_script(self, mock_ls: MagicMock) -> None:
         uri = "file:///proj/views/Main/view.json"
-        mock_ls.workspace.get_text_document.return_value = MockTextDocument(
-            uri, RESOURCE_JSON
-        )
+        mock_ls.workspace.get_text_document.return_value = MockTextDocument(uri, RESOURCE_JSON)
 
         actions = code_action(mock_ls, _params(uri, 0, 20))
 
@@ -119,9 +113,7 @@ class TestJsonResourceCodeActions:
 
     def test_non_json_file_gets_no_actions(self, mock_ls: MagicMock) -> None:
         uri = "file:///proj/scripts/code.py"
-        mock_ls.workspace.get_text_document.return_value = MockTextDocument(
-            uri, "print('hello')\n"
-        )
+        mock_ls.workspace.get_text_document.return_value = MockTextDocument(uri, "print('hello')\n")
 
         assert code_action(mock_ls, _params(uri, 0)) is None
 
@@ -142,9 +134,7 @@ class TestJsonResourceCodeActions:
 class TestDecodeScriptToFileCommand:
     """Decoding an embedded script into a sidecar file."""
 
-    def test_writes_sidecar_with_header_and_body(
-        self, mock_ls: MagicMock, project: Path
-    ) -> None:
+    def test_writes_sidecar_with_header_and_body(self, mock_ls: MagicMock, project: Path) -> None:
         source = project / "views" / "Main" / "view.json"
         result = decode_script_to_file_command(
             mock_ls,
@@ -169,9 +159,7 @@ class TestDecodeScriptToFileCommand:
         assert "'/home'" in body
         assert '"done"' in body
 
-    def test_asks_the_client_to_open_the_sidecar(
-        self, mock_ls: MagicMock, project: Path
-    ) -> None:
+    def test_asks_the_client_to_open_the_sidecar(self, mock_ls: MagicMock, project: Path) -> None:
         source = project / "views" / "Main" / "view.json"
         decode_script_to_file_command(
             mock_ls,
@@ -234,9 +222,7 @@ class TestSaveScriptToSourceCommand:
         assert result["success"] is True
         assert source.read_text(encoding="utf-8") == original
 
-    def test_edit_is_written_back_encoded(
-        self, mock_ls: MagicMock, project: Path
-    ) -> None:
+    def test_edit_is_written_back_encoded(self, mock_ls: MagicMock, project: Path) -> None:
         source = project / "views" / "Main" / "view.json"
         sidecar = self._decode(mock_ls, project)
 
@@ -268,9 +254,7 @@ class TestSaveScriptToSourceCommand:
         encoded = line.split('"onActionPerformed": "', 1)[1].rsplit('"', 1)[0]
         assert "\tsystem.perspective.navigate" in decode(encoded)
 
-    def test_missing_header_is_refused(
-        self, mock_ls: MagicMock, project: Path
-    ) -> None:
+    def test_missing_header_is_refused(self, mock_ls: MagicMock, project: Path) -> None:
         stray = project / SCRIPTS_DIR_NAME / "stray.py"
         stray.parent.mkdir(parents=True, exist_ok=True)
         stray.write_text("print('no header here')\n", encoding="utf-8")
@@ -310,9 +294,7 @@ class TestSidecarCodeActions:
 
     def test_sidecar_without_header_gets_no_action(self, mock_ls: MagicMock) -> None:
         uri = f"file:///proj/{SCRIPTS_DIR_NAME}/stray.py"
-        mock_ls.workspace.get_text_document.return_value = MockTextDocument(
-            uri, "print('hello')\n"
-        )
+        mock_ls.workspace.get_text_document.return_value = MockTextDocument(uri, "print('hello')\n")
 
         assert code_action(mock_ls, _params(uri, 0)) is None
 
@@ -336,7 +318,7 @@ class TestSidecarValidation:
 
         # Someone else edits the same script in the source file.
         source.write_text(
-            RESOURCE_JSON.replace("print(\\\"done\\\")", "print(\\\"something else\\\")"),
+            RESOURCE_JSON.replace('print(\\"done\\")', 'print(\\"something else\\")'),
             encoding="utf-8",
         )
         changed = source.read_text(encoding="utf-8")
@@ -348,9 +330,7 @@ class TestSidecarValidation:
         # And the source is left exactly as the other edit left it.
         assert source.read_text(encoding="utf-8") == changed
 
-    def test_script_removed_from_line_is_refused(
-        self, mock_ls: MagicMock, project: Path
-    ) -> None:
+    def test_script_removed_from_line_is_refused(self, mock_ls: MagicMock, project: Path) -> None:
         source = project / "views" / "Main" / "view.json"
         sidecar = self._decode(mock_ls, project)
 
@@ -385,9 +365,7 @@ class TestSidecarValidation:
         assert "outside the project" in result["error"]
         assert outside.read_text(encoding="utf-8") == original
 
-    def test_sidecar_at_wrong_path_is_refused(
-        self, mock_ls: MagicMock, project: Path
-    ) -> None:
+    def test_sidecar_at_wrong_path_is_refused(self, mock_ls: MagicMock, project: Path) -> None:
         """A header that does not match the file's own location is not trusted."""
         sidecar = self._decode(mock_ls, project)
         moved = sidecar.parent / "renamed.py"
@@ -464,9 +442,7 @@ class TestRepeatedSaves:
             encoded = line.split('"onActionPerformed": "', 1)[1].rsplit('"', 1)[0]
             assert f'print("{marker}")' in decode(encoded)
 
-    def test_save_refreshes_the_header_digest(
-        self, mock_ls: MagicMock, project: Path
-    ) -> None:
+    def test_save_refreshes_the_header_digest(self, mock_ls: MagicMock, project: Path) -> None:
         source = project / "views" / "Main" / "view.json"
         result = decode_script_to_file_command(
             mock_ls,
@@ -491,9 +467,7 @@ class TestRepeatedSaves:
             before.indent,
         )
 
-    def test_body_is_preserved_across_the_refresh(
-        self, mock_ls: MagicMock, project: Path
-    ) -> None:
+    def test_body_is_preserved_across_the_refresh(self, mock_ls: MagicMock, project: Path) -> None:
         source = project / "views" / "Main" / "view.json"
         result = decode_script_to_file_command(
             mock_ls,
@@ -505,3 +479,113 @@ class TestRepeatedSaves:
         save_script_to_source_command(mock_ls, {"uri": sidecar.as_uri()})
 
         assert strip_header(sidecar.read_text(encoding="utf-8")) == body_before
+
+
+class TestAtomicWrites:
+    """A partial write must never leave a project file torn."""
+
+    def test_failed_write_leaves_source_intact(
+        self, mock_ls: MagicMock, project: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        source = project / "views" / "Main" / "view.json"
+        result = decode_script_to_file_command(
+            mock_ls,
+            {"uri": source.as_uri(), "line": SCRIPT_LINE, "key": SCRIPT_KEY},
+        )
+        sidecar = Path(result["path"])
+        text = sidecar.read_text(encoding="utf-8")
+        sidecar.write_text(text.replace('print("done")', 'print("new")'), encoding="utf-8")
+        original = source.read_text(encoding="utf-8")
+
+        def boom(*args: object, **kwargs: object) -> None:
+            raise OSError("simulated crash during rename")
+
+        monkeypatch.setattr("ignition_lsp.server.os.replace", boom)
+        outcome = save_script_to_source_command(mock_ls, {"uri": sidecar.as_uri()})
+
+        assert outcome["success"] is False
+        # The source is untouched, not half-written.
+        assert source.read_text(encoding="utf-8") == original
+
+    def test_failed_write_leaves_no_temp_file(
+        self, mock_ls: MagicMock, project: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        source = project / "views" / "Main" / "view.json"
+        result = decode_script_to_file_command(
+            mock_ls,
+            {"uri": source.as_uri(), "line": SCRIPT_LINE, "key": SCRIPT_KEY},
+        )
+        sidecar = Path(result["path"])
+        text = sidecar.read_text(encoding="utf-8")
+        sidecar.write_text(text.replace('print("done")', 'print("new")'), encoding="utf-8")
+
+        def boom(*args: object, **kwargs: object) -> None:
+            raise OSError("simulated crash during rename")
+
+        monkeypatch.setattr("ignition_lsp.server.os.replace", boom)
+        save_script_to_source_command(mock_ls, {"uri": sidecar.as_uri()})
+
+        leftovers = [p.name for p in source.parent.iterdir() if ".ignition-lsp.tmp" in p.name]
+        assert leftovers == []
+
+    def test_successful_write_leaves_no_temp_file(self, mock_ls: MagicMock, project: Path) -> None:
+        source = project / "views" / "Main" / "view.json"
+        result = decode_script_to_file_command(
+            mock_ls,
+            {"uri": source.as_uri(), "line": SCRIPT_LINE, "key": SCRIPT_KEY},
+        )
+        sidecar = Path(result["path"])
+        assert save_script_to_source_command(mock_ls, {"uri": sidecar.as_uri()})["success"]
+
+        for directory in (source.parent, sidecar.parent):
+            assert [p.name for p in directory.iterdir() if ".ignition-lsp.tmp" in p.name] == []
+
+
+class TestPercentEncodedPaths:
+    """Project roots and sources must resolve through one conversion.
+
+    A root resolved one way and a source path another do not compare equal,
+    which sends the sidecar somewhere unexpected and then refuses to save it.
+    """
+
+    @pytest.fixture
+    def spaced_project(self, tmp_path: Path) -> Path:
+        root = tmp_path / "My Ignition Project"
+        root.mkdir()
+        (root / "project.json").write_text('{"name": "Spaced"}', encoding="utf-8")
+        views = root / "My Views" / "Main"
+        views.mkdir(parents=True)
+        (views / "view.json").write_text(RESOURCE_JSON, encoding="utf-8")
+        return root
+
+    def test_round_trip_through_a_path_with_spaces(self, spaced_project: Path) -> None:
+        ls = MagicMock()
+        ls._find_project_root.return_value = str(spaced_project)
+        source = spaced_project / "My Views" / "Main" / "view.json"
+        original = source.read_text(encoding="utf-8")
+
+        result = decode_script_to_file_command(
+            ls, {"uri": source.as_uri(), "line": SCRIPT_LINE, "key": SCRIPT_KEY}
+        )
+        assert result["success"] is True
+
+        sidecar = Path(result["path"])
+        # The sidecar lands inside the project, not somewhere derived from a
+        # differently-decoded root.
+        assert sidecar.parent == spaced_project / SCRIPTS_DIR_NAME
+
+        assert save_script_to_source_command(ls, {"uri": sidecar.as_uri()})["success"] is True
+        assert source.read_text(encoding="utf-8") == original
+
+    def test_project_root_resolution_matches_uri_conversion(self, spaced_project: Path) -> None:
+        """_find_project_root must decode URIs the same way _uri_to_path does."""
+        from ignition_lsp.server import IgnitionLanguageServer, _uri_to_path
+
+        source = spaced_project / "My Views" / "Main" / "view.json"
+        server = IgnitionLanguageServer.__new__(IgnitionLanguageServer)
+
+        root = IgnitionLanguageServer._find_project_root(server, source.as_uri())
+
+        assert root == str(spaced_project)
+        # relative_to rather than is_relative_to: the package supports 3.8.
+        Path(_uri_to_path(source.as_uri())).relative_to(Path(root))
