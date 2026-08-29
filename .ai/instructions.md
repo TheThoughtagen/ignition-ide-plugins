@@ -95,7 +95,7 @@ Decode/encode is exposed instead through standard LSP code actions (see below).
 
 **Ignition** is a SCADA/ICS platform by Inductive Automation. Projects are stored as JSON files containing embedded Python (Jython) scripts. Developers use `system.*` scripting APIs (e.g., `system.tag.readBlocking()`, `system.db.runPrepQuery()`, `system.perspective.sendMessage()`).
 
-Both editors decode those embedded scripts into editable Python buffers with full LSP support, then encode them back.
+All three editors decode those embedded scripts into editable Python buffers with full LSP support, then encode them back. Zed uses real sidecar files rather than in-memory buffers (see Code Actions below).
 
 ## Critical Technical Details
 
@@ -225,7 +225,7 @@ Load it in Zed via `zed: extensions` → **Install Dev Extension** → `packages
 14 modules in `packages/ignition-lsp/ignition_lsp/api_db/`:
 `system_alarm`, `system_dataset`, `system_date`, `system_db`, `system_file`, `system_gui`, `system_nav`, `system_net`, `system_opc`, `system_perspective`, `system_security`, `system_tag`, `system_user`, `system_util`
 
-All follow `schema.json`. Adding a new module = immediate completions + hover for all users (both editors).
+All follow `schema.json`. Adding a new module = immediate completions + hover for all users (all editors).
 
 ## Marketing (gitignored)
 
@@ -279,7 +279,7 @@ Ralph follows `fix_plan.md` and implements one task per loop. Claude Code should
 - **Monorepo** with four packages: ignition-nvim, ignition-lsp, ignition-vscode, ignition-zed
 - All 7 priority levels in `fix_plan.md` are complete
 - 14 API modules, 239 functions + 26 Java packages (146 classes)
-- 671 Python tests + 107 Lua tests + VS Code extension tests — all passing
+- 704 Python tests + 6 Rust tests + 107 Lua tests + VS Code extension tests — all passing
 - VS Code extension features: CodeLens, Project Browser, Tag Browser, Component Tree, diagnostics toggle, Pyright/Pylance stubs
 - Project indexing and go-to-definition implemented
 - Kindling integration tested across platforms

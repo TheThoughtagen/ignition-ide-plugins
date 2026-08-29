@@ -4,12 +4,12 @@ from pathlib import Path
 
 from ignition_lsp.script_files import (
     HEADER_BEGIN,
-    content_digest,
     HEADER_END,
     SCRIPTS_DIR_NAME,
     ScriptRef,
     build_header,
     build_sidecar_content,
+    content_digest,
     parse_header,
     sidecar_filename,
     sidecar_path,
@@ -123,9 +123,7 @@ class TestParseHeaderRejectsBadInput:
         assert parse_header(text) is None
 
     def test_missing_field(self) -> None:
-        text = "\n".join(
-            [HEADER_BEGIN, "# source: file:///a.json", "# key: script", HEADER_END]
-        )
+        text = "\n".join([HEADER_BEGIN, "# source: file:///a.json", "# key: script", HEADER_END])
         assert parse_header(text) is None
 
     def test_non_numeric_line(self) -> None:

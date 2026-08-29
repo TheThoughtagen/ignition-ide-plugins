@@ -50,6 +50,10 @@ class LspClient:
         self._next_id = 0
         self._responses: Dict[int, dict] = {}
         self._server_requests: "queue.Queue[dict]" = queue.Queue()
+        # Cumulative record. request() drains the queue while polling, so a
+        # server -> client request can be answered and removed before a test
+        # ever looks at the queue; assertions read this instead.
+        self.handled_server_requests: List[dict] = []
         self._lock = threading.Lock()
         self._reader = threading.Thread(target=self._read_loop, daemon=True)
         self._reader.start()
@@ -120,6 +124,7 @@ class LspClient:
             except queue.Empty:
                 return received
             received.append(request)
+            self.handled_server_requests.append(request)
             self._send({"jsonrpc": "2.0", "id": request["id"], "result": {"success": True}})
 
     def stop(self) -> None:
@@ -283,8 +288,9 @@ class TestCodeActionsOverTheWire:
             },
         )
         time.sleep(0.3)
+        client.drain_server_requests()
 
-        methods = [request["method"] for request in client.drain_server_requests()]
+        methods = [r["method"] for r in client.handled_server_requests]
         assert "window/showDocument" in methods
 
 

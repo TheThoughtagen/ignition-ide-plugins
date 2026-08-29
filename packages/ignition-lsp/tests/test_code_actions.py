@@ -410,8 +410,12 @@ class TestUriToPath:
         target.write_text("{}", encoding="utf-8")
         assert Path(_uri_to_path(target.as_uri())) == target
 
-    def test_non_file_scheme_is_left_alone(self) -> None:
-        """Virtual-buffer URIs are not filesystem paths."""
+    def test_non_file_scheme_keeps_legacy_path_decoding(self) -> None:
+        """Virtual-buffer URIs keep the pre-existing unquote-the-path behaviour.
+
+        _find_project_root and did_save are called with these and depend on it,
+        so the Windows fix deliberately does not apply url2pathname here.
+        """
         from ignition_lsp.server import _uri_to_path
 
         assert _uri_to_path("ignition-script:///abc/key/42") == "/abc/key/42"

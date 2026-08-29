@@ -92,7 +92,11 @@ def _uri_to_path(uri: str) -> str:
     """
     parsed = urlparse(uri)
     if parsed.scheme and parsed.scheme != "file":
-        # Virtual-buffer schemes are not filesystem paths; leave them as-is.
+        # Virtual-buffer schemes (VS Code's ignition-script://, Neovim's
+        # bracketed buffer names) are not filesystem paths. Keep the legacy
+        # unquote-the-path behaviour for them rather than returning the URI
+        # verbatim: _find_project_root and did_save are called with these and
+        # already rely on it, and url2pathname would mangle them on Windows.
         return unquote(parsed.path)
 
     path = url2pathname(parsed.path)
