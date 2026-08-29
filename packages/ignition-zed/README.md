@@ -65,8 +65,10 @@ virtual-document API, so the round trip goes through a real file on disk:
    re-encoded and written back into the exact line it came from.
 
 The header comment at the top of a decoded file records where it came from —
-leave it in place; it is what the save action reads. Add `.ignition-scripts/`
-to your `.gitignore`.
+leave it in place; it is what the save action reads. It also fingerprints the
+script as it was at decode time: if the source JSON changes underneath you, the
+save is refused rather than applied to whatever now sits on that line, and you
+decode again. Add `.ignition-scripts/` to your `.gitignore`.
 
 ## Settings
 

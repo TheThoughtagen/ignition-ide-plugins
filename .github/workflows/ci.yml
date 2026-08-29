@@ -69,8 +69,14 @@ jobs:
   zed-extension:
     name: Zed Extension
     runs-on: ubuntu-latest
+    # Cargo compiles PR-controlled Rust (build scripts included), so give the
+    # job read-only repo access and keep the checkout token out of git config.
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - name: Set up Rust
         run: |

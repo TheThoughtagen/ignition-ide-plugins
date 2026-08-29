@@ -115,8 +115,13 @@ Both editors decode those embedded scripts into editable Python buffers with ful
   commands (`workspace/executeCommand`)
 - Decoded scripts land in `.ignition-scripts/` at the project root, carrying a
   comment header (`# >>> ignition-lsp:begin`) that records source URI, key, line,
-  and indent — the save path reads it, so **never change the header format without
-  changing `parse_header` in lockstep**
+  indent, and a digest of the encoded script — the save path reads it, so
+  **never change the header format without changing `parse_header` in lockstep**
+- `_validate_sidecar_target()` runs before every write: the sidecar must sit at
+  the path `sidecar_path()` derives from its own header, the source must resolve
+  inside the owning project, and the digest must still match the script at
+  (line, key). A stale sidecar is refused rather than allowed to overwrite a
+  script that moved into its position
 - Both save paths funnel through `_write_script_to_source()` so round-trip
   behaviour cannot diverge between clients
 

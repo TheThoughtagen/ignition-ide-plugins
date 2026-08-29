@@ -20,7 +20,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     "Ignition: Save … back to JSON" on decoded files
   - New `ignition.decodeScriptToFile` and `ignition.saveScriptToSource` commands
   - Decoded scripts are written to `.ignition-scripts/` with a metadata header
-    recording their source URI, key, line, and indentation
+    recording their source URI, key, line, indentation, and a digest of the
+    encoded script
+  - Saves are validated before they write: the sidecar must sit where its own
+    header says, the source must resolve inside the owning project, and the
+    digest must still match the script at that line, so a stale sidecar cannot
+    overwrite a script that has since moved into its position
 
 - **Ignition System API completions** — 14 modules with 239+ functions:
   - `system.tag` — Tag operations (read, write, browse)

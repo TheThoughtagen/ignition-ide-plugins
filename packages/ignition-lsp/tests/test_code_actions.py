@@ -44,12 +44,18 @@ SCRIPT_KEY = "onActionPerformed"
 
 @pytest.fixture
 def project(tmp_path: Path) -> Path:
-    """A minimal Ignition project containing one JSON resource with a script."""
-    (tmp_path / "project.json").write_text('{"name": "TestProject"}', encoding="utf-8")
-    views = tmp_path / "views" / "Main"
+    """A minimal Ignition project containing one JSON resource with a script.
+
+    Nested under tmp_path rather than being tmp_path itself, so tests can also
+    place files genuinely outside the project.
+    """
+    root = tmp_path / "project"
+    root.mkdir()
+    (root / "project.json").write_text('{"name": "TestProject"}', encoding="utf-8")
+    views = root / "views" / "Main"
     views.mkdir(parents=True)
     (views / "view.json").write_text(RESOURCE_JSON, encoding="utf-8")
-    return tmp_path
+    return root
 
 
 @pytest.fixture
@@ -309,3 +315,193 @@ class TestSidecarCodeActions:
         )
 
         assert code_action(mock_ls, _params(uri, 0)) is None
+
+
+class TestSidecarValidation:
+    """Guards that run before a sidecar is written back to its source."""
+
+    def _decode(self, mock_ls: MagicMock, project: Path) -> Path:
+        source = project / "views" / "Main" / "view.json"
+        result = decode_script_to_file_command(
+            mock_ls,
+            {"uri": source.as_uri(), "line": SCRIPT_LINE, "key": SCRIPT_KEY},
+        )
+        assert result["success"] is True
+        return Path(result["path"])
+
+    def test_stale_sidecar_is_refused(self, mock_ls: MagicMock, project: Path) -> None:
+        """If the source script changed after decode, the save must not land."""
+        source = project / "views" / "Main" / "view.json"
+        sidecar = self._decode(mock_ls, project)
+
+        # Someone else edits the same script in the source file.
+        source.write_text(
+            RESOURCE_JSON.replace("print(\\\"done\\\")", "print(\\\"something else\\\")"),
+            encoding="utf-8",
+        )
+        changed = source.read_text(encoding="utf-8")
+
+        result = save_script_to_source_command(mock_ls, {"uri": sidecar.as_uri()})
+
+        assert result["success"] is False
+        assert "changed" in result["error"].lower()
+        # And the source is left exactly as the other edit left it.
+        assert source.read_text(encoding="utf-8") == changed
+
+    def test_script_removed_from_line_is_refused(
+        self, mock_ls: MagicMock, project: Path
+    ) -> None:
+        source = project / "views" / "Main" / "view.json"
+        sidecar = self._decode(mock_ls, project)
+
+        source.write_text('{\n  "name": "TestView",\n  "events": {\n  }\n}\n', encoding="utf-8")
+
+        result = save_script_to_source_command(mock_ls, {"uri": sidecar.as_uri()})
+
+        assert result["success"] is False
+        assert "no '" in result["error"] or "changed" in result["error"].lower()
+
+    def test_source_outside_project_is_refused(
+        self, mock_ls: MagicMock, project: Path, tmp_path: Path
+    ) -> None:
+        """A rewritten `source:` must not redirect the write out of the project."""
+        outside = tmp_path / "outside.json"
+        outside.write_text(RESOURCE_JSON, encoding="utf-8")
+        original = outside.read_text(encoding="utf-8")
+
+        sidecar = self._decode(mock_ls, project)
+        text = sidecar.read_text(encoding="utf-8")
+        sidecar.write_text(
+            text.replace(
+                f"# source: {(project / 'views' / 'Main' / 'view.json').as_uri()}",
+                f"# source: {outside.as_uri()}",
+            ),
+            encoding="utf-8",
+        )
+
+        result = save_script_to_source_command(mock_ls, {"uri": sidecar.as_uri()})
+
+        assert result["success"] is False
+        assert "outside the project" in result["error"]
+        assert outside.read_text(encoding="utf-8") == original
+
+    def test_sidecar_at_wrong_path_is_refused(
+        self, mock_ls: MagicMock, project: Path
+    ) -> None:
+        """A header that does not match the file's own location is not trusted."""
+        sidecar = self._decode(mock_ls, project)
+        moved = sidecar.parent / "renamed.py"
+        moved.write_text(sidecar.read_text(encoding="utf-8"), encoding="utf-8")
+
+        result = save_script_to_source_command(mock_ls, {"uri": moved.as_uri()})
+
+        assert result["success"] is False
+        assert "does not match its location" in result["error"]
+
+    def test_sidecar_outside_scripts_dir_is_refused(
+        self, mock_ls: MagicMock, project: Path
+    ) -> None:
+        sidecar = self._decode(mock_ls, project)
+        stray = project / "stray.py"
+        stray.write_text(sidecar.read_text(encoding="utf-8"), encoding="utf-8")
+
+        result = save_script_to_source_command(mock_ls, {"uri": stray.as_uri()})
+
+        assert result["success"] is False
+        assert SCRIPTS_DIR_NAME in result["error"]
+
+
+class TestUriToPath:
+    """File URIs must survive the round trip on every platform."""
+
+    def test_posix_path(self) -> None:
+        from ignition_lsp.server import _uri_to_path
+
+        assert _uri_to_path("file:///proj/views/view.json") == "/proj/views/view.json"
+
+    def test_percent_encoding_is_decoded(self) -> None:
+        from ignition_lsp.server import _uri_to_path
+
+        assert _uri_to_path("file:///proj/My%20Views/view.json") == "/proj/My Views/view.json"
+
+    def test_round_trips_a_real_path(self, tmp_path: Path) -> None:
+        from ignition_lsp.server import _uri_to_path
+
+        target = tmp_path / "a b" / "view.json"
+        target.parent.mkdir()
+        target.write_text("{}", encoding="utf-8")
+        assert Path(_uri_to_path(target.as_uri())) == target
+
+    def test_non_file_scheme_is_left_alone(self) -> None:
+        """Virtual-buffer URIs are not filesystem paths."""
+        from ignition_lsp.server import _uri_to_path
+
+        assert _uri_to_path("ignition-script:///abc/key/42") == "/abc/key/42"
+
+
+class TestRepeatedSaves:
+    """Editing and saving the same sidecar repeatedly must keep working."""
+
+    def test_successive_edits_all_land(self, mock_ls: MagicMock, project: Path) -> None:
+        """Regression: the digest must be refreshed after each save."""
+        source = project / "views" / "Main" / "view.json"
+        result = decode_script_to_file_command(
+            mock_ls,
+            {"uri": source.as_uri(), "line": SCRIPT_LINE, "key": SCRIPT_KEY},
+        )
+        sidecar = Path(result["path"])
+
+        for marker in ("first", "second", "third"):
+            text = sidecar.read_text(encoding="utf-8")
+            body = strip_header(text)
+            new_body = body.rsplit("\n\t", 1)[0] + f'\n\tprint("{marker}")\n'
+            sidecar.write_text(text.replace(body, new_body), encoding="utf-8")
+
+            outcome = save_script_to_source_command(mock_ls, {"uri": sidecar.as_uri()})
+            assert outcome["success"] is True, f"{marker}: {outcome.get('error')}"
+
+            line = source.read_text(encoding="utf-8").splitlines()[SCRIPT_LINE - 1]
+            encoded = line.split('"onActionPerformed": "', 1)[1].rsplit('"', 1)[0]
+            assert f'print("{marker}")' in decode(encoded)
+
+    def test_save_refreshes_the_header_digest(
+        self, mock_ls: MagicMock, project: Path
+    ) -> None:
+        source = project / "views" / "Main" / "view.json"
+        result = decode_script_to_file_command(
+            mock_ls,
+            {"uri": source.as_uri(), "line": SCRIPT_LINE, "key": SCRIPT_KEY},
+        )
+        sidecar = Path(result["path"])
+
+        before = parse_header(sidecar.read_text(encoding="utf-8"))
+        text = sidecar.read_text(encoding="utf-8")
+        sidecar.write_text(text.replace('print("done")', 'print("new")'), encoding="utf-8")
+
+        save_script_to_source_command(mock_ls, {"uri": sidecar.as_uri()})
+
+        after = parse_header(sidecar.read_text(encoding="utf-8"))
+        assert before is not None and after is not None
+        assert after.digest != before.digest
+        # Everything else about the reference is unchanged.
+        assert (after.source_uri, after.key, after.line, after.indent) == (
+            before.source_uri,
+            before.key,
+            before.line,
+            before.indent,
+        )
+
+    def test_body_is_preserved_across_the_refresh(
+        self, mock_ls: MagicMock, project: Path
+    ) -> None:
+        source = project / "views" / "Main" / "view.json"
+        result = decode_script_to_file_command(
+            mock_ls,
+            {"uri": source.as_uri(), "line": SCRIPT_LINE, "key": SCRIPT_KEY},
+        )
+        sidecar = Path(result["path"])
+        body_before = strip_header(sidecar.read_text(encoding="utf-8"))
+
+        save_script_to_source_command(mock_ls, {"uri": sidecar.as_uri()})
+
+        assert strip_header(sidecar.read_text(encoding="utf-8")) == body_before

@@ -2,11 +2,13 @@
 
 import asyncio
 import logging
+import os
 import sys
 import tempfile
 from pathlib import Path
-from typing import List, Optional
+from typing import TYPE_CHECKING, List, Optional
 from urllib.parse import unquote, urlparse
+from urllib.request import url2pathname
 
 import lsprotocol.types
 from lsprotocol.types import (
@@ -58,6 +60,9 @@ from lsprotocol.types import (
 )
 from pygls.lsp.server import LanguageServer
 from pygls.workspace import TextDocument
+
+if TYPE_CHECKING:
+    from ignition_lsp.script_files import ScriptRef
 
 # Configure logging
 logging.basicConfig(
@@ -574,13 +579,14 @@ def _write_script_to_source(
         indent: Indentation stripped by dedent(), re-added before encoding.
 
     Returns:
-        ``{"success": True}`` or ``{"success": False, "error": ...}``.
+        ``{"success": True, "encoded": <what was written>}`` on success, or
+        ``{"success": False, "error": ...}``.
     """
     try:
         from ignition_lsp.encoding import encode, reindent
         from ignition_lsp.json_scanner import line_has_script_key, replace_script_in_line
 
-        file_path = unquote(urlparse(uri).path)
+        file_path = _uri_to_path(uri)
         path = Path(file_path)
 
         if not path.is_file():
@@ -616,7 +622,7 @@ def _write_script_to_source(
         path.write_text("".join(lines), encoding="utf-8")
 
         logger.info(f"Saved script to {file_path} line {line}")
-        return {"success": True}
+        return {"success": True, "encoded": encoded}
 
     except Exception as e:
         logger.error(f"Error saving script: {e}", exc_info=True)
@@ -648,8 +654,22 @@ SAVE_SCRIPT_COMMAND = "ignition.saveScriptToSource"
 
 
 def _uri_to_path(uri: str) -> str:
-    """Convert a file URI to a filesystem path."""
-    return unquote(urlparse(uri).path)
+    """Convert a file URI to a filesystem path.
+
+    Uses url2pathname so drive-qualified Windows URIs survive the round trip:
+    a plain unquote turns ``file:///C:/proj/view.json`` into ``/C:/proj/...``,
+    which Path then reads as root-relative. On POSIX this is equivalent to the
+    old unquote. UNC URIs carry the host in the authority component.
+    """
+    parsed = urlparse(uri)
+    if parsed.scheme and parsed.scheme != "file":
+        # Virtual-buffer schemes are not filesystem paths; leave them as-is.
+        return unquote(parsed.path)
+
+    path = url2pathname(parsed.path)
+    if parsed.netloc:
+        return f"\\\\{parsed.netloc}{path}" if os.name == "nt" else f"//{parsed.netloc}{path}"
+    return path
 
 
 def _path_to_uri(path: Path) -> str:
@@ -763,7 +783,12 @@ def decode_script_to_file_command(ls: IgnitionLanguageServer, args: object) -> d
     """
     from ignition_lsp.encoding import decode, dedent
     from ignition_lsp.json_scanner import find_scripts_in_lines
-    from ignition_lsp.script_files import ScriptRef, build_sidecar_content, sidecar_path
+    from ignition_lsp.script_files import (
+        ScriptRef,
+        build_sidecar_content,
+        content_digest,
+        sidecar_path,
+    )
 
     uri = str(_param(args, "uri", ""))
     line = int(_param(args, "line", 0))
@@ -796,7 +821,13 @@ def decode_script_to_file_command(ls: IgnitionLanguageServer, args: object) -> d
         target = sidecar_path(root, str(source), key, line)
         target.parent.mkdir(parents=True, exist_ok=True)
 
-        ref = ScriptRef(source_uri=uri, key=key, line=line, indent=indent)
+        ref = ScriptRef(
+            source_uri=uri,
+            key=key,
+            line=line,
+            indent=indent,
+            digest=content_digest(match.content),
+        )
         target.write_text(build_sidecar_content(ref, body), encoding="utf-8")
 
         target_uri = _path_to_uri(target)
@@ -820,6 +851,71 @@ def decode_script_to_file_command(ls: IgnitionLanguageServer, args: object) -> d
         return {"success": False, "error": str(e)}
 
 
+def _validate_sidecar_target(sidecar: Path, ref: "ScriptRef") -> Optional[str]:
+    """Check that a sidecar may write to the source its header names.
+
+    The header is data on disk, and by the time a save runs it may be stale or
+    hand-edited, so nothing in it is trusted before use:
+
+    * the sidecar must sit at the exact path `sidecar_path()` derives from its
+      own header, which pins it to one source file, key, and line;
+    * the source must resolve inside the project that owns the sidecar, so a
+      rewritten `source:` cannot redirect the write elsewhere;
+    * the script currently at (line, key) must still be the one that was
+      decoded, so an edit to the source in the meantime cannot cause this save
+      to overwrite a different script that has moved into that position.
+
+    Returns None when the save may proceed, or a message explaining why not.
+    """
+    from ignition_lsp.json_scanner import find_scripts_in_lines
+    from ignition_lsp.script_files import SCRIPTS_DIR_NAME, content_digest, sidecar_path
+
+    sidecar = sidecar.resolve()
+    if sidecar.parent.name != SCRIPTS_DIR_NAME:
+        return f"Decoded scripts must live in {SCRIPTS_DIR_NAME}/ to be saved back"
+
+    # The sidecar directory sits directly under the project root.
+    project_root = sidecar.parent.parent
+    source = Path(_uri_to_path(ref.source_uri)).resolve()
+
+    try:
+        source.relative_to(project_root)
+    except ValueError:
+        return (
+            f"Refusing to save: {source} is outside the project at {project_root}"
+        )
+
+    expected = sidecar_path(str(project_root), str(source), ref.key, ref.line).resolve()
+    if expected != sidecar:
+        return (
+            "Refusing to save: this file's header does not match its location "
+            "(expected it at {}). The header may have been edited.".format(expected.name)
+        )
+
+    if not source.is_file():
+        return f"Source file not found: {source}"
+
+    lines = source.read_text(encoding="utf-8").splitlines()
+    match = next(
+        (s for s in find_scripts_in_lines(lines) if s.line == ref.line and s.key == ref.key),
+        None,
+    )
+    if match is None:
+        return (
+            f"Source has changed: no '{ref.key}' script remains on line {ref.line}. "
+            "Decode it again to pick up the new location."
+        )
+
+    if content_digest(match.content) != ref.digest:
+        return (
+            f"Source has changed since this script was decoded (line {ref.line}, "
+            f"key '{ref.key}'). Decode it again so your edits are not applied to "
+            "a different script."
+        )
+
+    return None
+
+
 @server.command(SAVE_SCRIPT_COMMAND)
 def save_script_to_source_command(ls: IgnitionLanguageServer, args: object) -> dict:
     """Encode a sidecar script and write it back into its source JSON.
@@ -828,7 +924,12 @@ def save_script_to_source_command(ls: IgnitionLanguageServer, args: object) -> d
     is read from the sidecar's own header, so the source location cannot drift
     out of sync with the file being saved.
     """
-    from ignition_lsp.script_files import parse_header, strip_header
+    from ignition_lsp.script_files import (
+        build_header,
+        content_digest,
+        parse_header,
+        strip_header,
+    )
 
     uri = str(_param(args, "uri", ""))
     logger.info(f"{SAVE_SCRIPT_COMMAND}: {uri}")
@@ -846,9 +947,24 @@ def save_script_to_source_command(ls: IgnitionLanguageServer, args: object) -> d
                 "error": "Not a decoded Ignition script (missing or malformed header)",
             }
 
-        return _write_script_to_source(
-            ref.source_uri, ref.line, ref.key, strip_header(text), ref.indent
+        error = _validate_sidecar_target(path, ref)
+        if error:
+            return {"success": False, "error": error}
+
+        body = strip_header(text)
+        result = _write_script_to_source(
+            ref.source_uri, ref.line, ref.key, body, ref.indent
         )
+
+        # The source now holds what we just wrote, so the header's digest is
+        # stale. Refresh it, or the next save of this same sidecar would be
+        # rejected as out of date.
+        encoded = result.get("encoded")
+        if result.get("success") and encoded:
+            ref.digest = content_digest(encoded)
+            path.write_text(build_header(ref) + body, encoding="utf-8")
+
+        return result
 
     except Exception as e:
         logger.error(f"Error saving sidecar script: {e}", exc_info=True)

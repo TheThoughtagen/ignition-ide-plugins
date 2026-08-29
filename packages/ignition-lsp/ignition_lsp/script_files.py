@@ -14,6 +14,7 @@ file I/O lives in ``server.py`` so the rules here stay directly testable.
 """
 
 import base64
+import hashlib
 import re
 from dataclasses import dataclass
 from pathlib import Path
@@ -27,7 +28,7 @@ SCRIPTS_DIR_NAME = ".ignition-scripts"
 HEADER_BEGIN = "# >>> ignition-lsp:begin"
 HEADER_END = "# <<< ignition-lsp:end"
 
-_FIELD_RE = re.compile(r"^#\s*(source|key|line|indent):\s*(.*)$")
+_FIELD_RE = re.compile(r"^#\s*(source|key|line|indent|digest):\s*(.*)$")
 
 
 @dataclass
@@ -38,6 +39,19 @@ class ScriptRef:
     key: str
     line: int  # 1-based line number in the source JSON
     indent: str  # Leading indentation stripped by dedent(), restored on save
+    digest: str  # Digest of the encoded script as it was at decode time
+
+
+def content_digest(encoded: str) -> str:
+    """Fingerprint an encoded script so a stale sidecar can be detected.
+
+    A sidecar outlives the editing session that produced it, so by the time it
+    is saved the source JSON may have been edited, reordered, or regenerated.
+    Comparing this digest against the script currently at (line, key) is what
+    stops a save from overwriting a *different* script that has since moved
+    into that position.
+    """
+    return hashlib.sha256(encoded.encode("utf-8")).hexdigest()[:16]
 
 
 def sidecar_filename(source_path: str, key: str, line: int) -> str:
@@ -45,15 +59,19 @@ def sidecar_filename(source_path: str, key: str, line: int) -> str:
 
     The source path is flattened into the filename (rather than mirrored as
     nested directories) so every sidecar sits directly in one folder that is
-    easy to inspect and to delete.
+    easy to inspect and to delete. Flattening alone is ambiguous — both
+    ``views/Main__view.json`` and ``views__Main/view.json`` flatten to the same
+    string — so a short digest of the original path disambiguates them.
 
     Args:
         source_path: Path to the JSON file, relative to the project root.
         key: The script key (e.g. "eventScript").
         line: 1-based line number of the script in the source file.
     """
-    flat = source_path.replace("\\", "/").strip("/").replace("/", "__")
-    return f"{flat}__{key}__L{line}.py"
+    normalized = source_path.replace("\\", "/").strip("/")
+    flat = normalized.replace("/", "__")
+    path_hash = hashlib.sha256(normalized.encode("utf-8")).hexdigest()[:8]
+    return f"{flat}__{key}__L{line}__{path_hash}.py"
 
 
 def sidecar_path(project_root: str, source_path: str, key: str, line: int) -> Path:
@@ -91,6 +109,7 @@ def build_header(ref: ScriptRef) -> str:
             f"# key: {ref.key}",
             f"# line: {ref.line}",
             f"# indent: {encoded_indent}",
+            f"# digest: {ref.digest}",
             "# Run the 'Ignition: Save script back to JSON' code action to write",
             "# your changes into the source file.",
             HEADER_END,
@@ -122,7 +141,10 @@ def parse_header(text: str) -> Optional[ScriptRef]:
         # No terminator found.
         return None
 
-    if not {"source", "key", "line", "indent"}.issubset(fields):
+    if not {"source", "key", "line", "indent", "digest"}.issubset(fields):
+        return None
+
+    if not fields["digest"]:
         return None
 
     try:
@@ -140,6 +162,7 @@ def parse_header(text: str) -> Optional[ScriptRef]:
         key=fields["key"],
         line=line_num,
         indent=indent,
+        digest=fields["digest"],
     )
 
 
