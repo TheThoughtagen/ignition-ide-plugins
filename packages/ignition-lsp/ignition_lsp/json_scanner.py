@@ -145,6 +145,15 @@ def _extract_json_string_value(text: str, start: int) -> Optional[str]:
     return None
 
 
+def line_has_script_key(line_text: str, key: str) -> bool:
+    """Test whether a JSON line assigns a string value to the given script key.
+
+    Shares its pattern with replace_script_in_line() so callers can tell a
+    missing key apart from a replacement that happened to be a no-op.
+    """
+    return re.search(rf'"({re.escape(key)})"\s*:\s*"', line_text) is not None
+
+
 def replace_script_in_line(
     line_text: str, key: str, new_encoded_content: str
 ) -> str:

@@ -4,7 +4,7 @@
 [![VS Code Marketplace](https://img.shields.io/visual-studio-marketplace/v/WhiskeyHouse.ignition-dev-tools)](https://marketplace.visualstudio.com/items?itemName=WhiskeyHouse.ignition-dev-tools)
 [![PyPI](https://img.shields.io/pypi/v/ignition-lsp)](https://pypi.org/project/ignition-lsp/)
 
-Full IDE support for **[Ignition by Inductive Automation](https://inductiveautomation.com/)** — available for both **Neovim** and **VS Code**.
+Full IDE support for **[Ignition by Inductive Automation](https://inductiveautomation.com/)** — available for **Neovim**, **VS Code**, and **Zed**.
 
 ## Features
 
@@ -17,6 +17,21 @@ Full IDE support for **[Ignition by Inductive Automation](https://inductiveautom
 - **Script decode/encode** — Extract embedded Python scripts from JSON into editable buffers with full LSP support, then save them back
 - **Project navigation** — Workspace symbols and efficient navigation through Ignition project hierarchies
 - **Kindling integration** — Direct support for `.gwbk` gateway backup files
+
+### Editor Support
+
+| Feature | Neovim | VS Code | Zed |
+|---------|:------:|:-------:|:---:|
+| Completions, hover, go-to-definition, diagnostics | ✅ | ✅ | ✅ |
+| Workspace symbols | ✅ | ✅ | ✅ |
+| Decode/encode embedded scripts | ✅ | ✅ | ✅ * |
+| Project / Tag Browser, Component Tree | — | ✅ | — |
+| CodeLens | — | ✅ | — |
+| Kindling integration | ✅ | ✅ | — |
+
+\* Zed has no virtual-document API, so decoded scripts are written to
+`.ignition-scripts/` and edited as real files. See the
+[Zed README](packages/ignition-zed/README.md).
 
 ### VS Code Extras
 
@@ -33,6 +48,16 @@ Full IDE support for **[Ignition by Inductive Automation](https://inductiveautom
 Install **[Ignition Dev Tools](https://marketplace.visualstudio.com/items?itemName=WhiskeyHouse.ignition-dev-tools)** from the VS Code Marketplace.
 
 The language server is installed automatically on first activation. No manual setup required.
+
+### Zed
+
+Install **Ignition** from Zed's extensions view (`zed: extensions`).
+
+The language server is installed automatically on first use in an Ignition
+project, provided Python 3.8+ is on your `$PATH`. The extension attaches only to
+worktrees with a `project.json` at the root, so open the Ignition project folder
+itself. See the [Zed README](packages/ignition-zed/README.md) for settings and
+for how to edit embedded scripts.
 
 ### Neovim (lazy.nvim)
 
@@ -80,9 +105,10 @@ pip install --extra-index-url https://test.pypi.org/simple/ ignition-lsp
 
 ```
 packages/
-├── ignition-lsp/        # Python LSP server (shared by both editors)
+├── ignition-lsp/        # Python LSP server (shared by all editors)
 ├── ignition-nvim/       # Neovim plugin (Lua)
-└── ignition-vscode/     # VS Code extension (TypeScript)
+├── ignition-vscode/     # VS Code extension (TypeScript)
+└── ignition-zed/        # Zed extension (Rust → WebAssembly)
 ```
 
 Top-level symlinks (`lua/`, `lsp/`, `ftdetect/`, etc.) allow the repo to work directly as a Neovim plugin when installed via lazy.nvim.
@@ -110,11 +136,22 @@ Open the Command Palette (`Cmd+Shift+P` / `Ctrl+Shift+P`) and type "Ignition":
 - **Format JSON** / **Convert Indentation to Tabs**
 - **Open with Kindling**
 
+### Zed
+
+Zed drives everything through code actions (`editor: toggle code actions`) on a
+file in an Ignition project:
+
+| Code action | Where | Description |
+|-------------|-------|-------------|
+| `Ignition: Decode …` | JSON resource | Decode the embedded script on the current line into `.ignition-scripts/` and open it |
+| `Ignition: Save … back to JSON` | Decoded script | Re-encode and write the script back into its source JSON |
+
 ## Documentation
 
 - **User Guide**: [online documentation](https://whiskeyhouse.github.io/ignition-nvim)
 - **Vim Help**: `:help ignition-nvim`
 - **VS Code README**: [packages/ignition-vscode/README.md](packages/ignition-vscode/README.md)
+- **Zed README**: [packages/ignition-zed/README.md](packages/ignition-zed/README.md)
 - **LSP Server README**: [packages/ignition-lsp/README.md](packages/ignition-lsp/README.md)
 - **Contributing**: [CONTRIBUTING.md](CONTRIBUTING.md)
 - **Troubleshooting**: [TROUBLESHOOTING.md](TROUBLESHOOTING.md)
@@ -140,7 +177,7 @@ See [claude-code-plugin/README.md](claude-code-plugin/README.md) and [templates/
 
 ## Part of the Whiskey House Ignition Developer Toolkit
 
-- **[Ignition Dev Tools](https://github.com/TheThoughtagen/ignition-dev-tools)** — Neovim + VS Code IDE support (this repo)
+- **[Ignition Dev Tools](https://github.com/TheThoughtagen/ignition-dev-tools)** — Neovim, VS Code, and Zed IDE support (this repo)
 - **[ignition-lint](https://github.com/TheThoughtagen/ignition-lint)** — Static analysis for Ignition Python scripts
 - **[ignition-git-module](https://github.com/bmusson/ignition-git-module)** — Native Git inside Ignition Designer
 

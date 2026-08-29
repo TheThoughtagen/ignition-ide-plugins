@@ -2,10 +2,10 @@
 
 ## Project Overview
 
-**Ignition Dev Tools** is a multi-editor monorepo providing full IDE support for Inductive Automation's Ignition SCADA platform. It delivers LSP completions, hover docs, diagnostics, script decode/encode, project browsing, and more — for both **Neovim** and **VS Code**.
+**Ignition Dev Tools** is a multi-editor monorepo providing full IDE support for Inductive Automation's Ignition SCADA platform. It delivers LSP completions, hover docs, diagnostics, script decode/encode, project browsing, and more — for **Neovim**, **VS Code**, and **Zed**.
 
 Part of the **Whiskey House Ignition Developer Toolkit**:
-- **Ignition Dev Tools** — Neovim + VS Code IDE support (this repo)
+- **Ignition Dev Tools** — Neovim, VS Code, and Zed IDE support (this repo)
 - **ignition-lint** — Static analysis for Ignition Python scripts
 - **ignition-git-module** — Native Git inside Ignition Designer
 
@@ -13,9 +13,10 @@ Part of the **Whiskey House Ignition Developer Toolkit**:
 
 ```
 packages/
-├── ignition-lsp/        # Python LSP server (shared by both editors)
+├── ignition-lsp/        # Python LSP server (shared by all editors)
 ├── ignition-nvim/       # Neovim plugin (Lua)
-└── ignition-vscode/     # VS Code extension (TypeScript)
+├── ignition-vscode/     # VS Code extension (TypeScript)
+└── ignition-zed/        # Zed extension (Rust → WebAssembly)
 ```
 
 Top-level symlinks (`lua/`, `lsp/`, `ftdetect/`, `ftplugin/`, `plugin/`, `syntax/`, `queries/`, `doc/`, `lazy.lua`) point into `packages/` so the repo works directly as a Neovim plugin via lazy.nvim's `runtimepath` discovery.
@@ -23,7 +24,7 @@ Top-level symlinks (`lua/`, `lsp/`, `ftdetect/`, `ftplugin/`, `plugin/`, `syntax
 ## Architecture
 
 ### Python LSP Server (`packages/ignition-lsp/`)
-pygls 2.0 language server — shared by both editors.
+pygls 2.0 language server — shared by all editors.
 
 | Module | Responsibility |
 |--------|---------------|
@@ -35,6 +36,7 @@ pygls 2.0 language server — shared by both editors.
 | `api_loader.py` | Loads and indexes API definitions from `api_db/` JSON |
 | `project_scanner.py` | Walks Ignition project dirs, builds script index |
 | `workspace_symbols.py` | Exposes project index via LSP workspace symbols |
+| `script_files.py` | Sidecar decoded-script files (path + metadata header) for clients without virtual documents |
 | `api_db/*.json` | 14 modules, 239 functions — follows `api_db/schema.json` |
 | `java_db/*.json` | Java/Jython class completions (26 packages, 146 classes) |
 | `stubs/**/*.pyi` | Pyright/Pylance type stubs for Ignition APIs |
@@ -68,6 +70,19 @@ TypeScript extension providing IDE features in VS Code.
 | `syntaxes/` | TextMate grammars for syntax highlighting |
 | `test/` | Vitest test suite |
 
+### Zed Extension (`packages/ignition-zed/`)
+Rust extension compiled to WebAssembly (`wasm32-wasip2`), built against `zed_extension_api` 0.7.
+
+| Component | Responsibility |
+|-----------|---------------|
+| `extension.toml` | Extension manifest; registers `ignition-lsp` for the Python and JSON languages |
+| `src/lib.rs` | Binary discovery, venv auto-install, project gating, settings passthrough |
+| `Cargo.lock` | Committed — the Zed extension registry builds from it |
+
+Zed has no API for sidebars, custom commands, or CodeLens, so the Project Browser,
+Tag Browser, Component Tree, and Kindling integration are VS Code / Neovim only.
+Decode/encode is exposed instead through standard LSP code actions (see below).
+
 ### Supporting Files
 - `lazy.lua` → symlink to `packages/ignition-nvim/lazy.lua` (lazy.nvim plugin spec)
 - `ftdetect/`, `ftplugin/`, `syntax/`, `plugin/`, `queries/`, `doc/` → symlinks for Neovim runtimepath
@@ -80,7 +95,7 @@ TypeScript extension providing IDE features in VS Code.
 
 **Ignition** is a SCADA/ICS platform by Inductive Automation. Projects are stored as JSON files containing embedded Python (Jython) scripts. Developers use `system.*` scripting APIs (e.g., `system.tag.readBlocking()`, `system.db.runPrepQuery()`, `system.perspective.sendMessage()`).
 
-Both editors decode those embedded scripts into editable Python buffers with full LSP support, then encode them back.
+All three editors decode those embedded scripts into editable Python buffers with full LSP support, then encode them back. Zed uses real sidecar files rather than in-memory buffers (see Code Actions below).
 
 ## Critical Technical Details
 
@@ -93,10 +108,30 @@ Both editors decode those embedded scripts into editable Python buffers with ful
 - Lua encoding uses `string.gsub` with **plain flag** — NOT Lua patterns (this caused bugs)
 - VS Code encoding in `src/encoding/` mirrors the same logic in TypeScript
 
+### Code Actions (decode/encode for plain LSP clients)
+- `textDocument/codeAction` offers **Ignition: Decode …** on a JSON resource line
+  holding an encoded script, and **Ignition: Save … back to JSON** on a decoded file
+- Backed by the `ignition.decodeScriptToFile` and `ignition.saveScriptToSource`
+  commands (`workspace/executeCommand`)
+- Decoded scripts land in `.ignition-scripts/` at the project root, carrying a
+  comment header (`# >>> ignition-lsp:begin`) that records source URI, key, line,
+  indent, and a digest of the encoded script — the save path reads it, so
+  **never change the header format without changing `parse_header` in lockstep**
+- `_validate_sidecar_target()` runs before every write: the sidecar must sit at
+  the path `sidecar_path()` derives from its own header, the source must resolve
+  inside the owning project, and the digest must still match the script at
+  (line, key). A stale sidecar is refused rather than allowed to overwrite a
+  script that moved into its position
+- Both save paths funnel through `_write_script_to_source()` so round-trip
+  behaviour cannot diverge between clients
+
 ### LSP Client
 - **Neovim:** Uses `vim.lsp.start()` — modern Neovim 0.11+ API, NOT lspconfig
 - **VS Code:** Uses `vscode-languageclient` — standard VS Code LSP client library
-- Both auto-install `ignition-lsp` from PyPI on first activation
+- **Zed:** Extension returns the server command from `language_server_command()`;
+  declines (returns `Err`) when the worktree has no root `project.json`, which is
+  what keeps the server off unrelated Python/JSON files
+- All three auto-install `ignition-lsp` from PyPI on first activation
 - Python venv at `packages/ignition-lsp/venv/` (Python 3.13 for local dev)
 
 ### Virtual Buffers (Neovim)
@@ -159,12 +194,27 @@ cd packages/ignition-vscode && npx eslint src/ --ext .ts
 cd packages/ignition-vscode && npx @vscode/vsce package
 ```
 
+### Zed Extension (`packages/ignition-zed/`)
+```bash
+# Setup (once)
+rustup target add wasm32-wasip2
+
+# Build the WASM extension
+cd packages/ignition-zed && cargo build --target wasm32-wasip2 --release
+
+# Lint / format
+cd packages/ignition-zed && cargo clippy --target wasm32-wasip2 --release -- -D warnings
+cd packages/ignition-zed && cargo fmt --check
+```
+
+Load it in Zed via `zed: extensions` → **Install Dev Extension** → `packages/ignition-zed`.
+
 ## Git Workflow
 
 - **Branch:** Work on `main` (single contributor flow)
 - **Commits:** Conventional format — `feat:`, `fix:`, `refactor:`, `test:`, `docs:`, `chore:`
-- **Scoped commits:** Use scope for package-specific changes — `feat(vscode):`, `fix(lsp):`, `refactor(nvim):`
-- **CI:** GitHub Actions (`.github/workflows/ci.yml`) — Lua tests (Neovim stable+nightly), Python tests (3.9/3.11/3.13), VS Code extension tests (Node 20)
+- **Scoped commits:** Use scope for package-specific changes — `feat(vscode):`, `fix(lsp):`, `refactor(nvim):`, `feat(zed):`
+- **CI:** GitHub Actions (`.github/workflows/ci.yml`) — Lua tests (Neovim stable+nightly), Python tests (3.9/3.11/3.13), VS Code extension tests (Node 20), Zed extension (fmt/clippy/wasm build)
 - **Release pipelines:**
   - `beta.yml` / `release.yml` — PyPI publishing for ignition-lsp
   - `release-vscode.yml` — VS Code Marketplace publishing (triggered by `vscode/v*` tags)
@@ -175,7 +225,7 @@ cd packages/ignition-vscode && npx @vscode/vsce package
 14 modules in `packages/ignition-lsp/ignition_lsp/api_db/`:
 `system_alarm`, `system_dataset`, `system_date`, `system_db`, `system_file`, `system_gui`, `system_nav`, `system_net`, `system_opc`, `system_perspective`, `system_security`, `system_tag`, `system_user`, `system_util`
 
-All follow `schema.json`. Adding a new module = immediate completions + hover for all users (both editors).
+All follow `schema.json`. Adding a new module = immediate completions + hover for all users (all editors).
 
 ## Marketing (gitignored)
 
@@ -226,15 +276,15 @@ Ralph follows `fix_plan.md` and implements one task per loop. Claude Code should
 
 ## Current State (March 2026)
 
-- **Monorepo** with three packages: ignition-nvim, ignition-lsp, ignition-vscode
+- **Monorepo** with four packages: ignition-nvim, ignition-lsp, ignition-vscode, ignition-zed
 - All 7 priority levels in `fix_plan.md` are complete
 - 14 API modules, 239 functions + 26 Java packages (146 classes)
-- 162 Python tests + 107 Lua tests + VS Code extension tests — all passing
+- 704 Python tests + 6 Rust tests + 107 Lua tests + VS Code extension tests — all passing
 - VS Code extension features: CodeLens, Project Browser, Tag Browser, Component Tree, diagnostics toggle, Pyright/Pylance stubs
 - Project indexing and go-to-definition implemented
 - Kindling integration tested across platforms
 - lazy.nvim spec with auto LSP install (Neovim), auto LSP install (VS Code)
-- CI pipeline: Lua (stable+nightly), Python (3.9/3.11/3.13), VS Code (Node 20)
+- CI pipeline: Lua (stable+nightly), Python (3.9/3.11/3.13), VS Code (Node 20), Zed (wasm32-wasip2)
 - PyPI publishing configured for ignition-lsp
 - VS Code Marketplace publishing configured (publisher: WhiskeyHouse)
 - Remaining: full documentation, additional API modules (10+ more exist in Ignition)

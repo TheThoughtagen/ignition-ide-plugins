@@ -2,11 +2,13 @@
 
 import asyncio
 import logging
+import os
 import sys
 import tempfile
 from pathlib import Path
-from typing import List, Optional
+from typing import TYPE_CHECKING, Any, Dict, List, Optional
 from urllib.parse import unquote, urlparse
+from urllib.request import url2pathname
 
 import lsprotocol.types
 from lsprotocol.types import (
@@ -20,7 +22,13 @@ from lsprotocol.types import (
     TEXT_DOCUMENT_DID_SAVE,
     TEXT_DOCUMENT_DID_CLOSE,
     TEXT_DOCUMENT_PUBLISH_DIAGNOSTICS,
+    TEXT_DOCUMENT_CODE_ACTION,
     WORKSPACE_SYMBOL,
+    CodeAction,
+    CodeActionKind,
+    CodeActionOptions,
+    CodeActionParams,
+    Command,
     InitializedParams,
     DidChangeConfigurationParams,
     CompletionItem,
@@ -44,6 +52,7 @@ from lsprotocol.types import (
     DiagnosticSeverity,
     SymbolInformation,
     WorkspaceSymbolParams,
+    ShowDocumentParams,
     WorkDoneProgressBegin,
     WorkDoneProgressEnd,
     ProgressParams,
@@ -51,6 +60,9 @@ from lsprotocol.types import (
 )
 from pygls.lsp.server import LanguageServer
 from pygls.workspace import TextDocument
+
+if TYPE_CHECKING:
+    from ignition_lsp.script_files import ScriptRef
 
 # Configure logging
 logging.basicConfig(
@@ -62,6 +74,60 @@ logging.basicConfig(
     ]
 )
 logger = logging.getLogger(__name__)
+
+
+def _uri_to_path(uri: str) -> str:
+    """Convert a file URI to a filesystem path.
+
+    The single URI-to-path conversion in this module. Uses url2pathname so
+    drive-qualified Windows URIs survive the round trip: a plain unquote turns
+    ``file:///C:/proj/view.json`` into ``/C:/proj/view.json``, which Path then
+    reads as root-relative. On POSIX this is equivalent to that unquote. UNC
+    URIs carry the host in the authority component.
+
+    Every caller must use this. Two conversions that disagree are worse than
+    one that is wrong everywhere: a project root resolved one way and a source
+    path the other do not compare equal, which sends sidecars to the wrong
+    directory and then refuses to save them.
+    """
+    parsed = urlparse(uri)
+    if parsed.scheme and parsed.scheme != "file":
+        # Virtual-buffer schemes (VS Code's ignition-script://, Neovim's
+        # bracketed buffer names) are not filesystem paths. Keep the legacy
+        # unquote-the-path behaviour for them rather than returning the URI
+        # verbatim: _find_project_root and did_save are called with these and
+        # already rely on it, and url2pathname would mangle them on Windows.
+        return unquote(parsed.path)
+
+    path = url2pathname(parsed.path)
+    if parsed.netloc:
+        return f"\\\\{parsed.netloc}{path}" if os.name == "nt" else f"//{parsed.netloc}{path}"
+    return path
+
+
+def _path_to_uri(path: Path) -> str:
+    """Convert a filesystem path to a file URI."""
+    return path.as_uri()
+
+
+def _atomic_write_text(path: Path, content: str) -> None:
+    """Replace a file's contents in one step.
+
+    Project JSON is the user's source of truth, and a plain write truncates
+    before it writes: an interruption partway leaves a half-written resource
+    file. Writing a sibling temp file and renaming it over the target means a
+    reader sees either the old contents or the new ones, never a torn file.
+    """
+    temp = path.with_name(f".{path.name}.ignition-lsp.tmp")
+    try:
+        temp.write_text(content, encoding="utf-8")
+        os.replace(str(temp), str(path))
+    except BaseException:
+        try:
+            temp.unlink()
+        except OSError:
+            pass
+        raise
 
 
 class IgnitionLanguageServer(LanguageServer):
@@ -142,7 +208,7 @@ class IgnitionLanguageServer(LanguageServer):
         """Find Ignition project root by walking up from a URI or workspace root."""
         # Try from the file's directory
         try:
-            file_path = unquote(urlparse(uri).path)
+            file_path = _uri_to_path(uri)
             current = Path(file_path).parent
             while current != current.parent:
                 if (current / "project.json").is_file():
@@ -155,7 +221,7 @@ class IgnitionLanguageServer(LanguageServer):
         try:
             root_uri = getattr(self.workspace, 'root_uri', None)
             if root_uri:
-                root_path = unquote(urlparse(root_uri).path)
+                root_path = _uri_to_path(root_uri)
                 if (Path(root_path) / "project.json").is_file():
                     return root_path
                 current = Path(root_path)
@@ -333,7 +399,7 @@ async def did_save(ls: IgnitionLanguageServer, params: DidSaveTextDocumentParams
     logger.info(f"Document saved: {uri}")
 
     # Invalidate symbol cache when a .py file is saved
-    file_path = unquote(urlparse(uri).path)
+    file_path = _uri_to_path(uri)
     if file_path.endswith(".py") and ls.symbol_cache is not None:
         ls.symbol_cache.invalidate(file_path)
 
@@ -497,7 +563,7 @@ def find_scripts_handler(ls: IgnitionLanguageServer, params: object) -> list:
     try:
         from ignition_lsp.json_scanner import find_scripts
 
-        file_path = unquote(urlparse(uri).path)
+        file_path = _uri_to_path(uri)
         scripts = find_scripts(file_path)
         return [
             {
@@ -550,25 +616,31 @@ def encode_script_handler(ls: IgnitionLanguageServer, params: object) -> dict:
         return {"encoded": "", "error": str(e)}
 
 
-@server.feature("ignition/saveScript")
-def save_script_handler(ls: IgnitionLanguageServer, params: object) -> dict:
-    """Save a decoded script back into its source JSON file.
+def _write_script_to_source(
+    uri: str, line: int, key: str, decoded_content: str, indent: str
+) -> dict:
+    """Encode a script and write it back into its source JSON file.
 
-    Encodes the content and writes it into the correct position in the
-    source JSON file.
+    Shared by the ``ignition/saveScript`` custom method and the
+    ``ignition.saveScriptToSource`` command so both paths encode identically —
+    round-trip fidelity must not depend on which client asked for the save.
+
+    Args:
+        uri: URI of the source JSON file.
+        line: 1-based line number holding the script.
+        key: The script key (e.g. "eventScript").
+        decoded_content: The edited, dedented script body.
+        indent: Indentation stripped by dedent(), re-added before encoding.
+
+    Returns:
+        ``{"success": True, "encoded": <what was written>}`` on success, or
+        ``{"success": False, "error": ...}``.
     """
-    uri = str(_param(params, "uri", ""))
-    line = int(_param(params, "line", 0))
-    key = str(_param(params, "key", ""))
-    decoded_content = str(_param(params, "decodedContent", ""))
-    indent = str(_param(params, "indent", ""))
-    logger.info(f"ignition/saveScript: {uri} line={line} key={key} indent={repr(indent)}")
-
     try:
         from ignition_lsp.encoding import encode, reindent
-        from ignition_lsp.json_scanner import replace_script_in_line
+        from ignition_lsp.json_scanner import line_has_script_key, replace_script_in_line
 
-        file_path = unquote(urlparse(uri).path)
+        file_path = _uri_to_path(uri)
         path = Path(file_path)
 
         if not path.is_file():
@@ -593,19 +665,347 @@ def save_script_handler(ls: IgnitionLanguageServer, params: object) -> dict:
             trailing = "\r" + trailing
             original_line = original_line[:-1]
 
-        new_line = replace_script_in_line(original_line, key, encoded)
-
-        if new_line == original_line:
+        if not line_has_script_key(original_line, key):
             return {"success": False, "error": f"Key '{key}' not found on line {line}"}
 
+        new_line = replace_script_in_line(original_line, key, encoded)
+
+        # An unchanged line means the script was saved without edits — that is a
+        # successful no-op, not a failure.
         lines[line_idx] = new_line + trailing
-        path.write_text("".join(lines), encoding="utf-8")
+        _atomic_write_text(path, "".join(lines))
 
         logger.info(f"Saved script to {file_path} line {line}")
-        return {"success": True}
+        return {"success": True, "encoded": encoded}
 
     except Exception as e:
         logger.error(f"Error saving script: {e}", exc_info=True)
+        return {"success": False, "error": str(e)}
+
+
+@server.feature("ignition/saveScript")
+def save_script_handler(ls: IgnitionLanguageServer, params: object) -> dict:
+    """Save a decoded script back into its source JSON file.
+
+    Encodes the content and writes it into the correct position in the
+    source JSON file.
+    """
+    uri = str(_param(params, "uri", ""))
+    line = int(_param(params, "line", 0))
+    key = str(_param(params, "key", ""))
+    decoded_content = str(_param(params, "decodedContent", ""))
+    indent = str(_param(params, "indent", ""))
+    logger.info(f"ignition/saveScript: {uri} line={line} key={key} indent={repr(indent)}")
+
+    return _write_script_to_source(uri, line, key, decoded_content, indent)
+
+
+# Command IDs advertised through workspace/executeCommand. Clients without a
+# virtual-document API (Zed, Helix, and other plain LSP clients) drive the
+# decode/edit/save cycle entirely through these two commands.
+DECODE_SCRIPT_COMMAND = "ignition.decodeScriptToFile"
+SAVE_SCRIPT_COMMAND = "ignition.saveScriptToSource"
+
+
+def _is_sidecar_uri(uri: str) -> bool:
+    """Test whether a URI points into the decoded-scripts sidecar directory."""
+    from ignition_lsp.script_files import SCRIPTS_DIR_NAME
+
+    return SCRIPTS_DIR_NAME in Path(_uri_to_path(uri)).parts
+
+
+@server.feature(
+    TEXT_DOCUMENT_CODE_ACTION,
+    CodeActionOptions(code_action_kinds=[CodeActionKind.RefactorRewrite]),
+)
+def code_action(
+    ls: IgnitionLanguageServer, params: CodeActionParams
+) -> Optional[List[CodeAction]]:
+    """Offer decode/save actions for scripts embedded in Ignition JSON.
+
+    Two shapes, depending on which side of the round trip the file is on:
+
+    * a JSON resource — one "Decode" action per embedded script on the
+      selected lines;
+    * a decoded sidecar script — a single "Save back to JSON" action.
+    """
+    uri = params.text_document.uri
+
+    try:
+        doc = ls.workspace.get_text_document(uri)
+    except Exception as e:
+        logger.debug(f"codeAction: could not read document {uri}: {e}")
+        return None
+
+    try:
+        if _is_sidecar_uri(uri):
+            return _sidecar_code_actions(uri, doc.source)
+        if uri.endswith(".json"):
+            return _json_resource_code_actions(uri, doc.lines, params)
+    except Exception as e:
+        logger.error(f"Error building code actions for {uri}: {e}", exc_info=True)
+
+    return None
+
+
+def _sidecar_code_actions(uri: str, text: str) -> Optional[List[CodeAction]]:
+    """Build the save-back action for a decoded sidecar script."""
+    from ignition_lsp.script_files import parse_header
+
+    ref = parse_header(text)
+    if ref is None:
+        return None
+
+    return [
+        CodeAction(
+            title=f"Ignition: Save '{ref.key}' back to JSON",
+            kind=CodeActionKind.RefactorRewrite,
+            command=Command(
+                title="Save script back to JSON",
+                command=SAVE_SCRIPT_COMMAND,
+                arguments=[{"uri": uri}],
+            ),
+        )
+    ]
+
+
+def _json_resource_code_actions(
+    uri: str, lines: List[str], params: CodeActionParams
+) -> Optional[List[CodeAction]]:
+    """Build decode actions for scripts on the lines the request covers."""
+    from ignition_lsp.json_scanner import find_scripts_in_lines
+
+    scripts = find_scripts_in_lines([line.rstrip("\n").rstrip("\r") for line in lines])
+    if not scripts:
+        return None
+
+    start_line = params.range.start.line
+    end_line = params.range.end.line
+
+    actions = []
+    for script in scripts:
+        # ScriptLocation.line is 1-based; LSP ranges are 0-based.
+        if not (start_line <= script.line - 1 <= end_line):
+            continue
+
+        actions.append(
+            CodeAction(
+                title=f"Ignition: Decode {script.context}",
+                kind=CodeActionKind.RefactorRewrite,
+                command=Command(
+                    title="Decode script",
+                    command=DECODE_SCRIPT_COMMAND,
+                    arguments=[
+                        {"uri": uri, "line": script.line, "key": script.key}
+                    ],
+                ),
+            )
+        )
+
+    return actions or None
+
+
+@server.command(DECODE_SCRIPT_COMMAND)
+def decode_script_to_file_command(
+    ls: IgnitionLanguageServer, args: Dict[str, Any]
+) -> dict:
+    """Decode an embedded script into an editable sidecar file, and open it.
+
+    Args (single object argument): ``uri``, ``line`` (1-based), ``key``.
+
+    The ``Dict[str, Any]`` annotation is load-bearing: pygls structures each
+    executeCommand argument into the parameter's annotated type, and cattrs has
+    no hook for a bare ``object``.
+    """
+    from ignition_lsp.encoding import decode, dedent
+    from ignition_lsp.json_scanner import find_scripts_in_lines
+    from ignition_lsp.script_files import (
+        ScriptRef,
+        build_sidecar_content,
+        content_digest,
+        sidecar_path,
+    )
+
+    uri = str(_param(args, "uri", ""))
+    line = int(_param(args, "line", 0))
+    key = str(_param(args, "key", ""))
+    logger.info(f"{DECODE_SCRIPT_COMMAND}: {uri} line={line} key={key}")
+
+    try:
+        source = Path(_uri_to_path(uri))
+        if not source.is_file():
+            return {"success": False, "error": f"File not found: {source}"}
+
+        lines = source.read_text(encoding="utf-8").splitlines()
+        match = next(
+            (
+                s
+                for s in find_scripts_in_lines(lines)
+                if s.line == line and s.key == key
+            ),
+            None,
+        )
+        if match is None:
+            return {
+                "success": False,
+                "error": f"No '{key}' script found on line {line}",
+            }
+
+        body, indent = dedent(decode(match.content))
+
+        root = ls._find_project_root(uri) or str(source.parent)
+        target = sidecar_path(root, str(source), key, line)
+        target.parent.mkdir(parents=True, exist_ok=True)
+
+        ref = ScriptRef(
+            source_uri=uri,
+            key=key,
+            line=line,
+            indent=indent,
+            digest=content_digest(match.content),
+        )
+        _atomic_write_text(target, build_sidecar_content(ref, body))
+
+        target_uri = _path_to_uri(target)
+        logger.info(f"Decoded script to {target}")
+
+        # Ask the client to open the sidecar. Clients that do not implement
+        # window/showDocument still get the file — they just have to open it
+        # themselves — so a failure here is not a failure of the command.
+        try:
+            ls.window_show_document(
+                ShowDocumentParams(uri=target_uri, take_focus=True),
+                callback=lambda _result: None,
+            )
+        except Exception as e:
+            logger.debug(f"window/showDocument not available: {e}")
+
+        return {"success": True, "uri": target_uri, "path": str(target)}
+
+    except Exception as e:
+        logger.error(f"Error decoding script to file: {e}", exc_info=True)
+        return {"success": False, "error": str(e)}
+
+
+def _validate_sidecar_target(sidecar: Path, ref: "ScriptRef") -> Optional[str]:
+    """Check that a sidecar may write to the source its header names.
+
+    The header is data on disk, and by the time a save runs it may be stale or
+    hand-edited, so nothing in it is trusted before use:
+
+    * the sidecar must sit at the exact path `sidecar_path()` derives from its
+      own header, which pins it to one source file, key, and line;
+    * the source must resolve inside the project that owns the sidecar, so a
+      rewritten `source:` cannot redirect the write elsewhere;
+    * the script currently at (line, key) must still be the one that was
+      decoded, so an edit to the source in the meantime cannot cause this save
+      to overwrite a different script that has moved into that position.
+
+    Returns None when the save may proceed, or a message explaining why not.
+    """
+    from ignition_lsp.json_scanner import find_scripts_in_lines
+    from ignition_lsp.script_files import SCRIPTS_DIR_NAME, content_digest, sidecar_path
+
+    sidecar = sidecar.resolve()
+    if sidecar.parent.name != SCRIPTS_DIR_NAME:
+        return f"Decoded scripts must live in {SCRIPTS_DIR_NAME}/ to be saved back"
+
+    # The sidecar directory sits directly under the project root.
+    project_root = sidecar.parent.parent
+    source = Path(_uri_to_path(ref.source_uri)).resolve()
+
+    try:
+        source.relative_to(project_root)
+    except ValueError:
+        return (
+            f"Refusing to save: {source} is outside the project at {project_root}"
+        )
+
+    expected = sidecar_path(str(project_root), str(source), ref.key, ref.line).resolve()
+    if expected != sidecar:
+        return (
+            "Refusing to save: this file's header does not match its location "
+            "(expected it at {}). The header may have been edited.".format(expected.name)
+        )
+
+    if not source.is_file():
+        return f"Source file not found: {source}"
+
+    lines = source.read_text(encoding="utf-8").splitlines()
+    match = next(
+        (s for s in find_scripts_in_lines(lines) if s.line == ref.line and s.key == ref.key),
+        None,
+    )
+    if match is None:
+        return (
+            f"Source has changed: no '{ref.key}' script remains on line {ref.line}. "
+            "Decode it again to pick up the new location."
+        )
+
+    if content_digest(match.content) != ref.digest:
+        return (
+            f"Source has changed since this script was decoded (line {ref.line}, "
+            f"key '{ref.key}'). Decode it again so your edits are not applied to "
+            "a different script."
+        )
+
+    return None
+
+
+@server.command(SAVE_SCRIPT_COMMAND)
+def save_script_to_source_command(
+    ls: IgnitionLanguageServer, args: Dict[str, Any]
+) -> dict:
+    """Encode a sidecar script and write it back into its source JSON.
+
+    Args (single object argument): ``uri`` of the sidecar file. Everything else
+    is read from the sidecar's own header, so the source location cannot drift
+    out of sync with the file being saved.
+    """
+    from ignition_lsp.script_files import (
+        build_header,
+        content_digest,
+        parse_header,
+        strip_header,
+    )
+
+    uri = str(_param(args, "uri", ""))
+    logger.info(f"{SAVE_SCRIPT_COMMAND}: {uri}")
+
+    try:
+        path = Path(_uri_to_path(uri))
+        if not path.is_file():
+            return {"success": False, "error": f"File not found: {path}"}
+
+        text = path.read_text(encoding="utf-8")
+        ref = parse_header(text)
+        if ref is None:
+            return {
+                "success": False,
+                "error": "Not a decoded Ignition script (missing or malformed header)",
+            }
+
+        error = _validate_sidecar_target(path, ref)
+        if error:
+            return {"success": False, "error": error}
+
+        body = strip_header(text)
+        result = _write_script_to_source(
+            ref.source_uri, ref.line, ref.key, body, ref.indent
+        )
+
+        # The source now holds what we just wrote, so the header's digest is
+        # stale. Refresh it, or the next save of this same sidecar would be
+        # rejected as out of date.
+        encoded = result.get("encoded")
+        if result.get("success") and encoded:
+            ref.digest = content_digest(encoded)
+            _atomic_write_text(path, build_header(ref) + body)
+
+        return result
+
+    except Exception as e:
+        logger.error(f"Error saving sidecar script: {e}", exc_info=True)
         return {"success": False, "error": str(e)}
 
 
