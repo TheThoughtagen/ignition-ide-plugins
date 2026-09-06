@@ -61,6 +61,16 @@ Inspect Perspective view component hierarchies:
 3. The extension activates automatically and prompts to install the language server
 4. Start editing — completions, hover docs, and diagnostics work immediately on Python and JSON files
 
+## Perspective View Preview
+
+On any Perspective `view.json`, the code action menu (`Ctrl+.` / `Cmd+.`) offers:
+
+- **Ignition: Preview view (wireframe)** — renders the component tree (layout,
+  bindings, scripted components) to an HTML page in `.ignition-preview/` and opens
+  it in your browser. It re-renders as you edit and the page reloads itself.
+- **Ignition: Open view in Gateway** — opens the page that mounts the view on the
+  Gateway configured in `ignition.gateway.url`.
+
 ## Configuration
 
 | Setting | Default | Description |
@@ -69,6 +79,7 @@ Inspect Perspective view component hierarchies:
 | `ignition.ignitionVersion` | `"8.1"` | Ignition platform version for API completions (`8.0` or `8.1`). |
 | `ignition.codeLens.enabled` | `true` | Show "Edit Script" CodeLens above embedded scripts in JSON files. |
 | `ignition.diagnostics.enabled` | `true` | Enable inline diagnostics for Python scripts. |
+| `ignition.gateway.url` | `""` | Gateway base URL (e.g. `http://localhost:8088`) for "Ignition: Open view in Gateway". |
 | `ignition.autoConvertTabs` | `true` | Auto-convert space indentation to tabs when opening Python files. |
 | `ignition.kindling.path` | `""` | Path to the Kindling executable. Leave empty for auto-detection. |
 

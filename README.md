@@ -25,6 +25,8 @@ Full IDE support for **[Ignition by Inductive Automation](https://inductiveautom
 | Completions, hover, go-to-definition, diagnostics | ✅ | ✅ | ✅ |
 | Workspace symbols | ✅ | ✅ | ✅ |
 | Decode/encode embedded scripts | ✅ | ✅ | ✅ * |
+| Perspective view wireframe preview (live) | ✅ | ✅ | ✅ |
+| Open Perspective view in Gateway | ✅ | ✅ | ✅ |
 | Project / Tag Browser, Component Tree | — | ✅ | — |
 | CodeLens | — | ✅ | — |
 | Kindling integration | ✅ | ✅ | — |
@@ -32,6 +34,13 @@ Full IDE support for **[Ignition by Inductive Automation](https://inductiveautom
 \* Zed has no virtual-document API, so decoded scripts are written to
 `.ignition-scripts/` and edited as real files. See the
 [Zed README](packages/ignition-zed/README.md).
+
+The Perspective view actions are LSP code actions on a `view.json`, so they work
+the same in every editor. **Preview view (wireframe)** renders the component
+tree (layout, bindings, scripted components) to a self-contained HTML page in
+`.ignition-preview/` and opens it in your browser; it re-renders as you edit and
+the page reloads itself. **Open view in Gateway** opens the page that mounts the
+view on a running Gateway (`ignition.gateway.url`).
 
 ### VS Code Extras
 
@@ -79,6 +88,7 @@ With custom options:
       settings = {
         ignition = {
           version = "8.1",
+          gateway = { url = "http://localhost:8088" }, -- for "Open view in Gateway"
         },
       },
     },
@@ -145,6 +155,8 @@ file in an Ignition project:
 |-------------|-------|-------------|
 | `Ignition: Decode …` | JSON resource | Decode the embedded script on the current line into `.ignition-scripts/` and open it |
 | `Ignition: Save … back to JSON` | Decoded script | Re-encode and write the script back into its source JSON |
+| `Ignition: Preview view (wireframe)` | Perspective `view.json` | Render a live-updating HTML wireframe of the view into `.ignition-preview/` and open it in the browser |
+| `Ignition: Open view in Gateway` | Perspective `view.json` | Open the page that mounts the view on the configured Gateway |
 
 ## Documentation
 

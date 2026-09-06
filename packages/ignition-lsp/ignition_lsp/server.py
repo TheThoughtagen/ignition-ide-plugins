@@ -53,6 +53,8 @@ from lsprotocol.types import (
     SymbolInformation,
     WorkspaceSymbolParams,
     ShowDocumentParams,
+    ShowMessageParams,
+    MessageType,
     WorkDoneProgressBegin,
     WorkDoneProgressEnd,
     ProgressParams,
@@ -142,6 +144,11 @@ class IgnitionLanguageServer(LanguageServer):
         self.project_index = None
         self.symbol_cache = None
         self._scan_in_progress = False
+        # Perspective client base URL (`ignition.gateway.url`), e.g.
+        # "http://localhost:8088". None until the client configures it.
+        self.gateway_url: Optional[str] = None
+        # view.json URI -> generated wireframe path, for live re-rendering.
+        self.previewed_views: Dict[str, Path] = {}
         logger.info("Ignition LSP Server initialized")
 
     def initialize_api_loader(self, version: str = "8.1"):
@@ -317,7 +324,10 @@ def did_change_configuration(
     settings = getattr(params, "settings", None) or {}
     ignition_settings = settings.get("ignition", settings)
     _apply_settings(ls, ignition_settings)
-    logger.info(f"Configuration updated (diagnostics={ls.diagnostics_enabled})")
+    logger.info(
+        f"Configuration updated (diagnostics={ls.diagnostics_enabled}, "
+        f"gateway={ls.gateway_url})"
+    )
 
 
 def _apply_settings(ls: IgnitionLanguageServer, settings: dict) -> None:
@@ -333,6 +343,12 @@ def _apply_settings(ls: IgnitionLanguageServer, settings: dict) -> None:
                     ls.diagnostics_enabled = enabled
             elif isinstance(diag, bool):
                 ls.diagnostics_enabled = diag
+
+            gateway = ignition.get("gateway")
+            if isinstance(gateway, dict):
+                gateway = gateway.get("url")
+            if isinstance(gateway, str):
+                ls.gateway_url = gateway.strip() or None
 
 
 # ── Custom LSP Methods: Stubs Info ────────────────────────────────
@@ -387,6 +403,9 @@ async def did_change(ls: IgnitionLanguageServer, params: DidChangeTextDocumentPa
     """Handle document change event."""
     logger.debug(f"Document changed: {params.text_document.uri}")
 
+    if params.text_document.uri in ls.previewed_views:
+        _refresh_view_preview(ls, params.text_document.uri)
+
     # Run diagnostics on change (with debouncing in production)
     if ls.diagnostics_enabled:
         await run_diagnostics(ls, params.text_document.uri)
@@ -419,6 +438,9 @@ async def did_save(ls: IgnitionLanguageServer, params: DidSaveTextDocumentParams
 def did_close(ls: IgnitionLanguageServer, params: DidCloseTextDocumentParams):
     """Handle document close event."""
     logger.info(f"Document closed: {params.text_document.uri}")
+
+    # The preview file stays on disk; it just stops following edits.
+    ls.previewed_views.pop(params.text_document.uri, None)
 
     # Clear diagnostics for closed document
     ls.text_document_publish_diagnostics(
@@ -705,6 +727,8 @@ def save_script_handler(ls: IgnitionLanguageServer, params: object) -> dict:
 # decode/edit/save cycle entirely through these two commands.
 DECODE_SCRIPT_COMMAND = "ignition.decodeScriptToFile"
 SAVE_SCRIPT_COMMAND = "ignition.saveScriptToSource"
+PREVIEW_VIEW_COMMAND = "ignition.previewView"
+OPEN_VIEW_IN_GATEWAY_COMMAND = "ignition.openViewInGateway"
 
 
 def _is_sidecar_uri(uri: str) -> bool:
@@ -741,7 +765,9 @@ def code_action(
         if _is_sidecar_uri(uri):
             return _sidecar_code_actions(uri, doc.source)
         if uri.endswith(".json"):
-            return _json_resource_code_actions(uri, doc.lines, params)
+            actions = _json_resource_code_actions(uri, doc.lines, params) or []
+            actions += _view_code_actions(uri, doc.source)
+            return actions or None
     except Exception as e:
         logger.error(f"Error building code actions for {uri}: {e}", exc_info=True)
 
@@ -885,6 +911,211 @@ def decode_script_to_file_command(
     except Exception as e:
         logger.error(f"Error decoding script to file: {e}", exc_info=True)
         return {"success": False, "error": str(e)}
+
+
+# ── Perspective views: wireframe preview + open in Gateway ────────
+
+
+def _view_code_actions(uri: str, text: str) -> List[CodeAction]:
+    """Preview / open-in-Gateway actions, offered anywhere in a Perspective view."""
+    import json
+
+    from ignition_lsp.view_renderer import is_perspective_view
+
+    if Path(_uri_to_path(uri)).name != "view.json":
+        return []
+    try:
+        data = json.loads(text)
+    except ValueError:
+        return []
+    if not is_perspective_view(data):
+        return []
+
+    return [
+        CodeAction(
+            title="Ignition: Preview view (wireframe)",
+            kind=CodeActionKind.Empty,
+            command=Command(
+                title="Preview view",
+                command=PREVIEW_VIEW_COMMAND,
+                arguments=[{"uri": uri}],
+            ),
+        ),
+        CodeAction(
+            title="Ignition: Open view in Gateway",
+            kind=CodeActionKind.Empty,
+            command=Command(
+                title="Open view in Gateway",
+                command=OPEN_VIEW_IN_GATEWAY_COMMAND,
+                arguments=[{"uri": uri}],
+            ),
+        ),
+    ]
+
+
+def _view_document_text(ls: IgnitionLanguageServer, uri: str) -> str:
+    """The view's current text: the open buffer if there is one, else disk."""
+    try:
+        return ls.workspace.get_text_document(uri).source
+    except Exception:
+        return Path(_uri_to_path(uri)).read_text(encoding="utf-8")
+
+
+def _render_view_preview(ls: IgnitionLanguageServer, uri: str) -> Path:
+    """Render `uri` to its wireframe file and return the file's path.
+
+    Raises `NotAPerspectiveView` / `ValueError` when the text does not parse
+    as a Perspective view; callers decide whether that is an error (an
+    explicit preview request) or noise (a mid-edit re-render).
+    """
+    from ignition_lsp.gateway_urls import view_path_from_file
+    from ignition_lsp.view_renderer import parse_view, preview_path, render_view_html
+
+    source = Path(_uri_to_path(uri))
+    root = ls._find_project_root(uri) or str(source.parent)
+    view = parse_view(_view_document_text(ls, uri))
+
+    title = view_path_from_file(root, str(source)) or source.parent.name
+    try:
+        label = str(source.relative_to(root))
+    except ValueError:
+        label = str(source)
+
+    target = preview_path(root, str(source))
+    target.parent.mkdir(parents=True, exist_ok=True)
+    _atomic_write_text(target, render_view_html(view, title, label))
+    return target
+
+
+def _refresh_view_preview(ls: IgnitionLanguageServer, uri: str) -> None:
+    """Re-render a tracked preview after an edit; invalid JSON keeps the last one."""
+    try:
+        _render_view_preview(ls, uri)
+    except ValueError:
+        logger.debug(f"Preview not refreshed, view does not parse yet: {uri}")
+    except Exception as e:
+        logger.warning(f"Could not refresh preview for {uri}: {e}")
+
+
+@server.command(PREVIEW_VIEW_COMMAND)
+def preview_view_command(ls: IgnitionLanguageServer, args: Dict[str, Any]) -> dict:
+    """Render a Perspective view.json as a static HTML wireframe and open it.
+
+    Args (single object argument): ``uri``.
+
+    The file lands in ``.ignition-preview/`` at the project root and is opened
+    externally (the system browser). Edits to the view re-render the file and
+    the page reloads itself, so the wireframe follows the editor.
+    """
+    uri = str(_param(args, "uri", ""))
+    logger.info(f"{PREVIEW_VIEW_COMMAND}: {uri}")
+
+    try:
+        target = _render_view_preview(ls, uri)
+    except FileNotFoundError:
+        return {"success": False, "error": f"File not found: {_uri_to_path(uri)}"}
+    except ValueError as e:
+        return {"success": False, "error": f"Not a Perspective view: {e}"}
+    except Exception as e:
+        logger.error(f"Error rendering view preview: {e}", exc_info=True)
+        return {"success": False, "error": str(e)}
+
+    ls.previewed_views[uri] = target
+    target_uri = _path_to_uri(target)
+    logger.info(f"Rendered view preview to {target}")
+    _show_external(ls, target_uri)
+    return {"success": True, "uri": target_uri, "path": str(target)}
+
+
+@server.command(OPEN_VIEW_IN_GATEWAY_COMMAND)
+def open_view_in_gateway_command(
+    ls: IgnitionLanguageServer, args: Dict[str, Any]
+) -> dict:
+    """Open the Perspective page that mounts a view in the system browser.
+
+    Args (single object argument): ``uri``.
+
+    Needs ``ignition.gateway.url``. The page comes from the project's
+    page-config; a view no page mounts opens the project's root URL instead.
+    """
+    from ignition_lsp.gateway_urls import (
+        PAGE_CONFIG_RELATIVE,
+        client_url,
+        find_page_for_view,
+        parse_page_config,
+        project_name_from_root,
+        view_path_from_file,
+    )
+
+    uri = str(_param(args, "uri", ""))
+    logger.info(f"{OPEN_VIEW_IN_GATEWAY_COMMAND}: {uri}")
+
+    if not ls.gateway_url:
+        message = (
+            "No Gateway URL configured. Set ignition.gateway.url "
+            '(for example "http://localhost:8088") to open views in a browser.'
+        )
+        _warn(ls, message)
+        return {"success": False, "error": message}
+
+    try:
+        source = Path(_uri_to_path(uri))
+        root = ls._find_project_root(uri)
+        if root is None:
+            message = f"No Ignition project (project.json) found above {source}"
+            _warn(ls, message)
+            return {"success": False, "error": message}
+
+        project = project_name_from_root(root)
+        view_path = view_path_from_file(root, str(source))
+
+        page: Optional[str] = None
+        if view_path is not None:
+            config_file = Path(root) / PAGE_CONFIG_RELATIVE
+            if config_file.is_file():
+                pages = parse_page_config(config_file.read_text(encoding="utf-8"))
+                page = find_page_for_view(pages, view_path)
+
+        url = client_url(ls.gateway_url, project, page)
+        if page is None:
+            _info(
+                ls,
+                f"No page mounts '{view_path or source.name}'; "
+                f"opening the project instead: {url}",
+            )
+
+        logger.info(f"Opening {url}")
+        _show_external(ls, url)
+        return {"success": True, "url": url, "page": page, "view": view_path}
+
+    except Exception as e:
+        logger.error(f"Error opening view in Gateway: {e}", exc_info=True)
+        return {"success": False, "error": str(e)}
+
+
+def _show_external(ls: IgnitionLanguageServer, url: str) -> None:
+    """Ask the client to open `url` outside the editor; tolerate clients that can't."""
+    try:
+        ls.window_show_document(
+            ShowDocumentParams(uri=url, external=True),
+            callback=lambda _result: None,
+        )
+    except Exception as e:
+        logger.debug(f"window/showDocument not available: {e}")
+
+
+def _warn(ls: IgnitionLanguageServer, message: str) -> None:
+    try:
+        ls.window_show_message(ShowMessageParams(type=MessageType.Warning, message=message))
+    except Exception as e:
+        logger.debug(f"window/showMessage not available: {e}")
+
+
+def _info(ls: IgnitionLanguageServer, message: str) -> None:
+    try:
+        ls.window_show_message(ShowMessageParams(type=MessageType.Info, message=message))
+    except Exception as e:
+        logger.debug(f"window/showMessage not available: {e}")
 
 
 def _validate_sidecar_target(sidecar: Path, ref: "ScriptRef") -> Optional[str]:

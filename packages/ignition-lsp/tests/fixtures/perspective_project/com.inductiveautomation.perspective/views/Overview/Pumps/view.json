@@ -1,0 +1,231 @@
+{
+  "custom": {},
+  "params": {
+    "pumpId": 1
+  },
+  "propConfig": {
+    "params.pumpId": {
+      "paramDirection": "input",
+      "persistent": true
+    }
+  },
+  "props": {
+    "defaultSize": {
+      "height": 480,
+      "width": 720
+    }
+  },
+  "root": {
+    "children": [
+      {
+        "meta": {
+          "name": "Header"
+        },
+        "position": {
+          "basis": "56px",
+          "grow": 0,
+          "shrink": 0
+        },
+        "props": {
+          "style": {
+            "backgroundColor": "#1f3a5f",
+            "color": "white",
+            "fontSize": "20px",
+            "paddingLeft": "12px"
+          },
+          "text": "Pump Station"
+        },
+        "type": "ia.display.label"
+      },
+      {
+        "children": [
+          {
+            "events": {
+              "dom": {
+                "onClick": {
+                  "config": {
+                    "script": "\tsystem.perspective.navigate(page = '/settings')"
+                  },
+                  "scope": "G",
+                  "type": "script"
+                }
+              }
+            },
+            "meta": {
+              "name": "StartButton"
+            },
+            "position": {
+              "height": 40,
+              "width": 120,
+              "x": 20,
+              "y": 20
+            },
+            "props": {
+              "text": "Start"
+            },
+            "type": "ia.input.button"
+          },
+          {
+            "meta": {
+              "name": "Speed"
+            },
+            "position": {
+              "height": 40,
+              "width": 200,
+              "x": 160,
+              "y": 20
+            },
+            "propConfig": {
+              "props.value": {
+                "binding": {
+                  "config": {
+                    "fallbackDelay": 2.5,
+                    "mode": "direct",
+                    "tagPath": "[default]Pumps/Pump1/Speed"
+                  },
+                  "type": "tag"
+                }
+              }
+            },
+            "props": {
+              "units": "rpm"
+            },
+            "type": "ia.display.numericlabel"
+          },
+          {
+            "meta": {
+              "name": "Status"
+            },
+            "position": {
+              "height": 40,
+              "width": 200,
+              "x": 380,
+              "y": 20
+            },
+            "propConfig": {
+              "props.text": {
+                "binding": {
+                  "config": {
+                    "expression": "if({view.params.pumpId} > 0, 'Running', 'Stopped')"
+                  },
+                  "type": "expr"
+                }
+              }
+            },
+            "props": {},
+            "type": "ia.display.label"
+          },
+          {
+            "meta": {
+              "name": "Hidden"
+            },
+            "position": {
+              "display": false,
+              "height": 20,
+              "width": 20,
+              "x": 0,
+              "y": 0
+            },
+            "props": {},
+            "type": "ia.display.icon"
+          },
+          {
+            "meta": {
+              "name": "Trend"
+            },
+            "position": {
+              "height": 240,
+              "width": 680,
+              "x": 20,
+              "y": 80
+            },
+            "propConfig": {
+              "props.series[0].data": {
+                "binding": {
+                  "config": {
+                    "path": "view.custom.history"
+                  },
+                  "type": "property"
+                }
+              }
+            },
+            "props": {
+              "series": [
+                {
+                  "data": [],
+                  "name": "Speed"
+                }
+              ]
+            },
+            "type": "ia.chart.timeseries"
+          }
+        ],
+        "meta": {
+          "name": "Body"
+        },
+        "position": {
+          "basis": "0px",
+          "grow": 1,
+          "shrink": 1
+        },
+        "props": {
+          "mode": "fixed"
+        },
+        "type": "ia.container.coord"
+      },
+      {
+        "children": [
+          {
+            "meta": {
+              "name": "Save"
+            },
+            "position": {
+              "basis": "100px",
+              "grow": 0
+            },
+            "props": {
+              "text": "Save"
+            },
+            "type": "ia.input.button"
+          },
+          {
+            "meta": {
+              "name": "Cancel"
+            },
+            "position": {
+              "basis": "100px",
+              "grow": 0
+            },
+            "props": {
+              "text": "Cancel"
+            },
+            "type": "ia.input.button"
+          }
+        ],
+        "meta": {
+          "name": "Footer"
+        },
+        "position": {
+          "basis": "48px",
+          "grow": 0,
+          "shrink": 0
+        },
+        "props": {
+          "direction": "row",
+          "justify": "flex-end",
+          "style": {
+            "borderTop": "1px solid #ccc"
+          }
+        },
+        "type": "ia.container.flex"
+      }
+    ],
+    "meta": {
+      "name": "root"
+    },
+    "props": {
+      "direction": "column"
+    },
+    "type": "ia.container.flex"
+  }
+}

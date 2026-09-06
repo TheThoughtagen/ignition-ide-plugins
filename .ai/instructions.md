@@ -37,6 +37,8 @@ pygls 2.0 language server — shared by all editors.
 | `project_scanner.py` | Walks Ignition project dirs, builds script index |
 | `workspace_symbols.py` | Exposes project index via LSP workspace symbols |
 | `script_files.py` | Sidecar decoded-script files (path + metadata header) for clients without virtual documents |
+| `view_renderer.py` | Perspective `view.json` → self-contained HTML wireframe (layout, bindings, scripts) |
+| `gateway_urls.py` | Maps a view file to the Perspective client URL that shows it (page-config lookup) |
 | `api_db/*.json` | 14 modules, 239 functions — follows `api_db/schema.json` |
 | `java_db/*.json` | Java/Jython class completions (26 packages, 146 classes) |
 | `stubs/**/*.pyi` | Pyright/Pylance type stubs for Ignition APIs |
@@ -124,6 +126,26 @@ All three editors decode those embedded scripts into editable Python buffers wit
   script that moved into its position
 - Both save paths funnel through `_write_script_to_source()` so round-trip
   behaviour cannot diverge between clients
+
+### Perspective View Actions (preview + open in Gateway)
+- On a Perspective `view.json` (root `type` starts with `ia.`), `codeAction` also
+  offers **Ignition: Preview view (wireframe)** (`ignition.previewView`) and
+  **Ignition: Open view in Gateway** (`ignition.openViewInGateway`)
+- Preview: `view_renderer.parse_view()` → `render_view_html()` writes a static
+  page to `.ignition-preview/` at the project root and opens it with
+  `window/showDocument external=true`. The page carries a `<meta refresh>`, and
+  `did_change` re-renders any URI in `ls.previewed_views`, so edits show up live.
+  Invalid JSON mid-edit keeps the last good render. It is a **wireframe**, not a
+  Gateway render: coord containers place children by x/y/width/height (px or
+  percent mode), flex containers by grow/shrink/basis, everything else stacks
+- Open in Gateway: needs `ignition.gateway.url` (`ls.gateway_url`, set through
+  `_apply_settings`). `gateway_urls` derives the view path from the file
+  location, finds the page mounting it in
+  `com.inductiveautomation.perspective/page-config/config.json` (param-free,
+  shortest URL first), and builds `{gateway}/data/perspective/client/{project}{page}`.
+  A view no page mounts opens the project root instead, with an info message.
+  Project name = project directory name
+- All HTML output goes through `html.escape`; view content is untrusted
 
 ### LSP Client
 - **Neovim:** Uses `vim.lsp.start()` — modern Neovim 0.11+ API, NOT lspconfig

@@ -26,6 +26,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     header says, the source must resolve inside the owning project, and the
     digest must still match the script at that line, so a stale sidecar cannot
     overwrite a script that has since moved into its position
+- **Perspective view preview** — two new code actions on any Perspective `view.json`,
+  available in Neovim, VS Code, and Zed alike:
+  - "Ignition: Preview view (wireframe)" (`ignition.previewView`) renders the view's
+    component tree — coord and flex layout, bindings, scripted components, style
+    passthrough — to a self-contained HTML page in `.ignition-preview/` and opens it
+    in the browser. The page follows your edits: the server re-renders on every
+    change and the page reloads itself
+  - "Ignition: Open view in Gateway" (`ignition.openViewInGateway`) opens the page
+    that mounts the view on a running Gateway, resolved from the project's
+    page-config. Falls back to the project's root URL for views no page mounts
+  - New `ignition.gateway.url` setting (VS Code setting of the same name; `gateway.url`
+    in Neovim/Zed LSP settings)
 
 - **Ignition System API completions** — 14 modules with 239+ functions:
   - `system.tag` — Tag operations (read, write, browse)

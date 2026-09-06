@@ -1,0 +1,7 @@
+{
+  "title": "Demo Plant",
+  "description": "Fixture project for Perspective preview tests",
+  "parent": "",
+  "enabled": true,
+  "inheritable": false
+}

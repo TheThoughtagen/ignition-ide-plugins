@@ -399,3 +399,168 @@ class TestRoundTripOverTheWire:
         assert response["result"]["success"] is False
         assert "changed" in response["result"]["error"].lower()
         assert source.read_text(encoding="utf-8") == changed
+
+
+# ── Perspective views over the wire ──────────────────────────────────
+
+import shutil  # noqa: E402
+
+FIXTURE_PROJECT = pathlib.Path(__file__).parent / "fixtures" / "perspective_project"
+PUMPS_RELATIVE = pathlib.Path("com.inductiveautomation.perspective/views/Overview/Pumps/view.json")
+
+
+@pytest.fixture
+def perspective_project(tmp_path: pathlib.Path) -> pathlib.Path:
+    root = tmp_path / "Demo Plant"
+    shutil.copytree(FIXTURE_PROJECT, root)
+    return root
+
+
+@pytest.fixture
+def view_client(perspective_project: pathlib.Path):
+    """A started server with the fixture Perspective view open."""
+    lsp = LspClient([sys.executable, "-m", "ignition_lsp.server"])
+    try:
+        lsp.request(
+            "initialize",
+            {
+                "processId": None,
+                "rootUri": perspective_project.as_uri(),
+                "capabilities": {"window": {"showDocument": {"support": True}}},
+            },
+        )
+        lsp.notify("initialized", {})
+        view = perspective_project / PUMPS_RELATIVE
+        lsp.notify(
+            "textDocument/didOpen",
+            {
+                "textDocument": {
+                    "uri": view.as_uri(),
+                    "languageId": "json",
+                    "version": 1,
+                    "text": view.read_text(encoding="utf-8"),
+                }
+            },
+        )
+        time.sleep(0.5)
+        yield lsp
+    finally:
+        lsp.stop()
+
+
+def _server_requests(lsp: LspClient, method: str) -> List[dict]:
+    time.sleep(0.3)
+    lsp.drain_server_requests()
+    return [r for r in lsp.handled_server_requests if r["method"] == method]
+
+
+class TestPerspectiveViewsOverTheWire:
+    def test_commands_are_advertised(self, perspective_project: pathlib.Path) -> None:
+        lsp = LspClient([sys.executable, "-m", "ignition_lsp.server"])
+        try:
+            response = lsp.request(
+                "initialize",
+                {"processId": None, "rootUri": perspective_project.as_uri(), "capabilities": {}},
+            )
+            commands = response["result"]["capabilities"]["executeCommandProvider"]["commands"]
+            assert "ignition.previewView" in commands
+            assert "ignition.openViewInGateway" in commands
+        finally:
+            lsp.stop()
+
+    def test_view_actions_are_offered(
+        self, view_client: LspClient, perspective_project: pathlib.Path
+    ) -> None:
+        view = perspective_project / PUMPS_RELATIVE
+        result = view_client.request(
+            "textDocument/codeAction",
+            {
+                "textDocument": {"uri": view.as_uri()},
+                "range": {"start": {"line": 0, "character": 0}, "end": {"line": 0, "character": 0}},
+                "context": {"diagnostics": []},
+            },
+        )
+        titles = [a["title"] for a in result.get("result") or []]
+        assert titles == [
+            "Ignition: Preview view (wireframe)",
+            "Ignition: Open view in Gateway",
+        ]
+
+    def test_preview_writes_html_and_opens_it_externally(
+        self, view_client: LspClient, perspective_project: pathlib.Path
+    ) -> None:
+        view = perspective_project / PUMPS_RELATIVE
+        response = view_client.request(
+            "workspace/executeCommand",
+            {"command": "ignition.previewView", "arguments": [{"uri": view.as_uri()}]},
+        )
+
+        assert "error" not in response, response.get("error")
+        result = response["result"]
+        assert result["success"] is True
+        html = pathlib.Path(result["path"]).read_text(encoding="utf-8")
+        assert "Pump Station" in html
+
+        shown = _server_requests(view_client, "window/showDocument")
+        assert shown, "client was not asked to open the preview"
+        assert shown[-1]["params"]["uri"] == result["uri"]
+        assert shown[-1]["params"]["external"] is True
+
+    def test_preview_follows_edits(
+        self, view_client: LspClient, perspective_project: pathlib.Path
+    ) -> None:
+        view = perspective_project / PUMPS_RELATIVE
+        result = view_client.request(
+            "workspace/executeCommand",
+            {"command": "ignition.previewView", "arguments": [{"uri": view.as_uri()}]},
+        )["result"]
+        preview = pathlib.Path(result["path"])
+
+        edited = view.read_text(encoding="utf-8").replace("Pump Station", "Wire Edit")
+        view_client.notify(
+            "textDocument/didChange",
+            {
+                "textDocument": {"uri": view.as_uri(), "version": 2},
+                "contentChanges": [{"text": edited}],
+            },
+        )
+
+        deadline = time.time() + 5
+        while time.time() < deadline:
+            if "Wire Edit" in preview.read_text(encoding="utf-8"):
+                break
+            time.sleep(0.1)
+        assert "Wire Edit" in preview.read_text(encoding="utf-8")
+
+    def test_open_in_gateway_uses_configured_url(
+        self, view_client: LspClient, perspective_project: pathlib.Path
+    ) -> None:
+        view_client.notify(
+            "workspace/didChangeConfiguration",
+            {"settings": {"ignition": {"gateway": {"url": "http://localhost:8088"}}}},
+        )
+        time.sleep(0.2)
+        view = perspective_project / PUMPS_RELATIVE
+
+        response = view_client.request(
+            "workspace/executeCommand",
+            {"command": "ignition.openViewInGateway", "arguments": [{"uri": view.as_uri()}]},
+        )
+
+        assert "error" not in response, response.get("error")
+        result = response["result"]
+        assert result["success"] is True
+        assert result["url"] == "http://localhost:8088/data/perspective/client/Demo%20Plant"
+        shown = _server_requests(view_client, "window/showDocument")
+        assert shown[-1]["params"] == {"uri": result["url"], "external": True}
+
+    def test_open_in_gateway_without_url_declines(
+        self, view_client: LspClient, perspective_project: pathlib.Path
+    ) -> None:
+        view = perspective_project / PUMPS_RELATIVE
+        response = view_client.request(
+            "workspace/executeCommand",
+            {"command": "ignition.openViewInGateway", "arguments": [{"uri": view.as_uri()}]},
+        )
+        assert response["result"]["success"] is False
+        assert not _server_requests(view_client, "window/showDocument")
