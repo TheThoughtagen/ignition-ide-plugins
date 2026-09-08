@@ -1112,6 +1112,7 @@ def _show_external(ls: IgnitionLanguageServer, url: str) -> None:
 
 
 def _warn(ls: IgnitionLanguageServer, message: str) -> None:
+    """Show a warning in the editor; a client without showMessage just logs it."""
     try:
         ls.window_show_message(ShowMessageParams(type=MessageType.Warning, message=message))
     except Exception as e:
@@ -1119,6 +1120,7 @@ def _warn(ls: IgnitionLanguageServer, message: str) -> None:
 
 
 def _info(ls: IgnitionLanguageServer, message: str) -> None:
+    """Show an info message in the editor; a client without showMessage just logs it."""
     try:
         ls.window_show_message(ShowMessageParams(type=MessageType.Info, message=message))
     except Exception as e:

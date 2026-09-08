@@ -76,6 +76,7 @@ class Node:
 
     @property
     def is_container(self) -> bool:
+        """Whether this component lays out children (any `ia.container.*` type)."""
         return self.type.startswith("ia.container.")
 
 
@@ -121,6 +122,7 @@ def parse_view(text: str) -> ViewModel:
 
 
 def _parse_node(component: Dict[str, Any]) -> Node:
+    """Build a `Node` from one component object, recursing into its children."""
     meta = component.get("meta") or {}
     props = component.get("props") or {}
     position = component.get("position") or {}
@@ -190,6 +192,7 @@ def render_view_html(view: ViewModel, title: str, source_label: str = "") -> str
 
 
 def _render_node(node: Node, parent: Optional[Node], depth: int) -> str:
+    """Render one component and its subtree as a positioned `<div>`."""
     style = _layout_style(node, parent) + _user_style(node)
     classes = ["c", "container" if node.is_container else "leaf"]
     if node.has_scripts:
@@ -214,6 +217,7 @@ def _render_node(node: Node, parent: Optional[Node], depth: int) -> str:
 
 
 def _render_header(node: Node) -> str:
+    """The component's title strip: short type, name, and script/binding badges."""
     badges = ""
     if node.has_scripts:
         badges += '<span class="badge script" title="has event scripts">script</span>'
@@ -229,6 +233,11 @@ def _render_header(node: Node) -> str:
 
 
 def _render_leaf_body(node: Node) -> str:
+    """Summarise a non-container component: a headline prop plus a few others.
+
+    Bound props show their binding placeholder instead of a value, since the
+    value in the file is only the design-time default.
+    """
     bound_props = {b.prop.split(".", 1)[-1]: b for b in node.bindings}
     lines: List[str] = []
 
@@ -276,6 +285,7 @@ def _render_leaf_body(node: Node) -> str:
 
 
 def _binding_placeholder(binding: Binding) -> str:
+    """Inline marker for a bound prop: `⟨tag [default]Path⟩`, `⟨expr …⟩`."""
     detail = f" {html.escape(binding.detail)}" if binding.detail else ""
     return f'<span class="binding" title="bound">⟨{html.escape(binding.kind)}{detail}⟩</span>'
 
@@ -300,6 +310,7 @@ def _layout_style(node: Node, parent: Optional[Node]) -> str:
 
 
 def _placement_style(node: Node, parent: Node) -> str:
+    """CSS for `node`'s box as its parent's container type interprets `position`."""
     pos = node.position
     if parent.type == _COORD:
         percent = parent.props.get("mode") == "percent"
@@ -372,6 +383,7 @@ def _user_style(node: Node) -> str:
 
 
 def _as_int(value: Any, default: int) -> int:
+    """`int(value)`, or `default` when the JSON holds something that is not one."""
     try:
         return int(value)
     except (TypeError, ValueError):
@@ -379,6 +391,7 @@ def _as_int(value: Any, default: int) -> int:
 
 
 def _as_float(value: Any, default: float) -> float:
+    """`float(value)`, or `default` when the JSON holds something that is not one."""
     try:
         return float(value)
     except (TypeError, ValueError):
@@ -400,6 +413,7 @@ def _css_length(value: Any) -> str:
 
 
 def _css_word(value: Any, default: str) -> str:
+    """A bare CSS keyword (`row`, `flex-end`) from untrusted JSON, else `default`."""
     return value if isinstance(value, str) and re.fullmatch(r"[a-z-]+", value) else default
 
 
