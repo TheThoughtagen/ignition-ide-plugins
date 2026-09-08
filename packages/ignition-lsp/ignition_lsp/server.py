@@ -1044,6 +1044,7 @@ def open_view_in_gateway_command(
         find_page_for_view,
         parse_page_config,
         project_name_from_root,
+        validate_gateway_url,
         view_path_from_file,
     )
 
@@ -1055,6 +1056,12 @@ def open_view_in_gateway_command(
             "No Gateway URL configured. Set ignition.gateway.url "
             '(for example "http://localhost:8088") to open views in a browser.'
         )
+        _warn(ls, message)
+        return {"success": False, "error": message}
+
+    problem = validate_gateway_url(ls.gateway_url)
+    if problem is not None:
+        message = f"ignition.gateway.url {problem} (got {ls.gateway_url!r})"
         _warn(ls, message)
         return {"success": False, "error": message}
 

@@ -12,6 +12,7 @@ from ignition_lsp.gateway_urls import (
     has_route_params,
     parse_page_config,
     project_name_from_root,
+    validate_gateway_url,
     view_path_from_file,
 )
 
@@ -129,6 +130,42 @@ class TestClientUrl:
         assert client_url("http://gw", "Demo Plant/1") == (
             "http://gw/data/perspective/client/Demo%20Plant%2F1"
         )
+
+
+class TestValidateGatewayUrl:
+    @pytest.mark.parametrize(
+        "url",
+        [
+            "http://localhost:8088",
+            "http://127.0.0.1:8088/",
+            "http://[::1]:8088",
+            "http://gateway.plant.local:8088",  # plain HTTP on a LAN is the Ignition default
+            "https://gw.example.com",
+            "https://gw.example.com/ignition",
+            "  http://localhost:8088  ",
+        ],
+    )
+    def test_accepts_web_urls(self, url: str) -> None:
+        assert validate_gateway_url(url) is None
+
+    @pytest.mark.parametrize(
+        "url, problem",
+        [
+            ("javascript:alert(1)", "http:// or https://"),
+            ("file:///etc/passwd", "http:// or https://"),
+            ("ftp://gw:21", "http:// or https://"),
+            ("localhost:8088", "http:// or https://"),
+            ("gw.example.com", "http:// or https://"),
+            ("http://", "host"),
+            ("http:///data", "host"),
+            ("http://gw:8088?x=1", "query string"),
+            ("http://gw:8088#frag", "query string"),
+        ],
+    )
+    def test_rejects_non_web_urls(self, url: str, problem: str) -> None:
+        message = validate_gateway_url(url)
+        assert message is not None
+        assert problem in message
 
 
 class TestProjectName:

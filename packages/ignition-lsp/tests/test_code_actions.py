@@ -860,6 +860,31 @@ class TestOpenViewInGatewayCommand:
         message = view_ls.window_show_message.call_args.args[0].message
         assert "ignition.gateway.url" in message
 
+    @pytest.mark.parametrize("bad", ["javascript:alert(1)", "file:///etc/passwd", "gw:8088"])
+    def test_non_web_gateway_url_is_never_opened(
+        self, view_ls: MagicMock, perspective_project: Path, bad: str
+    ) -> None:
+        view_ls.gateway_url = bad
+        view = perspective_project / PUMPS_RELATIVE
+
+        result = open_view_in_gateway_command(view_ls, {"uri": view.as_uri()})
+
+        assert result["success"] is False
+        assert "ignition.gateway.url" in result["error"]
+        view_ls.window_show_document.assert_not_called()
+        assert bad in view_ls.window_show_message.call_args.args[0].message
+
+    def test_plain_http_on_a_lan_host_is_allowed(
+        self, view_ls: MagicMock, perspective_project: Path
+    ) -> None:
+        view_ls.gateway_url = "http://gateway.plant.local:8088"
+        view = perspective_project / PUMPS_RELATIVE
+
+        result = open_view_in_gateway_command(view_ls, {"uri": view.as_uri()})
+
+        assert result["success"] is True
+        assert result["url"].startswith("http://gateway.plant.local:8088/")
+
     def test_outside_any_project(self, view_ls: MagicMock, tmp_path: Path) -> None:
         view_ls.gateway_url = "http://gw:8088"
         view_ls._find_project_root.return_value = None

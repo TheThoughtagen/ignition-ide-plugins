@@ -14,7 +14,7 @@ server reads the files and asks the client to open the result.
 import json
 from pathlib import Path
 from typing import Any, Dict, Optional
-from urllib.parse import quote
+from urllib.parse import quote, urlsplit
 
 # Where views and page config live inside an Ignition 8.1 project export.
 PERSPECTIVE_DIR = "com.inductiveautomation.perspective"
@@ -86,6 +86,27 @@ def find_page_for_view(pages: Dict[str, str], view_path: str) -> Optional[str]:
 def has_route_params(page_url: str) -> bool:
     """True when a page URL contains a `:param` segment."""
     return any(segment.startswith(":") for segment in page_url.split("/"))
+
+
+def validate_gateway_url(gateway_url: str) -> Optional[str]:
+    """Why `gateway_url` cannot be opened, or None when it is usable.
+
+    The value comes from editor settings, which a cloned workspace can carry,
+    so it is not trusted to be a web URL just because a user typed it: only
+    `http` and `https` with a host are handed to the system browser, never a
+    `file:`, `javascript:` or other scheme that the OS might route elsewhere.
+    Plain `http` is allowed for any host: a Gateway serves HTTP on 8088 by
+    default, and whether to put TLS in front of it is a deployment decision
+    the editor cannot second-guess.
+    """
+    parts = urlsplit(gateway_url.strip())
+    if parts.scheme not in ("http", "https"):
+        return "must start with http:// or https://"
+    if not parts.hostname:
+        return "must include a host, for example http://localhost:8088"
+    if parts.query or parts.fragment:
+        return "must be a base URL without a query string or fragment"
+    return None
 
 
 def client_url(gateway_url: str, project_name: str, page_url: Optional[str] = None) -> str:

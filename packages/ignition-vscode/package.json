@@ -126,8 +126,8 @@
           "type": "string",
           "default": "",
           "description": "Base URL of the Ignition Gateway (e.g. http://localhost:8088). Used by 'Ignition: Open view in Gateway' to open a Perspective view in the browser.",
-          "pattern": "^(https?://.*)?$",
-          "patternErrorMessage": "Must be an http:// or https:// URL."
+          "pattern": "^(https?://[^/?#\\s]+[^?#\\s]*)?$",
+          "patternErrorMessage": "Must be an http:// or https:// URL with a host and no query string or fragment."
         },
         "ignition.autoConvertTabs": {
           "type": "boolean",
