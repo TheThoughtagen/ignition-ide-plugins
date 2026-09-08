@@ -593,3 +593,349 @@ class TestPercentEncodedPaths:
         assert root == str(spaced_project)
         # relative_to rather than is_relative_to: the package supports 3.8.
         Path(_uri_to_path(source.as_uri())).relative_to(Path(root))
+
+
+# ── Perspective views: preview + open in Gateway ─────────────────────
+
+import shutil  # noqa: E402
+
+from ignition_lsp.server import (  # noqa: E402
+    OPEN_VIEW_IN_GATEWAY_COMMAND,
+    PREVIEW_VIEW_COMMAND,
+    open_view_in_gateway_command,
+    preview_view_command,
+)
+from ignition_lsp.view_renderer import PREVIEW_DIR_NAME  # noqa: E402
+
+FIXTURE_PROJECT = Path(__file__).parent / "fixtures" / "perspective_project"
+PUMPS_RELATIVE = Path("com.inductiveautomation.perspective/views/Overview/Pumps/view.json")
+
+
+@pytest.fixture
+def perspective_project(tmp_path: Path) -> Path:
+    """A copy of the fixture project, so previews never land in the repo."""
+    root = tmp_path / "Demo Plant"
+    shutil.copytree(FIXTURE_PROJECT, root)
+    return root
+
+
+@pytest.fixture
+def view_ls(perspective_project: Path) -> MagicMock:
+    ls = MagicMock()
+    ls._find_project_root.return_value = str(perspective_project)
+    ls.workspace.get_text_document.side_effect = KeyError("not open")  # read from disk
+    ls.gateway_url = None
+    ls.previewed_views = {}
+    return ls
+
+
+def _titles(actions) -> list:
+    return [a.title for a in (actions or [])]
+
+
+class TestViewCodeActions:
+    def test_perspective_view_offers_preview_and_open(
+        self, view_ls: MagicMock, perspective_project: Path
+    ) -> None:
+        view = perspective_project / PUMPS_RELATIVE
+        uri = view.as_uri()
+        view_ls.workspace.get_text_document.side_effect = None
+        view_ls.workspace.get_text_document.return_value = MockTextDocument(
+            uri, view.read_text(encoding="utf-8")
+        )
+
+        actions = code_action(view_ls, _params(uri, 0))
+
+        assert _titles(actions) == [
+            "Ignition: Preview view (wireframe)",
+            "Ignition: Open view in Gateway",
+        ]
+        assert actions[0].command.command == PREVIEW_VIEW_COMMAND
+        assert actions[1].command.command == OPEN_VIEW_IN_GATEWAY_COMMAND
+        assert actions[0].command.arguments == [{"uri": uri}]
+
+    def test_view_actions_are_offered_on_any_line(
+        self, view_ls: MagicMock, perspective_project: Path
+    ) -> None:
+        view = perspective_project / PUMPS_RELATIVE
+        uri = view.as_uri()
+        text = view.read_text(encoding="utf-8")
+        view_ls.workspace.get_text_document.side_effect = None
+        view_ls.workspace.get_text_document.return_value = MockTextDocument(uri, text)
+
+        last_line = text.count("\n") - 1
+        assert len(code_action(view_ls, _params(uri, last_line)) or []) == 2
+
+    def test_script_and_view_actions_combine(
+        self, view_ls: MagicMock, perspective_project: Path
+    ) -> None:
+        view = perspective_project / PUMPS_RELATIVE
+        uri = view.as_uri()
+        text = view.read_text(encoding="utf-8")
+        view_ls.workspace.get_text_document.side_effect = None
+        view_ls.workspace.get_text_document.return_value = MockTextDocument(uri, text)
+        script_line = next(i for i, line in enumerate(text.splitlines()) if '"script":' in line)
+
+        titles = _titles(code_action(view_ls, _params(uri, script_line)))
+
+        assert titles[0].startswith("Ignition: Decode")
+        assert titles[1:] == [
+            "Ignition: Preview view (wireframe)",
+            "Ignition: Open view in Gateway",
+        ]
+
+    def test_resource_json_is_not_a_view(
+        self, view_ls: MagicMock, perspective_project: Path
+    ) -> None:
+        resource = perspective_project / PUMPS_RELATIVE.parent / "resource.json"
+        uri = resource.as_uri()
+        view_ls.workspace.get_text_document.side_effect = None
+        view_ls.workspace.get_text_document.return_value = MockTextDocument(
+            uri, resource.read_text(encoding="utf-8")
+        )
+        assert code_action(view_ls, _params(uri, 0)) is None
+
+    def test_view_json_without_perspective_root_is_not_a_view(self, view_ls: MagicMock) -> None:
+        uri = "file:///p/views/X/view.json"
+        view_ls.workspace.get_text_document.side_effect = None
+        view_ls.workspace.get_text_document.return_value = MockTextDocument(
+            uri, '{"root": {"type": "custom"}}'
+        )
+        assert code_action(view_ls, _params(uri, 0)) is None
+
+    def test_half_typed_json_offers_nothing(self, view_ls: MagicMock) -> None:
+        uri = "file:///p/views/X/view.json"
+        view_ls.workspace.get_text_document.side_effect = None
+        view_ls.workspace.get_text_document.return_value = MockTextDocument(uri, '{"root": {')
+        assert code_action(view_ls, _params(uri, 0)) is None
+
+
+class TestPreviewViewCommand:
+    def test_writes_preview_under_project_and_opens_it(
+        self, view_ls: MagicMock, perspective_project: Path
+    ) -> None:
+        view = perspective_project / PUMPS_RELATIVE
+
+        result = preview_view_command(view_ls, {"uri": view.as_uri()})
+
+        assert result["success"] is True, result
+        target = Path(result["path"])
+        assert target.parent == perspective_project / PREVIEW_DIR_NAME
+        html = target.read_text(encoding="utf-8")
+        assert "Overview/Pumps" in html
+        assert "Pump Station" in html
+
+        params = view_ls.window_show_document.call_args.args[0]
+        assert params.uri == result["uri"]
+        assert params.external is True
+
+    def test_preview_is_tracked_for_live_updates(
+        self, view_ls: MagicMock, perspective_project: Path
+    ) -> None:
+        view = perspective_project / PUMPS_RELATIVE
+        result = preview_view_command(view_ls, {"uri": view.as_uri()})
+        assert view_ls.previewed_views == {view.as_uri(): Path(result["path"])}
+
+    def test_open_buffer_wins_over_disk(
+        self, view_ls: MagicMock, perspective_project: Path
+    ) -> None:
+        view = perspective_project / PUMPS_RELATIVE
+        uri = view.as_uri()
+        edited = view.read_text(encoding="utf-8").replace("Pump Station", "Edited Title")
+        view_ls.workspace.get_text_document.side_effect = None
+        view_ls.workspace.get_text_document.return_value = MockTextDocument(uri, edited)
+
+        result = preview_view_command(view_ls, {"uri": uri})
+
+        assert "Edited Title" in Path(result["path"]).read_text(encoding="utf-8")
+
+    def test_missing_file(self, view_ls: MagicMock, perspective_project: Path) -> None:
+        missing = perspective_project / "views" / "Nope" / "view.json"
+        result = preview_view_command(view_ls, {"uri": missing.as_uri()})
+        assert result["success"] is False
+        assert "not found" in result["error"].lower()
+        view_ls.window_show_document.assert_not_called()
+
+    def test_not_a_view(self, view_ls: MagicMock, perspective_project: Path) -> None:
+        resource = perspective_project / PUMPS_RELATIVE.parent / "resource.json"
+        result = preview_view_command(view_ls, {"uri": resource.as_uri()})
+        assert result["success"] is False
+        assert "Perspective view" in result["error"]
+        assert not (perspective_project / PREVIEW_DIR_NAME).exists()
+
+
+class TestLivePreviewRefresh:
+    def test_edit_rerenders_tracked_preview(
+        self, view_ls: MagicMock, perspective_project: Path
+    ) -> None:
+        from ignition_lsp.server import _refresh_view_preview
+
+        view = perspective_project / PUMPS_RELATIVE
+        uri = view.as_uri()
+        target = Path(preview_view_command(view_ls, {"uri": uri})["path"])
+
+        edited = view.read_text(encoding="utf-8").replace("Pump Station", "Live Update")
+        view_ls.workspace.get_text_document.side_effect = None
+        view_ls.workspace.get_text_document.return_value = MockTextDocument(uri, edited)
+        _refresh_view_preview(view_ls, uri)
+
+        assert "Live Update" in target.read_text(encoding="utf-8")
+
+    def test_invalid_json_keeps_last_good_preview(
+        self, view_ls: MagicMock, perspective_project: Path
+    ) -> None:
+        from ignition_lsp.server import _refresh_view_preview
+
+        view = perspective_project / PUMPS_RELATIVE
+        uri = view.as_uri()
+        target = Path(preview_view_command(view_ls, {"uri": uri})["path"])
+        before = target.read_text(encoding="utf-8")
+
+        view_ls.workspace.get_text_document.side_effect = None
+        view_ls.workspace.get_text_document.return_value = MockTextDocument(uri, '{"root": {')
+        _refresh_view_preview(view_ls, uri)
+
+        assert target.read_text(encoding="utf-8") == before
+
+
+class TestOpenViewInGatewayCommand:
+    def test_opens_the_page_mounting_the_view(
+        self, view_ls: MagicMock, perspective_project: Path
+    ) -> None:
+        view_ls.gateway_url = "http://localhost:8088/"
+        view = perspective_project / PUMPS_RELATIVE
+
+        result = open_view_in_gateway_command(view_ls, {"uri": view.as_uri()})
+
+        assert result == {
+            "success": True,
+            "url": "http://localhost:8088/data/perspective/client/Demo%20Plant",
+            "page": "/",
+            "view": "Overview/Pumps",
+        }
+        params = view_ls.window_show_document.call_args.args[0]
+        assert params.uri == result["url"]
+        assert params.external is True
+        view_ls.window_show_message.assert_not_called()
+
+    def test_unmounted_view_falls_back_to_project(
+        self, view_ls: MagicMock, perspective_project: Path
+    ) -> None:
+        view_ls.gateway_url = "http://gw:8088"
+        popup = perspective_project / "com.inductiveautomation.perspective/views/Popups/X/view.json"
+        popup.parent.mkdir(parents=True)
+        popup.write_text('{"root": {"type": "ia.container.coord"}}', encoding="utf-8")
+
+        result = open_view_in_gateway_command(view_ls, {"uri": popup.as_uri()})
+
+        assert result["success"] is True
+        assert result["page"] is None
+        assert result["url"] == "http://gw:8088/data/perspective/client/Demo%20Plant"
+        message = view_ls.window_show_message.call_args.args[0].message
+        assert "Popups/X" in message
+
+    def test_missing_page_config_still_opens_project(
+        self, view_ls: MagicMock, perspective_project: Path
+    ) -> None:
+        view_ls.gateway_url = "http://gw:8088"
+        config = perspective_project / "com.inductiveautomation.perspective/page-config/config.json"
+        config.unlink()
+        view = perspective_project / PUMPS_RELATIVE
+
+        result = open_view_in_gateway_command(view_ls, {"uri": view.as_uri()})
+
+        assert result["success"] is True
+        assert result["url"].endswith("/client/Demo%20Plant")
+
+    def test_without_gateway_url_warns_and_declines(
+        self, view_ls: MagicMock, perspective_project: Path
+    ) -> None:
+        view = perspective_project / PUMPS_RELATIVE
+
+        result = open_view_in_gateway_command(view_ls, {"uri": view.as_uri()})
+
+        assert result["success"] is False
+        assert "ignition.gateway.url" in result["error"]
+        view_ls.window_show_document.assert_not_called()
+        message = view_ls.window_show_message.call_args.args[0].message
+        assert "ignition.gateway.url" in message
+
+    @pytest.mark.parametrize("bad", ["javascript:alert(1)", "file:///etc/passwd", "gw:8088"])
+    def test_non_web_gateway_url_is_never_opened(
+        self, view_ls: MagicMock, perspective_project: Path, bad: str
+    ) -> None:
+        view_ls.gateway_url = bad
+        view = perspective_project / PUMPS_RELATIVE
+
+        result = open_view_in_gateway_command(view_ls, {"uri": view.as_uri()})
+
+        assert result["success"] is False
+        assert "ignition.gateway.url" in result["error"]
+        view_ls.window_show_document.assert_not_called()
+        assert bad in view_ls.window_show_message.call_args.args[0].message
+
+    def test_plain_http_on_a_lan_host_is_allowed(
+        self, view_ls: MagicMock, perspective_project: Path
+    ) -> None:
+        view_ls.gateway_url = "http://gateway.plant.local:8088"
+        view = perspective_project / PUMPS_RELATIVE
+
+        result = open_view_in_gateway_command(view_ls, {"uri": view.as_uri()})
+
+        assert result["success"] is True
+        assert result["url"].startswith("http://gateway.plant.local:8088/")
+
+    def test_outside_any_project(self, view_ls: MagicMock, tmp_path: Path) -> None:
+        view_ls.gateway_url = "http://gw:8088"
+        view_ls._find_project_root.return_value = None
+        stray = tmp_path / "view.json"
+        stray.write_text('{"root": {"type": "ia.container.coord"}}', encoding="utf-8")
+
+        result = open_view_in_gateway_command(view_ls, {"uri": stray.as_uri()})
+
+        assert result["success"] is False
+        assert "project.json" in result["error"]
+        view_ls.window_show_document.assert_not_called()
+
+
+class TestGatewaySetting:
+    """`ignition.gateway.url` reaches the server in every shape clients send."""
+
+    def _server(self):
+        from ignition_lsp.server import IgnitionLanguageServer
+
+        ls = IgnitionLanguageServer.__new__(IgnitionLanguageServer)
+        ls.gateway_url = None
+        ls.diagnostics_enabled = True
+        return ls
+
+    @pytest.mark.parametrize(
+        "settings",
+        [
+            {"ignition": {"gateway": {"url": "http://gw:8088"}}},  # VS Code section
+            {"gateway": {"url": "http://gw:8088"}},  # already-unwrapped
+            {"gateway": "http://gw:8088"},  # flat string
+        ],
+    )
+    def test_shapes(self, settings) -> None:
+        from ignition_lsp.server import _apply_settings
+
+        ls = self._server()
+        _apply_settings(ls, settings)
+        assert ls.gateway_url == "http://gw:8088"
+
+    def test_blank_clears(self) -> None:
+        from ignition_lsp.server import _apply_settings
+
+        ls = self._server()
+        ls.gateway_url = "http://old"
+        _apply_settings(ls, {"gateway": {"url": "   "}})
+        assert ls.gateway_url is None
+
+    def test_absent_setting_leaves_value_alone(self) -> None:
+        from ignition_lsp.server import _apply_settings
+
+        ls = self._server()
+        ls.gateway_url = "http://old"
+        _apply_settings(ls, {"diagnostics": {"enabled": False}})
+        assert ls.gateway_url == "http://old"

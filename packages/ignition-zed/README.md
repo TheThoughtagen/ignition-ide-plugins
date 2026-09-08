@@ -64,6 +64,18 @@ virtual-document API, so the round trip goes through a real file on disk:
 4. Run **Ignition: Save … back to JSON** from the code action menu. The script is
    re-encoded and written back into the exact line it came from.
 
+## Perspective views
+
+Two more code actions appear anywhere in a Perspective `view.json`:
+
+- **Ignition: Preview view (wireframe)** renders the component tree (layout,
+  bindings, scripted components) to an HTML page in `.ignition-preview/` and
+  opens it in your browser. The page re-renders as you edit and reloads itself.
+  It is a wireframe, not a Gateway render.
+- **Ignition: Open view in Gateway** opens the page that mounts the view on your
+  Gateway. Set `gateway.url` (below) first. Add `.ignition-preview/` to your
+  `.gitignore` alongside `.ignition-scripts/`.
+
 The header comment at the top of a decoded file records where it came from —
 leave it in place; it is what the save action reads. It also fingerprints the
 script as it was at decode time: if the source JSON changes underneath you, the
@@ -77,7 +89,8 @@ decode again. Add `.ignition-scripts/` to your `.gitignore`.
   "lsp": {
     "ignition-lsp": {
       "settings": {
-        "version": "8.1"
+        "version": "8.1",
+        "gateway": { "url": "http://localhost:8088" }
       }
     }
   }
@@ -87,6 +100,7 @@ decode again. Add `.ignition-scripts/` to your `.gitignore`.
 | Setting | Default | Description |
 |---------|---------|-------------|
 | `version` | `"8.1"` | Ignition platform version used for API completions |
+| `gateway.url` | unset | Gateway base URL for **Ignition: Open view in Gateway** |
 
 A `{ "ignition": { "version": "8.1" } }` shape is also accepted, so settings
 copied from the Neovim plugin work unchanged.

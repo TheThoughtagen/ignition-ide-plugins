@@ -1,0 +1,16 @@
+{
+  "pages": {
+    "/": {
+      "viewPath": "Overview/Pumps",
+      "title": "Pumps"
+    },
+    "/pumps/:id": {
+      "viewPath": "Overview/Pumps",
+      "title": "Pump detail"
+    },
+    "/settings": {
+      "viewPath": "Settings/Main"
+    }
+  },
+  "layout": {}
+}
