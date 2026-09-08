@@ -171,3 +171,27 @@ class TestReplaceScriptInLine:
         new_line = replace_script_in_line(line, "eventScript", re_encoded)
 
         assert new_line == line
+
+
+class TestLineHasScriptKey:
+    """Test detecting a script key on a JSON line."""
+
+    def test_finds_key(self) -> None:
+        from ignition_lsp.json_scanner import line_has_script_key
+
+        assert line_has_script_key('  "script": "print(1)"', "script")
+
+    def test_tolerates_whitespace(self) -> None:
+        from ignition_lsp.json_scanner import line_has_script_key
+
+        assert line_has_script_key('  "script"  :  "print(1)"', "script")
+
+    def test_missing_key(self) -> None:
+        from ignition_lsp.json_scanner import line_has_script_key
+
+        assert not line_has_script_key('  "name": "MyView"', "script")
+
+    def test_does_not_match_non_string_value(self) -> None:
+        from ignition_lsp.json_scanner import line_has_script_key
+
+        assert not line_has_script_key('  "script": null', "script")

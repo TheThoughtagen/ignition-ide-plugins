@@ -86,3 +86,6 @@ marketing/
 # aisync-managed
 CLAUDE.md
 # /aisync-managed
+
+# Decoded Ignition scripts (sidecar files created by the LSP code actions)
+.ignition-scripts/

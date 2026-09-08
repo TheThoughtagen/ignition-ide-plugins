@@ -210,3 +210,46 @@ class TestSaveScriptHandler:
             assert result["success"] is False
         finally:
             os.unlink(temp_path)
+
+
+class TestSaveScriptNoOp:
+    """A save with no edits must succeed rather than report a missing key."""
+
+    def test_unmodified_save_succeeds(self, mock_ls: MagicMock, tmp_path: Path) -> None:
+        source = tmp_path / "view.json"
+        source.write_text('{\n  "script": "print(1)\\n"\n}\n', encoding="utf-8")
+        original = source.read_text(encoding="utf-8")
+
+        result = save_script_handler(
+            mock_ls,
+            {
+                "uri": source.as_uri(),
+                "line": 2,
+                "key": "script",
+                "decodedContent": "print(1)\n",
+                "indent": "",
+            },
+        )
+
+        assert result["success"] is True
+        assert source.read_text(encoding="utf-8") == original
+
+    def test_genuinely_missing_key_still_errors(
+        self, mock_ls: MagicMock, tmp_path: Path
+    ) -> None:
+        source = tmp_path / "view.json"
+        source.write_text('{\n  "name": "MyView"\n}\n', encoding="utf-8")
+
+        result = save_script_handler(
+            mock_ls,
+            {
+                "uri": source.as_uri(),
+                "line": 2,
+                "key": "script",
+                "decodedContent": "print(1)\n",
+                "indent": "",
+            },
+        )
+
+        assert result["success"] is False
+        assert "not found" in result["error"]
