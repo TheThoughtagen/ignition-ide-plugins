@@ -1112,7 +1112,12 @@ def _show_external(ls: IgnitionLanguageServer, url: str) -> None:
 
 
 def _warn(ls: IgnitionLanguageServer, message: str) -> None:
-    """Show a warning in the editor; a client without showMessage just logs it."""
+    """Try to show a warning in the editor, logging the exception if the call fails.
+
+    Notifying the user is best-effort, so nothing here reaches the caller: any
+    failure, not only a client without `window/showMessage`, is swallowed. The
+    debug entry records the exception, not `message`.
+    """
     try:
         ls.window_show_message(ShowMessageParams(type=MessageType.Warning, message=message))
     except Exception as e:
@@ -1120,7 +1125,10 @@ def _warn(ls: IgnitionLanguageServer, message: str) -> None:
 
 
 def _info(ls: IgnitionLanguageServer, message: str) -> None:
-    """Show an info message in the editor; a client without showMessage just logs it."""
+    """Try to show an info message in the editor, logging the exception if it fails.
+
+    Best-effort in the same way as `_warn`.
+    """
     try:
         ls.window_show_message(ShowMessageParams(type=MessageType.Info, message=message))
     except Exception as e:
