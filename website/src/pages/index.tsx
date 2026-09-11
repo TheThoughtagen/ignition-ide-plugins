@@ -1,114 +1,12 @@
 import React from 'react';
 import Layout from '@theme/Layout';
 import Link from '@docusaurus/Link';
-
-const ASCII_ART = `  ██╗ ██████╗ ███╗   ██╗██╗████████╗██╗ ██████╗ ███╗   ██╗
-  ██║██╔════╝ ████╗  ██║██║╚══██╔══╝██║██╔═══██╗████╗  ██║
-  ██║██║  ███╗██╔██╗ ██║██║   ██║   ██║██║   ██║██╔██╗ ██║
-  ██║██║   ██║██║╚██╗██║██║   ██║   ██║██║   ██║██║╚██╗██║
-  ██║╚██████╔╝██║ ╚████║██║   ██║   ██║╚██████╔╝██║ ╚████║
-  ╚═╝ ╚═════╝ ╚═╝  ╚═══╝╚═╝   ╚═╝   ╚═╝ ╚═════╝ ╚═╝  ╚═══╝
-               ███╗   ██╗██╗   ██╗██╗███╗   ███╗
-               ████╗  ██║██║   ██║██║████╗ ████║
-               ██╔██╗ ██║██║   ██║██║██╔████╔██║
-               ██║╚██╗██║╚██╗ ██╔╝██║██║╚██╔╝██║
-               ██║ ╚████║ ╚████╔╝ ██║██║ ╚═╝ ██║
-               ╚═╝  ╚═══╝  ╚═══╝  ╚═╝╚═╝     ╚═╝`;
-
-const features = [
-  {
-    title: '$ decode',
-    description:
-      'Extract embedded Python scripts from Ignition JSON files into virtual buffers with full syntax highlighting.',
-  },
-  {
-    title: '$ complete',
-    description:
-      'LSP completions for system.tag, system.db, system.perspective, and 200+ Ignition API functions.',
-  },
-  {
-    title: '$ hover',
-    description:
-      'Inline documentation with parameter types, return values, and scope info for every system.* call.',
-  },
-  {
-    title: '$ diagnose',
-    description:
-      'Catch unknown functions, wrong argument counts, and scope violations before deploying to the gateway.',
-  },
-  {
-    title: '$ kindling',
-    description:
-      'Open .gwbk gateway backup files directly from Neovim with automatic Kindling detection.',
-  },
-  {
-    title: '$ detect',
-    description:
-      'Automatic filetype recognition for Ignition projects by extension, filename, path, and content markers.',
-  },
-];
-
+const cards = [{"title": "Edit embedded scripts", "description": "Pull Python out of a Perspective JSON resource, edit it, then save it back.", "path": "guides/script-editing"}, {"title": "Find the API", "description": "Use completions and hover documentation while working with system APIs.", "path": "guides/lsp-features"}, {"title": "Choose your editor", "description": "Compare installation steps and the differences between editors.", "path": "getting-started/installation"}];
 export default function Home(): React.JSX.Element {
-  return (
-    <Layout
-      title="Neovim plugin for Ignition SCADA"
-      description="LSP completions, script decode/encode, and gateway backup support for Ignition development in Neovim"
-    >
-      {/* ASCII Hero */}
-      <section className="hero-ascii">
-        <pre>{ASCII_ART}</pre>
-        <div className="hero-tagline">
-          {'> ignition development, from your terminal'}
-          <span className="cursor" />
-        </div>
-      </section>
-
-      {/* Features */}
-      <section className="features-section">
-        <div className="features-grid">
-          {features.map((feature) => (
-            <div key={feature.title} className="feature-card">
-              <h3>{feature.title}</h3>
-              <p>{feature.description}</p>
-            </div>
-          ))}
-        </div>
-      </section>
-
-      {/* CTA */}
-      <section className="cta-section">
-        <div className="cta-terminal">
-          <div className="terminal-header">
-            <span className="terminal-dot red" />
-            <span className="terminal-dot yellow" />
-            <span className="terminal-dot green" />
-          </div>
-          <code>
-            <span className="comment">-- lazy.nvim</span>
-            {'\n'}
-            <span className="prompt">{'{'}</span> <span className="string">'TheThoughtagen/ignition-nvim'</span> <span className="prompt">{'}'}</span>
-            {'\n\n'}
-            <span className="comment">-- open an ignition file and decode</span>
-            {'\n'}
-            <span className="prompt">:</span>IgnitionDecode
-            {'\n\n'}
-            <span className="comment">-- edit with full LSP support, then save</span>
-            {'\n'}
-            <span className="prompt">:</span>w
-          </code>
-        </div>
-        <div className="cta-buttons">
-          <Link className="primary" to="/docs/getting-started/installation">
-            Get Started
-          </Link>
-          <Link
-            className="secondary"
-            href="https://github.com/TheThoughtagen/ignition-nvim"
-          >
-            View on GitHub
-          </Link>
-        </div>
-      </section>
-    </Layout>
-  );
+ return <Layout title="Ignition Dev Tools" description="API completions, script extraction, and lint feedback for VS Code, Neovim, and Zed.">
+  <main><section className="launch-hero"><p className="launch-label">IGNITION / DEVELOPER TOOLS</p><h1>Edit Ignition scripts in your editor.</h1><p className="lead">API completions, script extraction, and lint feedback for VS Code, Neovim, and Zed.</p>
+  <div className="launch-actions"><Link className="button button--primary button--lg" to="/docs/getting-started/installation">Get started</Link><Link className="button button--outline button--primary button--lg" to="/docs/getting-started/quickstart">Try a first workflow</Link></div></section>
+  <section className="launch-grid" aria-label="Documentation paths">{cards.map(card => <article key={card.path}><h2>{card.title}</h2><p>{card.description}</p><Link to={'/docs/' + card.path}>Read the guide →</Link></article>)}</section>
+  <aside className="launch-maintainer"><p>I’m Patrick Mannion. I work on Ignition development tools and write about the work on FIELDNOTES.</p><p><a href="https://awake-iris-z6ww.here.now/about/">About me</a> · <a href="https://www.linkedin.com/in/mannionpatrick/">LinkedIn</a> · <a href="https://x.com/__pattym__">X</a> · <a href="https://github.com/TheThoughtagen/ignition-ide-plugins/graphs/contributors">Project contributors</a></p></aside></main>
+ </Layout>;
 }

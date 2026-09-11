@@ -67,7 +67,7 @@ A Claude Code plugin that gives Claude full Ignition domain awareness. Includes 
 
 ## Next Steps
 
-- **Neovim** — [Install the plugin](getting-started/installation) and LSP server
-- **Neovim** — [Try the quickstart](getting-started/quickstart) to decode your first script
-- **Claude Code** — [Set up the plugin](claude-code-plugin/overview) for auto-linting and testing
-- **Claude Code** — [Scaffold tests](claude-code-plugin/testing) for your Ignition project
+- **Neovim** — [Install the plugin](getting-started/installation.md) and LSP server
+- **Neovim** — [Try the quickstart](getting-started/quickstart.md) to decode your first script
+- **Claude Code** — [Set up the plugin](claude-code-plugin/overview.md) for auto-linting and testing
+- **Claude Code** — [Scaffold tests](claude-code-plugin/testing.md) for your Ignition project

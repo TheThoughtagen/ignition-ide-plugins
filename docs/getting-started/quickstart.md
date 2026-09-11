@@ -1,81 +1,25 @@
----
-sidebar_position: 2
----
+# Edit an embedded script
 
-# Quickstart
+Open a Perspective `view.json` that contains an event script or script transform. Keep it in a project checkout so you can inspect the diff after saving.
 
-This guide walks you through decoding, editing, and encoding your first Ignition script.
+## Extract the script
 
-## 1. Open an Ignition File
+| Editor | Action |
+| --- | --- |
+| VS Code | Run `Ignition: Decode Script at Cursor` from the Command Palette. |
+| Neovim | Run `:IgnitionDecode` and select the script when prompted. |
+| Zed | Use the `Ignition: Decode …` code action on the JSON resource. |
 
-Open any Ignition resource file that contains embedded Python scripts:
+The extracted script can use API completions and hover documentation. Lint feedback requires the linter dependency, which needs Python 3.10+.
 
-```bash
-nvim path/to/resource.json
-```
+## Save the edit
 
-The plugin automatically detects Ignition files by extension (`.gwbk`, `.proj`), filename (`resource.json`, `tags.json`), path patterns (`perspective/`, `script-python/`), and content markers.
+In Neovim, save the extracted buffer with `:w`, then save the source JSON buffer. In VS Code, save the decoded script and inspect its source resource. In Zed, use `Ignition: Save … back to JSON` on the extracted file.
 
-## 2. Decode a Script
+Review the source diff before committing. Editor checks do not execute the script on a gateway; test runtime behavior in your development project separately.
 
-Run the decode command:
+## If the script does not open
 
-```
-:IgnitionDecode
-```
+Check that the resource contains an embedded script, rather than only resource metadata. Confirm the language server is running and that your editor opened the project folder. Zed requires `project.json` at the worktree root.
 
-Or use the default keymap: `<localleader>id`
-
-If the file contains a single script, it opens immediately in a new split. If there are multiple scripts, you'll see a selection menu with previews.
-
-To decode all scripts at once:
-
-```
-:IgnitionDecodeAll
-```
-
-## 3. Edit the Script
-
-The decoded script opens in a virtual buffer with:
-
-- **Python filetype** — full syntax highlighting
-- **LSP support** — completions for `system.tag.read()`, `system.db.runQuery()`, and more
-- **Hover docs** — press `K` over any `system.*` function for parameter info
-
-Edit the script as you would any Python file.
-
-## 4. Save Back to JSON
-
-Save the virtual buffer with `:w`. The plugin automatically:
-
-1. Encodes the script using Ignition's encoding format
-2. Writes the encoded content back to the correct location in the source JSON
-3. Marks the source buffer as modified
-
-Then save the source JSON file (`:w` in that buffer) to persist the changes to disk.
-
-## 5. Explore Further
-
-- List all scripts in a file: `:IgnitionListScripts` or `<localleader>il`
-- Check plugin status: `:IgnitionInfo` or `<localleader>ii`
-- Open a gateway backup: `:IgnitionOpenKindling path/to/backup.gwbk`
-
-## Example Workflow
-
-```
-# Open a Perspective view with event scripts
-nvim com.inductiveautomation.perspective/views/MyView/view.json
-
-# Decode → opens virtual buffer with the Python script
-:IgnitionDecode
-
-# Edit the script (LSP completions work here)
-# ... make changes ...
-
-# Save virtual buffer → encodes back to JSON
-:w
-
-# Switch to source buffer and save
-<C-w>p
-:w
-```
+See [script editing](../guides/script-editing.md) for extraction behavior and [installation](installation.md) for editor-specific links.

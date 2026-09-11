@@ -23,7 +23,7 @@ The plugin provides 8 skills (4 Claude-only background knowledge, 4 user-invocab
 ## Install
 
 ```bash
-claude plugin add --from whiskeyhouse/ignition-nvim --path claude-code-plugin
+claude plugin add --from TheThoughtagen/ignition-ide-plugins --path claude-code-plugin
 ```
 
 Or from a local clone:
@@ -103,7 +103,7 @@ Four skills are available from the `/` menu:
 | `/ignition-scada:init-e2e` | Scaffold Playwright browser tests |
 | `/ignition-scada:test` | Run gateway or browser tests |
 
-See the [Skills Reference](skills-reference) for detailed usage of each.
+See the [Skills Reference](skills-reference.md) for detailed usage of each.
 
 ## Plugin vs Templates
 
