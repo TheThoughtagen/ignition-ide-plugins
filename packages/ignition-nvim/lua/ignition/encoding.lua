@@ -118,6 +118,64 @@ function M.decode_script(encoded)
   return table.concat(result)
 end
 
+-- Strip common leading whitespace from all lines.
+-- Ignition stores scripts with leading tab indentation. This strips the
+-- common prefix so the script is at the correct indentation level for
+-- editing. Only ever strips a *contiguous* run of leading tabs — it never
+-- touches spaces, so the stripped prefix is always an exact substring of
+-- each line and reindent() can restore it losslessly (e.g. a line with
+-- space-then-tab indentation, or no leading tabs at all, is left untouched).
+-- Returns (dedented_text, indent_prefix) so the indent can be restored on save.
+function M.dedent(text)
+  if not text or text == '' then
+    return '', ''
+  end
+
+  local lines = vim.split(text, '\n', { plain = true })
+
+  -- Find the minimum contiguous leading-tab count across non-empty lines.
+  local min_tabs = nil
+  for _, line in ipairs(lines) do
+    if line:match('%S') then
+      local leading_tabs = line:match('^\t*')
+      local tab_count = #leading_tabs
+      if min_tabs == nil or tab_count < min_tabs then
+        min_tabs = tab_count
+      end
+    end
+  end
+
+  if not min_tabs or min_tabs == 0 then
+    return text, ''
+  end
+
+  -- Strip exactly min_tabs leading tab characters from each line.
+  local result = {}
+  for _, line in ipairs(lines) do
+    if not line:match('%S') then
+      table.insert(result, '')
+    else
+      table.insert(result, line:sub(min_tabs + 1))
+    end
+  end
+
+  return table.concat(result, '\n'), string.rep('\t', min_tabs)
+end
+
+-- Re-add leading indentation stripped by dedent().
+-- Only indents non-empty lines. Mirrors ignition_lsp/encoding.py:reindent().
+function M.reindent(text, indent)
+  if not indent or indent == '' then
+    return text
+  end
+
+  local lines = vim.split(text, '\n', { plain = true })
+  for i, line in ipairs(lines) do
+    lines[i] = line:match('%S') and (indent .. line) or ''
+  end
+  return table.concat(lines, '\n')
+end
+
 -- Test if a string appears to be an encoded Ignition script
 -- Looks for common encoded patterns
 function M.is_encoded_script(text)
