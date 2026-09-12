@@ -118,6 +118,76 @@ function M.decode_script(encoded)
   return table.concat(result)
 end
 
+-- Strip common leading whitespace from all lines.
+-- Ignition stores scripts with leading tab indentation. This strips the
+-- common prefix so the script is at the correct indentation level for
+-- editing. Handles mixed whitespace (stray spaces alongside tabs) by
+-- counting only tabs in the leading whitespace to determine indent level.
+-- Mirrors ignition_lsp/encoding.py:dedent() — keep both in sync.
+-- Returns (dedented_text, indent_prefix) so the indent can be restored on save.
+function M.dedent(text)
+  if not text or text == '' then
+    return '', ''
+  end
+
+  local lines = vim.split(text, '\n', { plain = true })
+
+  -- Find the minimum leading-tab count across non-empty lines.
+  local min_tabs = nil
+  for _, line in ipairs(lines) do
+    if line:match('%S') then
+      local leading = line:match('^[\t ]*') or ''
+      local tab_count = select(2, leading:gsub('\t', ''))
+      if min_tabs == nil or tab_count < min_tabs then
+        min_tabs = tab_count
+      end
+    end
+  end
+
+  if not min_tabs or min_tabs == 0 then
+    return text, ''
+  end
+
+  -- Strip min_tabs worth of tabs from the leading whitespace of each line.
+  local result = {}
+  for _, line in ipairs(lines) do
+    if not line:match('%S') then
+      table.insert(result, '')
+    else
+      local stripped = line
+      local tabs_removed = 0
+      while tabs_removed < min_tabs and #stripped > 0 do
+        local first = stripped:sub(1, 1)
+        if first == '\t' then
+          stripped = stripped:sub(2)
+          tabs_removed = tabs_removed + 1
+        elseif first == ' ' then
+          stripped = stripped:sub(2) -- skip stray spaces
+        else
+          break
+        end
+      end
+      table.insert(result, stripped)
+    end
+  end
+
+  return table.concat(result, '\n'), string.rep('\t', min_tabs)
+end
+
+-- Re-add leading indentation stripped by dedent().
+-- Only indents non-empty lines. Mirrors ignition_lsp/encoding.py:reindent().
+function M.reindent(text, indent)
+  if not indent or indent == '' then
+    return text
+  end
+
+  local lines = vim.split(text, '\n', { plain = true })
+  for i, line in ipairs(lines) do
+    lines[i] = line:match('%S') and (indent .. line) or ''
+  end
+  return table.concat(lines, '\n')
+end
+
 -- Test if a string appears to be an encoded Ignition script
 -- Looks for common encoded patterns
 function M.is_encoded_script(text)

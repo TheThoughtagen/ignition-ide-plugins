@@ -53,6 +53,7 @@ function M.create_virtual_doc(source_bufnr, script_info)
     line_num = script_info.line,
     original_content = script_info.content,
     line_text = script_info.line_text,
+    indent = script_info.indent,
   }
 
   -- Set up autocommand for saving
@@ -94,9 +95,11 @@ function M.save_virtual_doc(virtual_bufnr)
   local decoded_lines = vim.api.nvim_buf_get_lines(virtual_bufnr, 0, -1, false)
   local decoded_content = table.concat(decoded_lines, '\n')
 
-  -- Encode the content
+  -- Re-add the tab indentation stripped by dedent() when the buffer was
+  -- created, then encode the content
   local encoding = require('ignition.encoding')
-  local encoded_content = encoding.encode_script(decoded_content)
+  local reindented_content = encoding.reindent(decoded_content, metadata.indent or '')
+  local encoded_content = encoding.encode_script(reindented_content)
 
   -- Update the source buffer
   local json_parser = require('ignition.json_parser')

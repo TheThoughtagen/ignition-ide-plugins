@@ -53,8 +53,12 @@ end
 
 -- Decode a specific script
 function M.decode_script(source_bufnr, script_info)
-  -- Decode the script content
-  local decoded = encoding.decode_script(script_info.content)
+  -- Decode the script content, then strip the leading tab indentation
+  -- Ignition stores scripts with. The stripped indent is carried on
+  -- script_info so create_virtual_doc can save it for re-indenting on write.
+  local raw_decoded = encoding.decode_script(script_info.content)
+  local decoded, indent = encoding.dedent(raw_decoded)
+  script_info.indent = indent
 
   -- Create or get existing virtual document
   local virtual_bufnr = virtual_doc.create_virtual_doc(source_bufnr, script_info)
