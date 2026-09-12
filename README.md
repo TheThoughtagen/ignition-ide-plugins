@@ -1,6 +1,8 @@
 # Ignition Dev Tools
 
-[![CI](https://github.com/TheThoughtagen/ignition-nvim/actions/workflows/ci.yml/badge.svg)](https://github.com/TheThoughtagen/ignition-nvim/actions/workflows/ci.yml)
+[Documentation](https://thethoughtagen.github.io/ignition-ide-plugins/) · [Releases](https://github.com/TheThoughtagen/ignition-ide-plugins/releases) · [Issues](https://github.com/TheThoughtagen/ignition-ide-plugins/issues)
+
+[![CI](https://github.com/TheThoughtagen/ignition-ide-plugins/actions/workflows/ci.yml/badge.svg)](https://github.com/TheThoughtagen/ignition-ide-plugins/actions/workflows/ci.yml)
 [![VS Code Marketplace](https://img.shields.io/visual-studio-marketplace/v/WhiskeyHouse.ignition-dev-tools)](https://marketplace.visualstudio.com/items?itemName=WhiskeyHouse.ignition-dev-tools)
 [![PyPI](https://img.shields.io/pypi/v/ignition-lsp)](https://pypi.org/project/ignition-lsp/)
 
@@ -73,14 +75,14 @@ for how to edit embedded scripts.
 Minimal (uses defaults from `lazy.lua` — lazy-loads on filetype + commands, auto-installs LSP):
 
 ```lua
-{ 'TheThoughtagen/ignition-nvim' }
+{ 'TheThoughtagen/ignition-ide-plugins' }
 ```
 
 With custom options:
 
 ```lua
 {
-  'TheThoughtagen/ignition-nvim',
+  'TheThoughtagen/ignition-ide-plugins',
   opts = {
     lsp = {
       enabled = true,
@@ -160,7 +162,7 @@ file in an Ignition project:
 
 ## Documentation
 
-- **User Guide**: [online documentation](https://whiskeyhouse.github.io/ignition-nvim)
+- **User Guide**: [online documentation](https://thethoughtagen.github.io/ignition-ide-plugins)
 - **Vim Help**: `:help ignition-nvim`
 - **VS Code README**: [packages/ignition-vscode/README.md](packages/ignition-vscode/README.md)
 - **Zed README**: [packages/ignition-zed/README.md](packages/ignition-zed/README.md)
@@ -176,13 +178,13 @@ Give Claude Code full Ignition awareness — API reference, expression language,
 **Option A: Plugin** (global, works across all projects)
 
 ```bash
-claude plugin add --from whiskeyhouse/ignition-nvim --path claude-code-plugin
+claude plugin add --from TheThoughtagen/ignition-ide-plugins --path claude-code-plugin
 ```
 
 **Option B: Templates** (per-project, check into your repo)
 
 ```bash
-curl -sL https://raw.githubusercontent.com/whiskeyhouse/ignition-nvim/main/templates/setup.sh | bash
+curl -sL https://raw.githubusercontent.com/TheThoughtagen/ignition-ide-plugins/main/templates/setup.sh | bash
 ```
 
 See [claude-code-plugin/README.md](claude-code-plugin/README.md) and [templates/README.md](templates/README.md) for details.

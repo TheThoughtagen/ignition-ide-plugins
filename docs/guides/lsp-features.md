@@ -10,7 +10,7 @@ ignition-nvim includes a comprehensive Language Server Protocol (LSP) implementa
 
 The LSP server provides four major feature areas:
 
-### 🎯 [System API Completions](lsp/system-apis)
+### 🎯 [System API Completions](lsp/system-apis.md)
 
 Complete IDE support for all Ignition `system.*` modules — 14 modules with 239+ functions.
 
@@ -20,9 +20,9 @@ Complete IDE support for all Ignition `system.*` modules — 14 modules with 239
 - Date/time utilities (`system.date.*`)
 - And 10 more modules
 
-**[Read detailed guide →](lsp/system-apis)**
+**[Read detailed guide →](lsp/system-apis.md)**
 
-### ☕ [Java & Jython Support](lsp/java-jython)
+### ☕ [Java & Jython Support](lsp/java-jython.md)
 
 Full type-aware completions for Java/Jython development — 26 packages with 146 classes.
 
@@ -31,9 +31,9 @@ Full type-aware completions for Java/Jython development — 26 packages with 146
 - Database connectivity (`java.sql`)
 - Ignition SDK (`com.inductiveautomation.*`)
 
-**[Read detailed guide →](lsp/java-jython)**
+**[Read detailed guide →](lsp/java-jython.md)**
 
-### 📦 [Project Script Completions](lsp/project-scripts)
+### 📦 [Project Script Completions](lsp/project-scripts.md)
 
 Intelligent completions for your project's custom scripts.
 
@@ -42,9 +42,9 @@ Intelligent completions for your project's custom scripts.
 - Go-to-definition across your entire project
 - Workspace symbol search
 
-**[Read detailed guide →](lsp/project-scripts)**
+**[Read detailed guide →](lsp/project-scripts.md)**
 
-### 📐 [Perspective JSON Support](lsp/perspective-json)
+### 📐 [Perspective JSON Support](lsp/perspective-json.md)
 
 Schema-aware completions for Perspective view.json files.
 
@@ -54,7 +54,7 @@ Schema-aware completions for Perspective view.json files.
 - Binding type completions
 - Style property completions
 
-**[Read detailed guide →](lsp/perspective-json)**
+**[Read detailed guide →](lsp/perspective-json.md)**
 
 ## Core Features
 
@@ -238,14 +238,14 @@ Or rebuild the project index by saving any project script file.
 
 ## Related Guides
 
-- **[Commands & Keymaps](commands)** - All available commands
-- **[Script Editing](script-editing)** - Decode/encode workflow
-- **[Configuration](../configuration/options)** - Full configuration options
+- **[Commands & Keymaps](commands.md)** - All available commands
+- **[Script Editing](script-editing.md)** - Decode/encode workflow
+- **[Configuration](../configuration/options.md)** - Full configuration options
 
 ## Further Reading
 
 For detailed examples and use cases, see the specific feature guides:
-- [System API Completions](lsp/system-apis)
-- [Java & Jython Support](lsp/java-jython)
-- [Project Script Completions](lsp/project-scripts)
-- [Perspective JSON Support](lsp/perspective-json)
+- [System API Completions](lsp/system-apis.md)
+- [Java & Jython Support](lsp/java-jython.md)
+- [Project Script Completions](lsp/project-scripts.md)
+- [Perspective JSON Support](lsp/perspective-json.md)

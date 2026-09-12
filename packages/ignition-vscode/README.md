@@ -103,7 +103,7 @@ Open the Command Palette (`Cmd+Shift+P` / `Ctrl+Shift+P`) and type "Ignition" to
 
 ## Part of the Whiskey House Ignition Developer Toolkit
 
-- **[Ignition Dev Tools](https://github.com/TheThoughtagen/ignition-dev-tools)** — VS Code + Neovim IDE support (this extension)
+- **[Ignition Dev Tools](https://github.com/TheThoughtagen/ignition-ide-plugins)** — VS Code + Neovim IDE support (this extension)
 - **[ignition-lint](https://github.com/TheThoughtagen/ignition-lint)** — static analysis for Ignition Python scripts
 - **[ignition-git-module](https://github.com/bmusson/ignition-git-module)** — native Git inside Ignition Designer
 

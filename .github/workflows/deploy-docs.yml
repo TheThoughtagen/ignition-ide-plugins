@@ -1,48 +1,42 @@
-name: Deploy Docs
-
+name: Documentation
 on:
   push:
     branches: [main]
-    paths:
-      - 'website/**'
-      - 'docs/**'
+  pull_request:
+    branches: [main]
   workflow_dispatch:
-
 permissions:
   contents: read
-  pages: write
-  id-token: write
-
 concurrency:
-  group: pages
+  group: docs-${{ github.ref }}
   cancel-in-progress: true
-
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
+        with:
+          persist-credentials: false
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: npm
           cache-dependency-path: website/package-lock.json
-
-      - name: Install dependencies
+      - run: npm ci
         working-directory: website
-        run: npm ci
-
-      - name: Build site
+      - run: npm run build
         working-directory: website
-        run: npm run build
-
+      - run: npm run typecheck
+        working-directory: website
       - uses: actions/upload-pages-artifact@v3
         with:
           path: website/build
-
   deploy:
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
     needs: build
+    permissions:
+      pages: write
+      id-token: write
     runs-on: ubuntu-latest
     environment:
       name: github-pages
