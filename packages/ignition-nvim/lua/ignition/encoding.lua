@@ -121,9 +121,10 @@ end
 -- Strip common leading whitespace from all lines.
 -- Ignition stores scripts with leading tab indentation. This strips the
 -- common prefix so the script is at the correct indentation level for
--- editing. Handles mixed whitespace (stray spaces alongside tabs) by
--- counting only tabs in the leading whitespace to determine indent level.
--- Mirrors ignition_lsp/encoding.py:dedent() — keep both in sync.
+-- editing. Only ever strips a *contiguous* run of leading tabs — it never
+-- touches spaces, so the stripped prefix is always an exact substring of
+-- each line and reindent() can restore it losslessly (e.g. a line with
+-- space-then-tab indentation, or no leading tabs at all, is left untouched).
 -- Returns (dedented_text, indent_prefix) so the indent can be restored on save.
 function M.dedent(text)
   if not text or text == '' then
@@ -132,12 +133,12 @@ function M.dedent(text)
 
   local lines = vim.split(text, '\n', { plain = true })
 
-  -- Find the minimum leading-tab count across non-empty lines.
+  -- Find the minimum contiguous leading-tab count across non-empty lines.
   local min_tabs = nil
   for _, line in ipairs(lines) do
     if line:match('%S') then
-      local leading = line:match('^[\t ]*') or ''
-      local tab_count = select(2, leading:gsub('\t', ''))
+      local leading_tabs = line:match('^\t*')
+      local tab_count = #leading_tabs
       if min_tabs == nil or tab_count < min_tabs then
         min_tabs = tab_count
       end
@@ -148,26 +149,13 @@ function M.dedent(text)
     return text, ''
   end
 
-  -- Strip min_tabs worth of tabs from the leading whitespace of each line.
+  -- Strip exactly min_tabs leading tab characters from each line.
   local result = {}
   for _, line in ipairs(lines) do
     if not line:match('%S') then
       table.insert(result, '')
     else
-      local stripped = line
-      local tabs_removed = 0
-      while tabs_removed < min_tabs and #stripped > 0 do
-        local first = stripped:sub(1, 1)
-        if first == '\t' then
-          stripped = stripped:sub(2)
-          tabs_removed = tabs_removed + 1
-        elseif first == ' ' then
-          stripped = stripped:sub(2) -- skip stray spaces
-        else
-          break
-        end
-      end
-      table.insert(result, stripped)
+      table.insert(result, line:sub(min_tabs + 1))
     end
   end
 
