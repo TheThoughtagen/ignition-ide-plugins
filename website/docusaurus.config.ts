@@ -45,6 +45,18 @@ const config: Config = {
       }
     ]
   ],
+  "themes": [
+    [
+      require.resolve("@easyops-cn/docusaurus-search-local"),
+      {
+        "docsDir": "../docs",
+        "indexBlog": false,
+        "hashed": true,
+        "searchBarShortcutKeymap": "mod+k",
+        "searchBarShortcutHint": true
+      }
+    ]
+  ],
   "themeConfig": {
     "colorMode": {
       "defaultMode": "dark",
@@ -95,6 +107,11 @@ const config: Config = {
         {
           "href": "https://github.com/TheThoughtagen/ignition-ide-plugins",
           "label": "GitHub",
+          "position": "right"
+        },
+        {
+          "href": "https://awake-iris-z6ww.here.now/",
+          "label": "FIELDNOTES",
           "position": "right"
         }
       ]
