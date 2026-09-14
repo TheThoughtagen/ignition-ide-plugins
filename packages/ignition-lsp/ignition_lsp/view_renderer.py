@@ -330,7 +330,13 @@ def _placement_style(node: Node, parent: Node) -> str:
         shrink = _as_float(pos.get("shrink"), 1)
         basis = pos.get("basis", "auto")
         basis_css = _css_length(basis)
-        return f"flex:{_num(grow)} {_num(shrink)} {basis_css};"
+        # Cap flex children at the container's box: a shrunk parent would
+        # otherwise let a child keep its natural cross-axis size, and
+        # `align-items` spills it over the neighbouring siblings.
+        return (
+            f"flex:{_num(grow)} {_num(shrink)} {basis_css};"
+            "max-height:100%;max-width:100%;min-width:0;"
+        )
 
     # Column, breakpoint, tab, split and unknown containers: stack.
     return "position:relative;width:100%;"
@@ -461,7 +467,7 @@ body { margin: 0; font: 12px/1.35 system-ui, sans-serif; background: #e9e9ec; co
 .badge { font-size: 9px; padding: 0 4px; border-radius: 3px; background: rgba(120,120,128,.25); }
 .badge.script { background: rgba(255,159,10,.35); }
 .badge.bound { background: rgba(10,132,255,.25); }
-.children { flex: 1 1 auto; min-height: 0; }
+.children { flex: 1 1 auto; min-height: 0; min-width: 0; }
 .leaf .children { padding: 2px 6px 4px; display: flex; flex-direction: column; gap: 1px; }
 .headline, .prop { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .headline { font-size: 13px; font-weight: 500; }
