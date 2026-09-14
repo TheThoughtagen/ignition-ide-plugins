@@ -161,6 +161,16 @@ class TestRendering:
         assert "flex:0 0 56px;" in html  # Header
         assert "flex:1 1 0px;" in html  # Body
 
+    def test_flex_children_cannot_spill_over_siblings(self, html: str) -> None:
+        # A flex child that outgrows its shrunk parent must be capped, or
+        # `align-items` spills it over the neighbouring siblings.
+        assert "flex:0 0 56px;max-height:100%;max-width:100%;min-width:0;" in html
+
+    def test_coord_children_keep_declared_geometry(self, html: str) -> None:
+        # The spill caps are flex-only: a coord child keeps its declared
+        # height even when it exceeds the container.
+        assert "height:40px;max-height" not in html
+
     def test_flex_direction_follows_props(self, html: str) -> None:
         assert "flex-direction:row" in html  # Footer
         assert "justify-content:flex-end" in html
