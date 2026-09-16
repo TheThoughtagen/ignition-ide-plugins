@@ -7,6 +7,54 @@ local lsp_config = {}
 function M.setup(config)
   lsp_config = config
 
+  -- Live-truth LSP from the ign CLI (IDE-03): a SECOND client registered
+  -- beside the statics ignition_lsp server below. nvim merges completions
+  -- across attached clients and aggregates per-client diagnostics, so the
+  -- two servers compose without knowing about each other. Guarded like the
+  -- venv/exepath checks in find_lsp_server(): when ign is absent the config
+  -- is never registered, so there is no failed-spawn loop. Registered before
+  -- the statics early-return below so the live client also works on machines
+  -- without the Python ignition-lsp.
+  if vim.fn.executable('ign') == 1 then
+    vim.lsp.config('ignition_live', {
+      cmd = { 'ign', 'lsp' },
+      root_markers = { 'project.json' },
+      filetypes = { 'ignition', 'python', 'ignition_expr' },
+    })
+
+    vim.api.nvim_create_autocmd('FileType', {
+      pattern = { 'ignition', 'python', 'ignition_expr' },
+      callback = function(args)
+        -- Check if already attached to avoid duplicate clients
+        local clients = vim.lsp.get_clients({ bufnr = args.buf, name = 'ignition_live' })
+        if #clients > 0 then
+          return
+        end
+
+        local config = vim.lsp.config.ignition_live
+        if not config then
+          return
+        end
+
+        -- Virtual buffers need root_dir resolved from the source file
+        -- because their synthetic paths (e.g. [Ignition:...]) aren't real paths
+        local virtual_doc = require('ignition.virtual_doc')
+        local meta = virtual_doc.get_metadata(args.buf)
+        if meta then
+          local root_dir = vim.fs.root(meta.source_file, 'project.json')
+          if root_dir then
+            local start_config = vim.tbl_extend('force', {}, config)
+            start_config.root_dir = root_dir
+            vim.lsp.start(start_config, { bufnr = args.buf })
+          end
+        else
+          vim.lsp.start(config, { bufnr = args.buf })
+        end
+      end,
+      desc = 'Start ignition_live (ign lsp) for Ignition project files',
+    })
+  end
+
   -- Auto-detect LSP server command if not provided
   if not lsp_config.cmd then
     lsp_config.cmd = M.find_lsp_server()
