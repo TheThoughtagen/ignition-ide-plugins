@@ -8,6 +8,16 @@
 
 Full IDE support for **[Ignition by Inductive Automation](https://inductiveautomation.com/)** — available for **Neovim**, **VS Code**, and **Zed**.
 
+## Watch it in use
+
+### Ignition Neovim
+
+API docs and completion, split editing, and Perspective component-tree navigation.
+
+[![Ignition Neovim recorded terminal walkthrough](website/static/demos/nvim.gif?raw=true)](https://thethoughtagen.github.io/ignition-ide-plugins/docs/demos/)
+
+[Open the recordings with playback controls and written summaries](https://thethoughtagen.github.io/ignition-ide-plugins/docs/demos/). Recorded against a fictional batch process; playback runs at 1.2×.
+
 ## Features
 
 - **System API completions** — All 14 `system.*` modules (239+ functions) with parameter signatures
