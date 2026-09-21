@@ -1,5 +1,7 @@
 # Edit an embedded script
 
+[Watch the recorded walkthroughs](../demos.md) to see the tools in use.
+
 Open a Perspective `view.json` that contains an event script or script transform. Keep it in a project checkout so you can inspect the diff after saving.
 
 ## Extract the script
