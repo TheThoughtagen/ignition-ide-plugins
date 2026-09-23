@@ -6,8 +6,8 @@
     "name": "Whiskey House",
     "url": "https://github.com/whiskeyhouse"
   },
-  "homepage": "https://github.com/whiskeyhouse/ignition-nvim",
-  "repository": "https://github.com/whiskeyhouse/ignition-nvim",
+  "homepage": "https://github.com/TheThoughtagen/ignition-ide-plugins",
+  "repository": "https://github.com/TheThoughtagen/ignition-ide-plugins",
   "license": "MIT",
   "keywords": ["ignition", "scada", "ics", "inductive-automation", "jython", "plc", "testing", "playwright"],
   "skills": "./skills/"

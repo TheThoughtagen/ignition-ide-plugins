@@ -264,7 +264,7 @@ Quick reference for diagnostic commands:
 If you've tried the solutions above and still have issues:
 
 1. **Check this troubleshooting guide** for your specific issue
-2. **Search GitHub issues**: https://github.com/whiskeyhouse/ignition-nvim/issues
+2. **Search GitHub issues**: https://github.com/TheThoughtagen/ignition-ide-plugins/issues
 3. **Enable debug logging** and gather diagnostic info:
    - Run `:LspInfo` and `:LspLog`
    - Check `/tmp/ignition-lsp.log`

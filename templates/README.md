@@ -7,7 +7,7 @@ Drop-in files that give Claude Code full Ignition SCADA awareness inside your pr
 From your Ignition project root (the directory with `project.json`):
 
 ```bash
-curl -sL https://raw.githubusercontent.com/whiskeyhouse/ignition-nvim/main/templates/setup.sh | bash
+curl -sL https://raw.githubusercontent.com/TheThoughtagen/ignition-ide-plugins/main/templates/setup.sh | bash
 ```
 
 Or from a local clone of this repo:
@@ -66,7 +66,7 @@ This repo also ships a [Claude Code plugin](../claude-code-plugin/) for the same
 | | Templates (this directory) | Plugin (`claude-code-plugin/`) |
 |--|-----------|------|
 | **Scope** | Per-project — files live in your repo | Global — works across all projects |
-| **Install** | `setup.sh` or manual copy | `claude plugin add` |
+| **Install** | `setup.sh` or manual copy | Add the marketplace, then install `ignition-scada@ignition-tools` |
 | **Team sharing** | Check `.claude/` into your repo | Each developer installs the plugin |
 | **Customization** | Edit `CLAUDE.md` directly | Plugin files are managed externally |
 | **Best for** | Teams, CI pipelines, project-specific rules | Solo developers, multiple projects |

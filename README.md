@@ -188,7 +188,8 @@ Give Claude Code full Ignition awareness — API reference, expression language,
 **Option A: Plugin** (global, works across all projects)
 
 ```bash
-claude plugin add --from TheThoughtagen/ignition-ide-plugins --path claude-code-plugin
+claude plugin marketplace add TheThoughtagen/ignition-ide-plugins
+claude plugin install ignition-scada@ignition-tools
 ```
 
 **Option B: Templates** (per-project, check into your repo)

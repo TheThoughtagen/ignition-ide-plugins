@@ -23,13 +23,15 @@ The plugin provides 8 skills (4 Claude-only background knowledge, 4 user-invocab
 ## Install
 
 ```bash
-claude plugin add --from TheThoughtagen/ignition-ide-plugins --path claude-code-plugin
+claude plugin marketplace add TheThoughtagen/ignition-ide-plugins
+claude plugin install ignition-scada@ignition-tools
 ```
 
-Or from a local clone:
+Or register a local clone as the marketplace source:
 
 ```bash
-claude plugin add --from /path/to/ignition-nvim/claude-code-plugin
+claude plugin marketplace add /path/to/ignition-ide-plugins
+claude plugin install ignition-scada@ignition-tools
 ```
 
 ## Prerequisites
@@ -112,7 +114,7 @@ This repo offers two ways to give Claude Ignition awareness:
 | | Plugin (`claude-code-plugin/`) | Templates (`templates/`) |
 |--|------|-----------|
 | **Scope** | Global — works across all your Ignition projects | Per-project — files live in your project repo |
-| **Install** | `claude plugin add` once | Copy files or run `setup.sh` per project |
+| **Install** | Add the `ignition-tools` marketplace, then run `claude plugin install ignition-scada@ignition-tools` | Copy files or run `setup.sh` per project |
 | **Updates** | `claude plugin update` | Re-run setup or manually copy |
 | **Best for** | Developers who work on multiple Ignition projects | Teams who want the config checked into their project |
 
