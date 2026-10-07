@@ -6,6 +6,14 @@ schema_version = 1
 authors = ["Whiskey House E&T <engineering@whiskeyhouse.com>"]
 repository = "https://github.com/TheThoughtagen/ignition-dev-tools"
 
+# The interpreter is resolved from the worktree's PATH (and may be an absolute
+# path); pip lives in the extension-managed venv. Restrict both to the exact
+# installation commands rather than granting arbitrary process execution.
+capabilities = [
+    { kind = "process:exec", command = "*", args = ["-m", "venv", "ignition-lsp-venv"] },
+    { kind = "process:exec", command = "*", args = ["install", "--upgrade", "ignition-lsp"] },
+]
+
 [language_servers.ignition-lsp]
 name = "Ignition LSP"
 # Ignition scripts live both as standalone Python (script-python modules,
