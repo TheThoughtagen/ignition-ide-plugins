@@ -6,6 +6,15 @@ schema_version = 1
 authors = ["Whiskey House E&T <engineering@whiskeyhouse.com>"]
 repository = "https://github.com/TheThoughtagen/ignition-dev-tools"
 
+# The interpreter is resolved from the worktree's PATH and the venv is
+# created at an absolute path inside Zed's extension work directory. Zed's
+# capability matcher only supports whole-argument wildcards, so allow one
+# variable path while keeping the interpreter arguments and pip package fixed.
+capabilities = [
+    { kind = "process:exec", command = "*", args = ["-m", "venv", "*"] },
+    { kind = "process:exec", command = "*", args = ["install", "--upgrade", "ignition-lsp"] },
+]
+
 [language_servers.ignition-lsp]
 name = "Ignition LSP"
 # Ignition scripts live both as standalone Python (script-python modules,

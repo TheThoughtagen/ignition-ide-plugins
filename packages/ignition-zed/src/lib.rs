@@ -43,13 +43,25 @@ impl IgnitionExtension {
         worktree.read_text_file(PROJECT_MARKER).is_ok()
     }
 
-    /// Path to the `pip`/`ignition-lsp` executables inside the managed venv.
-    fn venv_bin(name: &str) -> String {
-        let (os, _arch): (Os, Architecture) = zed::current_platform();
-        match os {
-            Os::Windows => format!("{VENV_DIR}/Scripts/{name}.exe"),
-            Os::Mac | Os::Linux => format!("{VENV_DIR}/bin/{name}"),
+    /// Absolute path in Zed's writable extension work directory. The WASM
+    /// current directory is set to that directory by Zed, but subprocesses
+    /// launched with `process::Command` do not inherit it (they may run in /).
+    fn venv_dir() -> Result<std::path::PathBuf> {
+        let work_dir = std::env::current_dir()
+            .map_err(|err| format!("Could not locate the extension work directory: {err}"))?;
+        if !work_dir.is_absolute() || !work_dir.is_dir() {
+            return Err(format!(
+                "Extension work directory is unavailable: {}",
+                work_dir.display()
+            ));
         }
+        Ok(work_dir.join(VENV_DIR))
+    }
+
+    /// Path to the `pip`/`ignition-lsp` executables inside the managed venv.
+    fn venv_bin(name: &str) -> Result<String> {
+        let (os, _arch): (Os, Architecture) = zed::current_platform();
+        Ok(venv_bin_path(&Self::venv_dir()?, name, os))
     }
 
     /// Locate the language server, installing it if necessary.
@@ -80,7 +92,7 @@ impl IgnitionExtension {
         }
 
         // 3. A venv this extension installed previously.
-        let venv_server = Self::venv_bin(SERVER_BINARY);
+        let venv_server = Self::venv_bin(SERVER_BINARY)?;
         if std::fs::metadata(&venv_server).is_ok_and(|stat| stat.is_file()) {
             self.cached_binary = Some(venv_server.clone());
             return Ok(venv_server);
@@ -117,23 +129,24 @@ impl IgnitionExtension {
             &LanguageServerInstallationStatus::Downloading,
         );
 
+        let venv_dir = Self::venv_dir()?;
         run(
             zed::process::Command::new(&python)
                 .arg("-m")
                 .arg("venv")
-                .arg(VENV_DIR),
+                .arg(venv_dir.to_string_lossy()),
             "create a virtualenv",
         )?;
 
         run(
-            zed::process::Command::new(Self::venv_bin("pip"))
+            zed::process::Command::new(Self::venv_bin("pip")?)
                 .arg("install")
                 .arg("--upgrade")
                 .arg(SERVER_BINARY),
             "install ignition-lsp",
         )?;
 
-        let server = Self::venv_bin(SERVER_BINARY);
+        let server = Self::venv_bin(SERVER_BINARY)?;
         if !std::fs::metadata(&server).is_ok_and(|stat| stat.is_file()) {
             return Err(format!(
                 "Installed {SERVER_BINARY} but no executable appeared at {server}."
@@ -152,6 +165,19 @@ impl IgnitionExtension {
                 .and_then(|settings| settings.settings),
         )
     }
+}
+
+/// Construct an absolute executable path independent of the subprocess cwd.
+fn venv_bin_path(venv_dir: &std::path::Path, name: &str, os: Os) -> String {
+    let (bin_dir, executable) = match os {
+        Os::Windows => ("Scripts", format!("{name}.exe")),
+        Os::Mac | Os::Linux => ("bin", name.to_string()),
+    };
+    venv_dir
+        .join(bin_dir)
+        .join(executable)
+        .to_string_lossy()
+        .into_owned()
 }
 
 /// Merge user-supplied LSP settings over this extension's defaults.
@@ -265,6 +291,27 @@ zed::register_extension!(IgnitionExtension);
 mod tests {
     use super::*;
     use zed_extension_api::serde_json::json;
+
+    #[test]
+    fn managed_venv_paths_are_absolute_and_in_work_dir() {
+        let work_dir = std::env::current_dir()
+            .expect("test current directory")
+            .join("zed")
+            .join("extensions")
+            .join("work")
+            .join("ignition");
+        let venv_dir = work_dir.join(VENV_DIR);
+        assert!(venv_dir.is_absolute());
+        assert_eq!(venv_dir.parent(), Some(work_dir.as_path()));
+        assert_eq!(
+            venv_bin_path(&venv_dir, SERVER_BINARY, Os::Mac),
+            venv_dir.join("bin").join(SERVER_BINARY).to_string_lossy()
+        );
+        assert_eq!(
+            venv_bin_path(&venv_dir, "pip", Os::Windows),
+            venv_dir.join("Scripts").join("pip.exe").to_string_lossy()
+        );
+    }
 
     #[test]
     fn defaults_when_no_user_settings() {
