@@ -294,17 +294,22 @@ mod tests {
 
     #[test]
     fn managed_venv_paths_are_absolute_and_in_work_dir() {
-        let work_dir = std::path::Path::new("/tmp/zed/extensions/work/ignition");
+        let work_dir = std::env::current_dir()
+            .expect("test current directory")
+            .join("zed")
+            .join("extensions")
+            .join("work")
+            .join("ignition");
         let venv_dir = work_dir.join(VENV_DIR);
         assert!(venv_dir.is_absolute());
-        assert_eq!(venv_dir.parent(), Some(work_dir));
+        assert_eq!(venv_dir.parent(), Some(work_dir.as_path()));
         assert_eq!(
             venv_bin_path(&venv_dir, SERVER_BINARY, Os::Mac),
-            "/tmp/zed/extensions/work/ignition/ignition-lsp-venv/bin/ignition-lsp"
+            venv_dir.join("bin").join(SERVER_BINARY).to_string_lossy()
         );
         assert_eq!(
             venv_bin_path(&venv_dir, "pip", Os::Windows),
-            "/tmp/zed/extensions/work/ignition/ignition-lsp-venv/Scripts/pip.exe"
+            venv_dir.join("Scripts").join("pip.exe").to_string_lossy()
         );
     }
 
